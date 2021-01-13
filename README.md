@@ -22,9 +22,9 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
       - [ ] : Study - Quill API
     - Practicals:
       - [ ] : Build MediumClone using modules, and integrate with a Vue app
-
+      
   - Auth0:
     - Research:
-      - [ ] : Read relevant documentation
+      - [ ] : Understand - Quill-Parchment model
     - Practicals:
-      - [ ] : Implement role-based authentication system
+      - [ ] : Build MediumClone using modules, and integrate with a Vue app
