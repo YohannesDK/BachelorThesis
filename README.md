@@ -25,8 +25,14 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
 
   - TinyMCE:
     - 
-  - Auth0:
+    
+  - Quill:
     - Research:
-      - [ ] : Read relevant documentation
+      - [ ] : Understand - Quill-Parchment model
+      - [ ] : Understand - delta format
+      - [ ] : Study - Quill API
     - Practicals:
-      - [ ] : Implement role-based 
+      - [ ] : Build MediumClone using modules, and integrate with a Vue app
+
+  - TinyMCE:
+    - 
