@@ -15,16 +15,16 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     Stack Overflow</a> link
 
 ## Todoes:
-  - Quill:
+  - <a href="https://github.com/quilljs/quill">Quill</a>:
     - Research:
-      - [ ] : Understand - Quill-Parchment model
-      - [ ] : Understand - delta format
-      - [ ] : Study - Quill API
+      - [ ] Understand - Quill-Parchment model
+      - [ ] Understand - delta format
+      - [ ] Study - Quill API
     - Practicals:
-      - [ ] : Build MediumClone using modules, and integrate with a Vue app
+      - [ ] Build MediumClone using modules, and integrate with a Vue app
       
   - Auth0:
     - Research:
-      - [ ] : Read relevant documentation
+      - [ ] Read relevant documentation
     - Practicals:
-      - [ ] : Implement role-based authentication system
+      - [ ] Implement role-based authentication system
