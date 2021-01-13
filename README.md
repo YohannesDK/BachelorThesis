@@ -7,7 +7,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
   - Monitoring
     - Build delta format-monitoring system for user interaction with the document   
 ## Resources
-  - Quill
+  - <a href="https://github.com/quilljs/quill">Quill</a>
     - Integrate quill with VueJs - <a href="https://pineco.de/wrapping-quill-editor-in-a-vue-component/"> 
     Wrapping quill editor in a vue component</a> 
     - We will most propably need to start with quill-core, and extend that. Here is a nice
@@ -15,7 +15,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     Stack Overflow</a> link
 
 ## Todoes:
-  - <a href="https://github.com/quilljs/quill">Quill</a>:
+  - Quill
     - Research:
       - [ ] Understand - Quill-Parchment model
       - [ ] Understand - delta format
