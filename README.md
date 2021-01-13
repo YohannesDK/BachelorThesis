@@ -25,4 +25,9 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
 
   - TinyMCE:
     - 
+  - Auth0:
+    - Research:
+      - [ ] : Read relevant Auth0 documentation
+    - Practicals:
+      - [ ] : Implement a role-based authentication system
 
