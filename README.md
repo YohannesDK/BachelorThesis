@@ -4,6 +4,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
 ## Ideas
   - Editing:
     - <a href="https://quilljs.com/guides/designing-the-delta-format/" target="_blank">Delta format on text</a> 
+    - Tooltip -> user can select a few "commonly used tools" to attach to inline tooltip
   - Monitoring
     - Build delta format-monitoring system for user interaction with the document
     - Extend Quill Block-Blots to store info about that block of text or paragraph 
@@ -18,9 +19,9 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
 ## Todoes:
   - Quill
     - Research:
-      - [ ] Understand - Quill-Parchment model
-      - [ ] Understand - delta format
-      - [ ] Study - Quill API
+      - [x] Understand - Quill-Parchment model
+      - [x] Understand - delta format
+      - [x] Study - Quill API
     - Practicals:
       - [ ] Build MediumClone using modules, and integrate with a Vue app
       
