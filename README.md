@@ -23,6 +23,12 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     - Practicals:
       - [ ] Build MediumClone using modules, and integrate with a Vue app
       
+  - TinyMCE
+    - Research:
+      - [ ] Understand TinyMCE API
+    - Practicals:
+      - [ ] Try to download and extend TinyMCE core - MediumClone
+
   - Auth0:
     - Research:
       - [ ] Read relevant documentation
