@@ -5,7 +5,8 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
   - Editing:
     - <a href="https://quilljs.com/guides/designing-the-delta-format/" target="_blank">Delta format on text</a> 
   - Monitoring
-    - Build delta format-monitoring system for user interaction with the document   
+    - Build delta format-monitoring system for user interaction with the document
+    - Extend Quill Block-Blots to store info about that block of text or paragraph 
 ## Resources
   - <a href="https://github.com/quilljs/quill" target="_blank">Quill</a>
     - Integrate quill with VueJs - <a href="https://pineco.de/wrapping-quill-editor-in-a-vue-component/" target="_blank"> 
