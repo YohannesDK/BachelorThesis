@@ -50,5 +50,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
   - Auth0:
     - Research:
       - [ ] Read relevant documentation
+      - [ ] Nice link on how to <a href="https://blog.logrocket.com/the-perfect-architecture-flow-for-your-next-node-js-project/">structure</a>
+            Node/JS App 
     - Practicals:
       - [ ] Implement role-based authentication system
