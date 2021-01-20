@@ -7,7 +7,9 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     - Tooltip -> user can select a few "commonly used tools" to attach to inline tooltip
   - Monitoring
     - Build delta format-monitoring system for user interaction with the document
-    - Extend Quill Block-Blots to store info about that block of text or paragraph 
+    - Extend Quill Block-Blots to store info about that block of text or paragraph
+    - Build a context module that takes in a blot, and binds it to a store state menegment object.
+      - make sure that every blot besides embeds implements the context module. 
   - Delta is the key:
     - Extend delta so we can flag the different nodes, especially the "header" nodes.
     - Now that we have flagged each "header/topic" node, we can link the different paragraphs to each topic.
@@ -41,12 +43,6 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     - Practicals:
       - [ ] Build MediumClone using modules, and integrate with a Vue app
       
-  - TinyMCE
-    - Research:
-      - [ ] Understand TinyMCE API
-    - Practicals:
-      - [ ] Try to download and extend TinyMCE core - MediumClone
-
   - Auth0:
     - Research:
       - [ ] Read relevant documentation
