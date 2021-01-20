@@ -33,6 +33,8 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     - We will most propably need to start with quill-core, and extend that. Here is a nice
     <a href="https://stackoverflow.com/questions/51125342/implement-custom-editor-for-quill-blot" target="_blank">
     Stack Overflow</a> link
+  - Best Practices
+    - <a href="https://www.toptal.com/javascript/comprehensive-guide-javascript-design-patterns">The Comprehensive Guide to JavaScript Design Patterns</a>
 
 ## Todoes:
   - Quill
