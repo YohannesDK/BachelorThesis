@@ -35,7 +35,10 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     Stack Overflow</a> link
   - Best Practices
     - <a href="https://www.toptal.com/javascript/comprehensive-guide-javascript-design-patterns">The Comprehensive Guide to JavaScript Design Patterns</a>
-
+    - <a href="https://labs.mlssoccer.com/a-javascript-project-structure-i-can-finally-live-with-52b778041b72">Nice project structure we could use?</a>
+    - <a href="https://levelup.gitconnected.com/project-structure-and-building-routes-of-restful-api-with-node-js-f3a8b53d94e7">Node JS / Express RestAPI + typescript ❤️</a>
+    
+    
 ## Todoes:
   - Quill
     - Research:
