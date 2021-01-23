@@ -234,4 +234,163 @@ Now there are some problems with this...
 
 ### Singleton Pattern
 
+The singleton pattern is used in scenarios when we need exactly one instance of a class. 
+The example below is of a configuration object, which doesn't need to be re-created every time its
+needed in other parts of the system.
 
+```js
+var singleton = (function() {
+    // private singleton value which gets initialized only once
+    var config;
+
+    function initializeConfiguration(values){
+        this.randomNumber = Math.random();
+        values = values || {};
+        this.number = values.number || 5;
+        this.size = values.size || 10;
+    }
+
+    // we export the centralized method for retrieving the singleton value
+    return {
+        getConfig: function(values) {
+            // we initialize the singleton value only once
+            if (config === undefined) {
+                config = new initializeConfiguration(values);
+            }
+
+            // and return the same config value wherever it is asked for
+            return config;
+        }
+    };
+})();
+
+var configObject = singleton.getConfig({ "size": 8 });
+// prints number: 5, size: 8, randomNumber: someRandomDecimalValue
+console.log(configObject);
+var configObject1 = singleton.getConfig({ "number": 8 });
+// prints number: 5, size: 8, randomNumber: same randomDecimalValue as in first config
+console.log(configObject1);
+```
+---
+
+### Observer Pattern
+The observer pattern is used in a scenario where you would need to improve the communication between disparate parts of our system. It promotes loose coupling between objects. 
+
+There are to main parts to this pattern. We have a `subject` and a `observer`. 
+A `subject` handles all of the operations regarding a certain topic that the `observer subscribes` to.
+These `operations subscribe` an <b>observer</b> to a certain topic, `unsubscribe` an observer from a certain topic, and `notify observers` about a certain topic when an event is published. 
+
+```js
+var publisherSubscriber = {};
+
+// we send in a container object which will handle the subscriptions and publishing's
+(function(container) {
+    // the id represents a unique subscription id to a topic
+    var id = 0;
+
+    // we subscribe to a specific topic by sending in
+    // a callback function to be executed on event firing
+    container.subscribe = function(topic, f) {
+        if (!(topic in container)) {
+          container[topic] = [];
+        }
+
+        container[topic].push({
+            "id": ++id,
+            "callback": f
+        });
+
+        return id;
+    }
+
+    // each subscription has its own unique ID, which we use
+    // to remove a subscriber from a certain topic
+    container.unsubscribe = function(topic, id) {
+        var subscribers = [];
+        for (var subscriber of container[topic]) {
+            if (subscriber.id !== id) {
+                subscribers.push(subscriber);
+            }
+        }
+        container[topic] = subscribers;
+    }
+
+    container.publish = function(topic, data) {
+        for (var subscriber of container[topic]) {
+            // when executing a callback, it is usually helpful to read
+            // the documentation to know which arguments will be
+            // passed to our callbacks by the object firing the event
+            subscriber.callback(data);
+        }
+    }
+
+})(publisherSubscriber);
+
+var subscriptionID1 = publisherSubscriber.subscribe("mouseClicked", function(data) {
+    console.log("I am Bob's callback function for a mouse clicked event and this is my event data: " + JSON.stringify(data));
+});
+
+var subscriptionID2 = publisherSubscriber.subscribe("mouseHovered", function(data) {
+    console.log("I am Bob's callback function for a hovered mouse event and this is my event data: " + JSON.stringify(data));
+});
+
+var subscriptionID3 = publisherSubscriber.subscribe("mouseClicked", function(data) {
+    console.log("I am Alice's callback function for a mouse clicked event and this is my event data: " + JSON.stringify(data));
+});
+
+// NOTE: after publishing an event with its data, all of the
+// subscribed callbacks will execute and will receive
+// a data object from the object firing the event
+// there are 3 console.logs executed
+publisherSubscriber.publish("mouseClicked", {"data": "data1"});
+publisherSubscriber.publish("mouseHovered", {"data": "data2"});
+
+// we unsubscribe from an event by removing the subscription ID
+publisherSubscriber.unsubscribe("mouseClicked", subscriptionID3);
+
+// there are 2 console.logs executed
+publisherSubscriber.publish("mouseClicked", {"data": "data1"});
+publisherSubscriber.publish("mouseHovered", {"data": "data2"});
+```
+
+This design pattern is useful in situations when we need to perform multiple operations on a single event being fired. Imagine you have a scenario where we need to make multiple AJAX calls to a back-end service and then perform other AJAX calls depending on the result. 
+
+---
+
+### Prototype Pattern
+Since Javascript doesnt support classes, we have to use prototype-based inheritance. A prototype object
+works as a blueprint for each object the constructor creates.
+
+```js
+var personPrototype = {
+    sayHi: function() {
+        console.log("Hello, my name is " + this.name + ", and I am " + this.age);
+    },
+    sayBye: function() {
+        console.log("Bye Bye!");
+    }
+};
+
+function Person(name, age) {
+    name = name || "John Doe";
+    age = age || 26;
+
+    function constructorFunction(name, age) {
+        this.name = name;
+        this.age = age;
+    };
+
+    constructorFunction.prototype = personPrototype;
+
+    var instance = new constructorFunction(name, age);
+    return instance;
+}
+
+var person1 = Person();
+var person2 = Person("Bob", 38);
+
+// prints out Hello, my name is John Doe, and I am 26
+person1.sayHi();
+// prints out Hello, my name is Bob, and I am 38
+person2.sayHi();
+```
