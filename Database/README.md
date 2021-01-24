@@ -4,7 +4,7 @@
   - mysqldump -u [database user] -p [database name] > [sql file name]  
 
 
-## Entitites in our Application
+## Entities in our Application
   - Student 
   - Teacher
       -> or User entity with role type 
