@@ -2,6 +2,9 @@
 Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collaboration
 
 ## Ideas
+  - Login: 
+    - Instead of having a basic form, use a slack like login method. Where you have different slides and sites. 
+    - Have a guide on the start, that shows you how and where you can find different things on the app. 
   - Editing:
     - <a href="https://quilljs.com/guides/designing-the-delta-format/" target="_blank">Delta format on text</a> 
     - Tooltip -> user can select a few "commonly used tools" to attach to inline tooltip
