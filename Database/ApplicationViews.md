@@ -74,6 +74,12 @@ Think about the flow of actions made by different types of users.
     - link
     - reference to resource origin
 
+## Context
+  - ...
+
 idea avarage time from clicking on a resource link to they are back, to determine of the user was doing something else or actually was on the page.
 
 
+idea on saving delta's and a context module:
+  - just as each insert has a attributes field, we need to store some kind of id or reference to a context module index, that have information about exactly that block/element.
+  - need also to delete from the context module using the same id, when we encounter delta delete. 
