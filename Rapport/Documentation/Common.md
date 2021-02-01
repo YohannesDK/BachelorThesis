@@ -10,30 +10,30 @@ This document will try to identify the main elements of the Application.
 ---
 
 ## Editor in detail
-## <a href="https://github.com/quilljs/parchment">Parchment</a>
+## <a href="https://github.com/quilljs/parchment" target="_blank">Parchment</a>
 Parchment document model is made up of `Blots`, which mirror a DOM node. <br>
 Blots can provide structure, formatting, and/or content. In addition Parchment provides so called <br>
 `Attributors`, which are a counter part of the ordinary DOM Attribute. Like a DOM attribute's relationship to a node, Attributors are meant to belong to Blots. `This is what we are planning on using to id different parts of the document. By setting a data-id attribute`.
 
 <h2>Blots</h2>
 
-<a href="https://github.com/quilljs/parchment#block-blot"><h3>Block Blots</h3></a>
+<a href="https://github.com/quilljs/parchment#block-blot" target="_blank"><h3>Block Blots</h3></a>
 Basic implementation of a block scoped formattable parent Blot. Formatting a block blot by default will replace the appropriate subsection of the blot.
 
 <br>
 
-<a href="https://github.com/quilljs/parchment#inline-blot"><h3>Inline Blots</h3></a>
+<a href="https://github.com/quilljs/parchment#inline-blot" target="_blank"><h3>Inline Blots</h3></a>
 Basic implementation of an inline scoped formattable parent Blot. Formatting an inline blot by default either wraps itself with another blot or passes the call to the appropriate child.
 
 <br>
 
-<a href="https://github.com/quilljs/parchment#embed-blot"><h3>Embed Blots</h3></a>
+<a href="https://github.com/quilljs/parchment#embed-blot" target="_blank"><h3>Embed Blots</h3></a>
 Basic implementation of a non-text leaf blot, that is formattable. Its corresponding DOM node will often be a `Void Element`, but can be a `Normal Element`. In these cases Parchment will not manipulate or generally be aware of the element's children, and it will be important to correctly implement the blot's `index()` and `position()` functions to correctly work with cursors/selections.
 Basically it is embedded elements such as images, videos...
 
 ---
 
-## <a href="https://github.com/quilljs/delta">Delta</a>
+## <a href="https://github.com/quilljs/delta" target="_blank">Delta</a>
 Deltas are a simple, yet expressive format that can be used to describe contents and changes. The format is JSON based, and is human readable, yet easily parsible by machines. Deltas can describe any rich text document, includes all text and formatting information, without the ambiguity and complexity of HTML.
 ```js
   // Document with text "Gandalf the Grey"
