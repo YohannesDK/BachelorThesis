@@ -54,6 +54,8 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
         - <a href="https://github.com/quilljs/quill/issues/1089">Github issue</a>
         - Problem:
           - Uploading back again from server.
+    - Things to consider when storing editor content
+      - https://github.com/quilljs/quill/issues/2276
     
     
 ## Todoes:
