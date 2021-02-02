@@ -45,6 +45,15 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
       - <a href="https://codepen.io/icosahebron/pen/mMEVog">Example 1</a>
       - <a href="https://codepen.io/mackermedia/pen/gmNwZP">Example 2</a>
       - <a href="https://codepen.io/icosahebron/pen/mMEVog">Github issue</a>
+
+    - Image Handler so we can save the image location, instead of saving base64-encoded image
+      - This could be a problem when saving very large images,
+        - <a href="https://codepen.io/jackmu95/pen/EgBKZr"> Example 1</a>
+        - <a href="https://github.com/quilljs/quill/issues/1089#issuecomment-319567957"> Example 2 (this is better)</a>
+        - <a href="https://www.tutorialfor.com/blog-227128.htm"> Example 3 (or maybe this)</a>
+        - <a href="https://github.com/quilljs/quill/issues/1089">Github issue</a>
+        - Problem:
+          - Uploading back again from server.
     
     
 ## Todoes:

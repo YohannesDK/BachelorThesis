@@ -1,5 +1,7 @@
 # Common Language
 This document will try to identify the main elements of the Application. 
+
+Link to db diagram: almost finished - https://lucid.app/lucidchart/invitations/accept/3f3a7d68-b3e6-4340-909a-586f85568783
 ```
   - Editor - our document
     - Quill JS
