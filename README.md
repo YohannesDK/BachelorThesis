@@ -40,6 +40,11 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
     - <a href="https://www.toptal.com/javascript/comprehensive-guide-javascript-design-patterns">The Comprehensive Guide to JavaScript Design Patterns</a>
     - <a href="https://labs.mlssoccer.com/a-javascript-project-structure-i-can-finally-live-with-52b778041b72">Nice project structure we could use?</a>
     - <a href="https://levelup.gitconnected.com/project-structure-and-building-routes-of-restful-api-with-node-js-f3a8b53d94e7">Node JS / Express RestAPI + typescript ❤️</a>
+  - Quill Editor:
+    - Shift + Enter, to expand block content, instead of creating a new block below
+      - <a href="https://codepen.io/icosahebron/pen/mMEVog">Example 1</a>
+      - <a href="https://codepen.io/mackermedia/pen/gmNwZP">Example 2</a>
+      - <a href="https://codepen.io/icosahebron/pen/mMEVog">Github issue</a>
     
     
 ## Todoes:
@@ -49,7 +54,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
       - [x] Understand - delta format
       - [x] Study - Quill API
     - Practicals:
-      - [ ] Build MediumClone using modules, and integrate with a Vue app
+      - [x] Build MediumClone using modules, and integrate with a Vue app
       
   - Auth0:
     - Research:
