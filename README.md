@@ -56,6 +56,7 @@ Bachelor Thesis - LMS and Smart Text-Editor to Enhance Teacher - Student Collabo
           - Uploading back again from server.
     - Things to consider when storing editor content
       - https://github.com/quilljs/quill/issues/2276
+  - Diving deep in quill - https://dev.to/charrondev/getting-to-know-quilljs---part-1-parchment-blots-and-lifecycle--3e76
     
     
 ## Todoes:
