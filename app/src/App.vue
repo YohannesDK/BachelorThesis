@@ -1,10 +1,31 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+
+  <div class="wrapper">
+    <nav-bar/>
+
+    <!-- page content -->
+    <div class="container-fluid">
+      <router-view />
+      <button type="button" class="btn btn-primary">Primary</button>
+    </div>
+
   </div>
-  <router-view />
+
 </template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import NavBar from "@/components/NavBar.vue";
+
+export default defineComponent({
+  name: "App",
+  components: {
+    NavBar
+  }
+});
+</script>
+
+
 
 <style>
 #app {
@@ -15,16 +36,18 @@
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+.wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
 }
 
-#nav a {
+/* #nav a {
   font-weight: bold;
   color: #2c3e50;
 }
 
 #nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 </style>
