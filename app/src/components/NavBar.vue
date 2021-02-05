@@ -18,7 +18,7 @@
       </div>
 
       <div class="d-flex justify-content-center h-100 mb-1">
-        <div class="searchbar">
+        <div class="addProject">
           <div class="add_project">Add Project</div>
           <a href="#" class="search_icon"><fa icon="plus"></fa></a>
         </div>
@@ -32,24 +32,33 @@
       </li>
 
       <li class="sidebar-list">
-        <router-link to="/about">
-          <fa icon="user-graduate" class="sidebar-menu-faicons"></fa>
-          About
+        <router-link to="/profile">
+          <fa icon="user" class="sidebar-menu-faicons"></fa>
+          Profile
         </router-link>
       </li>
 
       <li class="sidebar-list">
-        <router-link to="/test">
-          <fa icon="user-graduate" class="sidebar-menu-faicons"></fa>
-          Test 1
+        <router-link to="/documents">
+          <fa icon="folder" class="sidebar-menu-faicons"></fa>
+          My Documents
+        </router-link>
+      </li>
+
+      <li class="sidebar-list">
+        <router-link to="/courses">
+          <fa icon="book" class="sidebar-menu-faicons"></fa>
+          Courses
         </router-link>
       </li>
     </ul>
 
-    <div class="collapse_icon" @click="toogleSideBar">
+    <div class="collapse_icon" v-if="showSideBar" @click="toogleSideBar">
       <fa icon="compress-alt"></fa>
     </div>
-
+    <div class="expand_icon" v-if="!showSideBar" @click="toogleSideBar">
+      <fa icon="expand-alt"></fa>
+    </div>
   </nav>
 </template>
 
@@ -60,17 +69,20 @@ export default defineComponent({
   name: "NavBar",
   setup() {
     const sidebar = ref<HTMLDivElement>();
-    let sidebarToogle = false;
+    const showSideBar = ref<boolean>(true);
 
     const toogleSideBar = () => {
-      !sidebarToogle
+      showSideBar.value
         ? sidebar.value?.classList.add("active")
         : sidebar.value?.classList.remove("active");
-      sidebarToogle = !sidebarToogle;
+
+      showSideBar.value = !showSideBar.value;
     };
+
     return {
       sidebar,
-      toogleSideBar
+      toogleSideBar,
+      showSideBar
     };
   }
 });
@@ -85,14 +97,14 @@ export default defineComponent({
 }
 
 .sidebar-list a.router-link-active {
-  background:#444b5c;
+  background: #444b5c;
 }
 
 .sidebar-list:hover {
   background: #3d4453;
 }
 
-.sidebar-menu-faicons{
+.sidebar-menu-faicons {
   margin-right: 2%;
   min-width: 2em;
   display: flex;
@@ -152,7 +164,7 @@ ul ul a {
 }
 
 p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 1.1em;
   font-weight: 300;
   line-height: 1.7em;
@@ -176,7 +188,8 @@ a:focus {
   }
 }
 
-.searchbar {
+.searchbar,
+.addProject {
   margin-bottom: auto;
   margin-top: auto;
   height: 50px;
@@ -188,13 +201,17 @@ a:focus {
   width: 95%;
 }
 
+.addProject {
+  background-color: #3a7793;
+}
+
 .search_input {
   color: white;
   border: 0;
   outline: 0;
   background: none;
   width: 80%;
-  caret-color:transparent;
+  caret-color: transparent;
   line-height: 40px;
   transition: width 0.4s linear;
   padding: 0 10px;
@@ -205,7 +222,7 @@ a:focus {
   outline: 0;
   background: none;
   width: 80%;
-  caret-color:transparent;
+  caret-color: transparent;
   line-height: 40px;
   transition: width 0.4s linear;
   padding: 0 10px;
@@ -215,17 +232,20 @@ a:focus {
 .searchbar:hover > .search_input {
   padding: 0 10px;
   width: 80%;
-  caret-color:red;
+  caret-color: red;
   transition: width 0.4s linear;
   transition: all 0.3s;
 }
 
-.search_icon:hover, .collapse_icon:hover {
+.search_icon:hover,
+.collapse_icon:hover {
   background: white;
   color: #e74c3c;
 }
 
-.search_icon,.collapse_icon {
+.search_icon,
+.collapse_icon,
+.expand_icon {
   height: 40px;
   width: 40px;
   float: right;
@@ -233,13 +253,27 @@ a:focus {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  color:white;
-  text-decoration:none;
+  color: white;
+  text-decoration: none;
+  transition: all 0.4s;
 }
 
-.collapse_icon{
+.collapse_icon {
   position: absolute;
   bottom: 0;
   right: 1px;
+}
+
+.expand_icon {
+  background: #353b48;
+  color: whitesmoke;
+  position: absolute;
+  bottom: 1px;
+  right: -42px;
+}
+
+.expand_icon:hover {
+  /* background: white; */
+  color: #e74c3c;
 }
 </style>

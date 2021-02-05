@@ -1,11 +1,11 @@
 <template>
-
   <div class="wrapper">
+    <!-- Sidebar -->
     <nav-bar />
+
     <!-- page content -->
     <div class="container-fluid">
       <router-view />
-      <button type="button" class="btn btn-primary">Primary</button>
     </div>
   </div>
 </template>
