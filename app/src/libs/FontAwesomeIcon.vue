@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import {computed, defineComponent} from 'vue';
-import { findIconDefinition} from "@fortawesome/fontawesome-svg-core";
+import { computed, defineComponent } from "vue";
+import { findIconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 export default defineComponent({
   name: "FontAwesomeIcon",
@@ -23,23 +23,28 @@ export default defineComponent({
   },
 
   setup(props) {
-    const definition = computed(() =>findIconDefinition({
-        prefix: 'fas',
+    const definition = computed(() =>
+      findIconDefinition({
+        prefix: "fas",
         iconName: props.icon
       })
     );
     console.log(definition, "halla");
     const width = computed(() => definition.value.icon.values);
     console.log(width);
-    
-    const height = computed(() => { return definition.value.icon[1] | 0 });
-    const svgPath = computed(() => { return definition.value.icon[4] | 0 });
+
+    const height = computed(() => {
+      return definition.value.icon[1] | 0;
+    });
+    const svgPath = computed(() => {
+      return definition.value.icon[4] | 0;
+    });
 
     return {
       width,
       height,
       svgPath
-    }
+    };
   }
-})
+});
 </script>

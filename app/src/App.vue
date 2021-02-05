@@ -1,16 +1,13 @@
 <template>
-
   <div class="wrapper">
-    <nav-bar/>
+    <!-- Sidebar -->
+    <nav-bar />
 
     <!-- page content -->
     <div class="container-fluid">
       <router-view />
-      <button type="button" class="btn btn-primary">Primary</button>
     </div>
-
   </div>
-
 </template>
 
 <script lang="ts">
@@ -24,8 +21,6 @@ export default defineComponent({
   }
 });
 </script>
-
-
 
 <style>
 #app {
