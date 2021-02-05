@@ -1,17 +1,44 @@
 <template>
-  <div class="container profile-container">
-    <div class="row">
-      <div class="profile-card col-md-3 card">
+  <div class="container profile-container d-flex">
+    <div class="col-md-3">
+      <div class="profile-card card shadow">
         <div class="panel">
           <div class="profile-card-card">
-            <fa icon="user" class="profile-img" />
+            <img
+              class="profile-img"
+              src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120"
+            />
+            <!-- <fa icon="user" class="profile-img" /> -->
             <h1>{{ user.username }}</h1>
             <p>{{ user.email }}</p>
           </div>
+          <ul class="profile-card-nav list-unstyled components">
+            <li class="profile-card-li active">
+              <a href="">
+                <fa class="profile-li-icon" icon="user"></fa>
+                Profile
+              </a>
+            </li>
+            <li class="profile-card-li">
+              <a href="">
+                <fa class="profile-li-icon" icon="edit" />
+                Edit Profile
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-      <div class="profile-info col-md-8 card">
-        haha
+    </div>
+    <div class="profile-info-container col-md-8 d-flex">
+      <div class="profile-info col-md-8 card shadow">
+        <div class="panel">
+          <h1>Info</h1>
+        </div>
+      </div>
+      <div class="profile-info col-md-8 card shadow">
+        <div class="panel">
+          <h1>Info 2</h1>
+        </div>
       </div>
     </div>
   </div>
@@ -46,6 +73,7 @@ export default defineComponent({
   margin-right: auto;
   margin-left: auto;
   margin-top: 10px;
+  justify-content: space-evenly;
 }
 
 .row {
@@ -53,22 +81,76 @@ export default defineComponent({
   margin-left: -15px;
   justify-content: space-evenly;
 }
+.card {
+  border-radius: 1.55rem;
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+}
+
+.profile-card-nav {
+  margin-top: 2%;
+}
+
+.profile-card-li {
+  height: 2.5em;
+  background-color: rgb(248, 248, 248);
+  margin-bottom: 1%;
+  border-left: 5px solid transparent;
+  padding-left: 3%;
+  display: flex;
+  align-items: center;
+}
+
+.profile-card-li a {
+  padding: 12px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-li-icon {
+  margin-right: 2%;
+  min-width: 2em;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card-li.active {
+  border-left: 5px solid rgb(179, 179, 179);
+  background-color: rgb(255, 255, 255);
+}
+
+.profile-info-container {
+  flex-direction: column;
+}
+
+.profile-info {
+  min-width: 90%;
+  min-height: 35vh;
+}
 
 .profile-card,
 .profile-info {
   margin-top: 30px;
-  background: #353b48;
+  background: whitesmoke;
 }
 
 .panel {
   margin-top: 7%;
   margin-bottom: 20px;
-  background-color: #fff;
+  color: #353b48;
+  /* background-color: #fff; */
   border: 1px solid transparent;
   border-radius: 4px;
   -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
   box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
-  min-width: 90%;
+  min-width: 85%;
+  max-width: 85%;
 }
 
 .profile-card-card {
@@ -79,6 +161,8 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.774);
+  padding-bottom: 10px;
 }
 
 .profile-card-card a {
