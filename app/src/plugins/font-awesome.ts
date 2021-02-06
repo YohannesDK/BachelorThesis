@@ -9,7 +9,8 @@ import {
   faExpandAlt,
   faFolder,
   faBook,
-  faEdit
+  faEdit,
+  faBars
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -23,7 +24,8 @@ library.add(
   faExpandAlt,
   faFolder,
   faBook,
-  faEdit
+  faEdit,
+  faBars
 );
 
 export { FontAwesomeIcon };
