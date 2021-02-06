@@ -1,14 +1,13 @@
 <template>
   <div class="container profile-container d-flex">
     <div class="col-md-3">
-      <div class="profile-card card shadow">
+      <div ref="profileCard" class="profile-card card shadow">
         <div class="panel">
           <div class="profile-card-card">
             <img
               class="profile-img"
               src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120"
             />
-            <!-- <fa icon="user" class="profile-img" /> -->
             <h1>{{ user.username }}</h1>
             <p>{{ user.email }}</p>
           </div>
@@ -30,14 +29,54 @@
       </div>
     </div>
     <div class="profile-info-container col-md-8 d-flex">
-      <div class="profile-info col-md-8 card shadow">
+      <div ref="profileUserInfo" class="profile-info col-md-8 card shadow">
         <div class="panel">
-          <h1>Info</h1>
+          <h1>User Info</h1>
+          <hr />
+          <div class="panel-inner-container">
+            <div class="row">
+              <div class="user-info-row">
+                <p><span>First Name</span> : {{ user.Firstname }}</p>
+              </div>
+              <div class="user-info-row">
+                <p><span>Last Name</span> : {{ user.Lastname }}</p>
+              </div>
+              <div class="user-info-row">
+                <p><span>Birthday</span> : {{ user.Birthday }}</p>
+              </div>
+              <div class="user-info-row">
+                <p><span>Gender</span> : {{ user.gender }}</p>
+              </div>
+              <div class="user-info-row">
+                <p><span>Email</span> : {{ user.email }}</p>
+              </div>
+              <div class="user-info-row">
+                <p><span>Mobile</span> : {{ user.mobile }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="profile-info col-md-8 card shadow">
         <div class="panel">
-          <h1>Info 2</h1>
+          <h1>Courses</h1>
+          <hr />
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="course-container row d-flex flex-col">
+                  <div class="course-shorthand .col-sm-3">
+                    DAT320
+                  </div>
+                  <div class="course-info .col-sm-6">
+                    <h2>Oprativ Systemer</h2>
+                    <a href="">Jens Hansen</a>
+                    <a href="">Room</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -45,22 +84,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 export default defineComponent({
   name: "Profile",
   setup() {
+    const profileCard = ref<HTMLDivElement>();
+    const profileUserInfo = ref<HTMLDivElement>();
     const user = {
       username: "JohnDoe123",
       Firstname: "John",
       Lastname: "Doe",
       email: "JohnDoe@gmail.com",
-      gender: "male",
       mobile: "+47 95029950",
-      birtday: "12 June 2000"
+      Birthday: "12 June 2000",
+      gender: "Male"
     };
+
+    onMounted(() => {
+      console.log(profileCard, profileUserInfo);
+    });
     return {
-      user
+      user,
+      profileCard,
+      profileUserInfo
     };
   }
 });
@@ -90,6 +137,10 @@ export default defineComponent({
   align-items: center;
 }
 
+.profile-card .panel {
+  margin-bottom: 0;
+}
+
 .profile-card-nav {
   margin-top: 2%;
 }
@@ -104,8 +155,12 @@ export default defineComponent({
   align-items: center;
 }
 
+.profile-card-li:hover {
+  border-left: 5px solid rgba(179, 179, 179, 0.308);
+}
+
 .profile-card-li a {
-  padding: 12px 10px;
+  padding: 12px 0px;
   font-size: 16px;
   cursor: pointer;
   display: flex;
@@ -141,16 +196,36 @@ export default defineComponent({
 }
 
 .panel {
-  margin-top: 7%;
   margin-bottom: 20px;
   color: #353b48;
-  /* background-color: #fff; */
   border: 1px solid transparent;
   border-radius: 4px;
   -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
   box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
   min-width: 85%;
   max-width: 85%;
+  padding-left: 4%;
+  padding-top: 2%;
+}
+
+.panel > h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  text-transform: capitalize;
+  letter-spacing: 2px;
+  color: #999;
+  font-variant: all-small-caps;
+}
+
+.panel-inner-container {
+  width: 100%;
+}
+
+.user-info-row {
+  width: 50%;
+  float: left;
+  margin-bottom: 10px;
+  padding: 0 15px;
 }
 
 .profile-card-card {
@@ -187,5 +262,17 @@ export default defineComponent({
 
 .profile-card-card p {
   font-size: 15px;
+}
+
+.course-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.course-shorthand {
+  width: 30%;
+}
+.course-info {
+  height: 60%;
 }
 </style>
