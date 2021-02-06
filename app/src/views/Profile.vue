@@ -176,9 +176,9 @@ export default defineComponent({
   width: 100%;
 }
 
-/* .card {
-  border-radius: 1.55rem;
-} */
+.card {
+  border-radius: 1.25rem;
+}
 
 .profile-card {
   display: flex;
@@ -259,7 +259,7 @@ export default defineComponent({
 
 .panel > h1 {
   font-size: 2rem;
-  font-weight: 300;
+  font-weight: 400;
   text-transform: capitalize;
   letter-spacing: 2px;
   color: #999;
@@ -321,5 +321,6 @@ export default defineComponent({
 .profile-recents-nav ul li.active {
   text-decoration: underline;
   font-weight: bold;
+  color: #3a7793;
 }
 </style>
