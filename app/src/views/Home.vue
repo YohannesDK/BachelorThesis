@@ -12,7 +12,7 @@
     <card class="three"></card>
 
     <!-- This is just to preview the questionModal component -->
-    <question-modal class="test"></question-modal>
+    <question-modal class="test"><input type="text" id="eyoo"></question-modal>
   </div>
 </template>
 

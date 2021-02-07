@@ -16,9 +16,9 @@
       <div class="modall" v-if="showModal">
         <h1>Add Notes</h1>
         <label>Notes</label>
-        <input v-model="note" name="note" />
+        <!-- <input v-model="note" name="note" />
         <button class="buttonn" @click="addNotes">Add</button>
-        <button class="buttonn" @click="showModal = false">Close</button>
+        <button class="buttonn" @click="showModal = false">Close</button> -->
       </div>
     </transition>
   </div>
