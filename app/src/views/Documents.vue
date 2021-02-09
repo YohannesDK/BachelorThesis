@@ -8,6 +8,7 @@
     </div>
     <div class="wrap">
       <input
+        v-model="searchValue"
         id="document-search"
         name="search"
         type="text"
@@ -17,48 +18,128 @@
         <fa icon="search" size="lg" />
       </div>
     </div>
+    <div class="search-icon-wrapper" style="min-height:45px; margin-left:1%;">
+      <fa icon="filter" size="lg" />
+    </div>
   </div>
   <div class="container">
     <ul class="tilesWrap d-flex justify-content-evenly flex-wrap">
-      <li>
-        <h2>02</h2>
-        <h3>Title 2</h3>
+      <li v-for="(doc, index) in filteredDocuments" :key="index">
+        <h2>0{{ index }}</h2>
+        <h3>{{ doc.name }}</h3>
         <p>
-          When an unknown printer took a galley of type and scrambled it to make
-          a type specimen book. It has survived not only five centuries.
+          {{ doc.text }}
         </p>
-        <button>Read more</button>
+        <button style="cursor:pointer; z-index:1;">Open</button>
       </li>
-      <li>
-        <h2>02</h2>
-        <h3>Title 2</h3>
-        <p>
-          When an unknown printer took a galley of type and scrambled it to make
-          a type specimen book. It has survived not only five centuries.
-        </p>
-        <button>Read more</button>
-      </li>
-      <li>
-        <h2>02</h2>
-        <h3>Title 2</h3>
-        <p>
-          When an unknown printer took a galley of type and scrambled it to make
-          a type specimen book. It has survived not only five centuries.
-        </p>
-        <button>Read more</button>
-      </li>
-      <li>
-        <h2>02</h2>
-        <h3>Title 2</h3>
-        <p>
-          When an unknown printer took a galley of type and scrambled it to make
-          a type specimen book. It has survived not only five centuries.
-        </p>
-        <button>Read more</button>
-      </li>
+      <h1 v-if="filteredDocuments.length === 0">No documents found...</h1>
     </ul>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent, ref, computed } from "vue";
+
+export default defineComponent({
+  name: "Documents",
+  setup() {
+    const searchValue = ref<string>("");
+    const documents = ref([
+      {
+        name: "Tittle 1",
+        text: `Lorem Ipsum is simply dummy text of the
+                printing and typesetting industry... Standard dummy text ever...`,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "2 Feb. 2021"
+      },
+      {
+        name: "Ajax 1",
+        text: `Used to retrieve data, not pages
+              Asynchronous, i.e., no need to “lock” the document while waiting for the response
+              Fetch
+              Performs AJAX call
+              Returns a promise`,
+        tags: ["DAT310", "WebProg", "Ajax", "NodeJS"],
+        lastEditied: "1 Jan. 2021"
+      },
+      {
+        name: "random 1",
+        text: `Lorem Ipsum is simply dummy text of the
+                printing and typesetting industry... Standard dummy text ever...`,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "3 Feb. 2021"
+      },
+      {
+        name: "random 2",
+        text: `Lorem Ipsum is simply dummy text of the
+                printing and typesetting industry... Standard dummy text ever...`,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "1 Jan. 2021"
+      },
+      {
+        name: "random 3",
+        text: `Executes the specified document, using the enclosed data
+            Data is sent in the body of the request
+            No restrictions on data length
+        `,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "1 Jan. 2021"
+      },
+      {
+        name: "random 4",
+        text: `Lorem Ipsum is simply dummy text of the
+                printing and typesetting industry... Standard dummy text ever...`,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "1 Jan. 2021"
+      },
+      {
+        name: "random 5",
+        text: `Secrecy; limiting the number of principals who can own access information
+              Anonymity; restricting accsss to metadata
+              Secutiyy policy; protection goals`,
+        tags: ["DAT310", "WebProg", "Vue", "TypeScript"],
+        lastEditied: "1 Jan. 2021"
+      },
+      {
+        name: "random 6",
+        text: `Vi er i designfasen nå og det jobbes jevnt og trutt. I likhet med alle andre år har alle eksamen også i år,
+               dermed er det litt mindre aktivitet både i november og desember... gode tilbakemeldinger. `,
+        tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
+        lastEditied: "1 Jan. 2021"
+      }
+    ]);
+
+    const filteredDocuments = computed(() => {
+      let tempDocuments = documents.value;
+      if (searchValue.value !== "") {
+        tempDocuments = tempDocuments.filter(doc => {
+          return (
+            doc.name
+              .replace(/ /g, "")
+              .toUpperCase()
+              .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
+            doc.text
+              .replace(/ /g, "")
+              .toUpperCase()
+              .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
+            doc.tags
+              .map(tag => {
+                return tag.toUpperCase();
+              })
+              .includes(searchValue.value.toUpperCase())
+          );
+        });
+      }
+      return tempDocuments;
+    });
+
+    return {
+      searchValue,
+      filteredDocuments
+    };
+  }
+});
+</script>
 
 <style scoped>
 .tilesWrap {
@@ -164,25 +245,10 @@
   top: 0;
   background: rgba(255, 255, 255, 0.02);
 }
-.tilesWrap li:nth-child(1):before {
+.tilesWrap li:before {
   background: #c9ffbf;
   background: -webkit-linear-gradient(to right, #ffafbd, #c9ffbf);
   background: linear-gradient(to right, #ffafbd, #c9ffbf);
-}
-.tilesWrap li:nth-child(2):before {
-  background: #f2709c;
-  background: -webkit-linear-gradient(to right, #ff9472, #f2709c);
-  background: linear-gradient(to right, #ff9472, #f2709c);
-}
-.tilesWrap li:nth-child(3):before {
-  background: #c21500;
-  background: -webkit-linear-gradient(to right, #ffc500, #c21500);
-  background: linear-gradient(to right, #ffc500, #c21500);
-}
-.tilesWrap li:nth-child(4):before {
-  background: #fc354c;
-  background: -webkit-linear-gradient(to right, #0abfbc, #fc354c);
-  background: linear-gradient(to right, #0abfbc, #fc354c);
 }
 
 .wrap {
