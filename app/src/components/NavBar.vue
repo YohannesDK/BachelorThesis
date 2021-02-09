@@ -18,7 +18,7 @@
       </div>
 
       <div class="d-flex justify-content-center h-100 mb-1">
-        <div class="addProject">
+        <div class="addProject" @click="addProject()">
           <div class="add_project">Add Project</div>
           <a href="#" class="search_icon"><fa icon="plus"></fa></a>
         </div>
@@ -70,7 +70,6 @@ export default defineComponent({
   setup() {
     const sidebar = ref<HTMLDivElement>();
     const showSideBar = ref<boolean>(true);
-
     const toogleSideBar = () => {
       showSideBar.value
         ? sidebar.value?.classList.add("active")
@@ -79,10 +78,15 @@ export default defineComponent({
       showSideBar.value = !showSideBar.value;
     };
 
+    const addProject = () => {
+      console.log("Adding project");
+    };
+
     return {
       sidebar,
       toogleSideBar,
-      showSideBar
+      showSideBar,
+      addProject
     };
   }
 });
@@ -203,6 +207,12 @@ a:focus {
 
 .addProject {
   background-color: #3a7793;
+  cursor: pointer;
+}
+
+.addProject:hover > .search_icon {
+  background: white;
+  color: #e74c3c;
 }
 
 .search_input {
