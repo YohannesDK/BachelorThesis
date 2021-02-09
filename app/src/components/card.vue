@@ -60,13 +60,12 @@ button {
 
 input {
   left: 50%;
-  width: 10%;
+  width: 50%;
   margin-left: 1em;
 }
 
 form {
-  margin-top: 20px;
-  margin-left: -70%;
+  margin-top: 10px;
 }
 
 .card {

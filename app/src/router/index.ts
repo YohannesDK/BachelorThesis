@@ -15,6 +15,9 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/courses",
+    redirect: {
+      name: "TeacherCourses"
+    },
     name: "Courses",
     component: () =>
       import(/* webpackChunkName: "courses" */ "../views/Courses.vue")
@@ -42,6 +45,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "Login",
     component: () =>
       import(/* webpackChunkName: "documents" */ "../views/Login.vue")
+  },
+  {
+    path: "/teachercourses",
+    name: "TeacherCourses",
+    component: () =>
+      import(/* webpackChunkName: "documents" */ "../views/TeacherCourses.vue")
   }
 ];
 

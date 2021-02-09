@@ -12,7 +12,7 @@
     <card class="three"></card>
 
     <!-- This is just to preview the questionModal component -->
-    <question-modal class="test"><input type="text" id="eyoo"></question-modal>
+    <question-modal class="test"><input type="text" id="eyoo"/></question-modal>
   </div>
 </template>
 
@@ -27,6 +27,12 @@ export default defineComponent({
   components: {
     card,
     questionModal
+  },
+
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
   },
 
   setup() {
@@ -90,25 +96,24 @@ h4 {
 
 .one {
   overflow-y: scroll;
-  max-height: 320px;
+  max-height: 230px;
 }
 
 .two {
   overflow-y: scroll;
-  left: -4.5%;
-  width: 30%;
+  left: -5%;
+  width: 35%;
   display: inline-block;
-  height: 345px;
+  height: 300px;
   margin: 2em;
-  padding: 2em;
 }
 
 .three {
   overflow-y: scroll;
   display: inline-block;
-  left: -3%;
-  width: 65%;
-  height: 345px;
+  left: -8%;
+  width: 62%;
+  height: 300px;
   margin: 2em;
   margin-right: -7em;
 }

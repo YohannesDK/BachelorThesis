@@ -10,7 +10,7 @@
           v-model="username"
           placeholder="Username"
         />
-
+        <br />
         <label> Password</label>
         <input
           type="password"
@@ -18,10 +18,9 @@
           v-model="password"
           placeholder="Username"
         />
-
-        <button>Submit</button>
-
         <br />
+        <br />
+        <button>Submit</button>
 
         <span> {{ error }} </span>
       </div>
@@ -104,4 +103,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+input {
+  margin-left: 1em;
+  margin-top: 1em;
+}
+</style>
