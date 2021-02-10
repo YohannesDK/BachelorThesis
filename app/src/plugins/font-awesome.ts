@@ -11,7 +11,10 @@ import {
   faBook,
   faEdit,
   faBars,
-  faFilter
+  faFilter,
+  faStickyNote,
+  faQuestion,
+  faLayerGroup
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -27,7 +30,10 @@ library.add(
   faBook,
   faEdit,
   faBars,
-  faFilter
+  faFilter,
+  faStickyNote,
+  faQuestion,
+  faLayerGroup
 );
 
 export { FontAwesomeIcon };

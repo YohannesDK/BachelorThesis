@@ -18,9 +18,41 @@
       </div>
 
       <div class="d-flex justify-content-center h-100 mb-1">
-        <div class="addProject" @click="addProject()">
-          <div class="add_project">Add Project</div>
-          <a href="#" class="search_icon"><fa icon="plus"></fa></a>
+        <div class="addProject">
+          <div class="add_project">Add New</div>
+          <a href="#" class="add_icon" @click="addProject()"
+            ><fa icon="plus"></fa
+          ></a>
+          <div class="dropdowncontainer">
+            <div class="add-project-dropdown-content card shadow">
+              <ul class="list-unstyled">
+                <li class="sidebar-list">
+                  <a href="">
+                    <fa icon="sticky-note" class="sidebar-menu-faicons"></fa>
+                    Blank Document</a
+                  >
+                </li>
+                <li class="sidebar-list">
+                  <a href="">
+                    <fa icon="question" class="sidebar-menu-faicons"></fa>
+                    Question Set</a
+                  >
+                </li>
+                <li class="sidebar-list">
+                  <a href="">
+                    <fa icon="book" class="sidebar-menu-faicons"></fa>
+                    Course</a
+                  >
+                </li>
+                <li class="sidebar-list">
+                  <a href="">
+                    <fa icon="layer-group" class="sidebar-menu-faicons"></fa>
+                    Resource Group</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -158,7 +190,8 @@ export default defineComponent({
 } */
 
 #sidebar ul li {
-  height: 2.5em;
+  min-height: 2.5em;
+  height: fit-content;
 }
 
 ul ul a {
@@ -208,11 +241,7 @@ a:focus {
 .addProject {
   background-color: #3a7793;
   cursor: pointer;
-}
-
-.addProject:hover > .search_icon {
-  background: white;
-  color: #e74c3c;
+  position: relative;
 }
 
 .search_input {
@@ -248,14 +277,16 @@ a:focus {
 }
 
 .search_icon:hover,
-.collapse_icon:hover {
+.collapse_icon:hover,
+.add_icon:hover {
   background: white;
   color: #e74c3c;
 }
 
 .search_icon,
 .collapse_icon,
-.expand_icon {
+.expand_icon,
+.add_icon {
   height: 40px;
   width: 40px;
   float: right;
@@ -266,6 +297,7 @@ a:focus {
   color: white;
   text-decoration: none;
   transition: all 0.4s;
+  z-index: 2;
 }
 
 .collapse_icon {
@@ -285,5 +317,45 @@ a:focus {
 .expand_icon:hover {
   /* background: white; */
   color: #e74c3c;
+}
+
+.add_icon:hover ~ .dropdowncontainer {
+  display: block;
+  opacity: 1;
+}
+
+.add-project-dropdown-content {
+  float: right;
+  width: 90%;
+  transition: all 0.4s;
+  border-radius: 0.8rem;
+  width: fit-content;
+  min-width: 90%;
+}
+
+.dropdowncontainer {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  right: -90%;
+  min-width: 100%;
+  padding-left: 6%;
+  opacity: 0;
+  transition: opacity 1s ease;
+  color: black;
+}
+
+.dropdowncontainer:hover {
+  display: block;
+  opacity: 1;
+}
+
+.dropdowncontainer ul li a {
+  background-color: whitesmoke;
+  padding-left: 10px !important;
+}
+
+.dropdowncontainer ul li:hover > a {
+  background-color: rgb(185, 185, 185);
 }
 </style>
