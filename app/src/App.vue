@@ -28,4 +28,8 @@ export default defineComponent({
   width: 100%;
   align-items: stretch;
 }
+
+.container-fluid {
+  padding: 0;
+}
 </style>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
+// import Editor from "../views/EditorView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,6 +25,15 @@ const routes: Array<RouteRecordRaw> = [
     name: "Documents",
     component: () =>
       import(/* webpackChunkName: "documents" */ "../views/Documents.vue")
+  },
+  {
+    path: "/editor",
+    name: "EditorView",
+    component: () =>
+      import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue"),
+    props: route => {
+      return { DocumentId: Number(route.params.DocumentId) };
+    }
   }
 ];
 
