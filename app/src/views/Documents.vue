@@ -28,9 +28,14 @@
         <h2>0{{ index }}</h2>
         <h3>{{ doc.name }}</h3>
         <p>
-          {{ doc.text }}
+          {{ doc.plainText }}
         </p>
-        <button style="cursor:pointer; z-index:1;">Open</button>
+        <button
+          style="cursor:pointer; z-index:1;"
+          @click="OpenEditor(doc.Documentid)"
+        >
+          Open
+        </button>
       </li>
       <h1 v-if="filteredDocuments.length === 0">No documents found...</h1>
     </ul>
@@ -38,9 +43,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
+import { DeltaToPlainText } from "@/utils/delta.utils";
+import router from "@/router";
 
 export default defineComponent({
   name: "Documents",
@@ -48,8 +55,26 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = store.getters.getDocuments;
+    const length = 40;
+
+    // Editor
+    const OpenEditor = (Documentid: -1) => {
+      router.push({ name: "EditorView", params: { DocumentId: Documentid } });
+    };
+
+    onMounted(() => {
+      // change deltas, to text and shorten length to 40 charachters
+      documents.map(
+        (doc: any) =>
+          (doc.plainText = DeltaToPlainText(doc.delta)
+            .substring(0, length)
+            .concat("..."))
+      );
+    });
+
     const filteredDocuments = computed(() => {
       let tempDocuments = documents;
+
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: doucmentType) => {
           return (
@@ -57,10 +82,11 @@ export default defineComponent({
               .replace(/ /g, "")
               .toUpperCase()
               .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
-            doc.text
-              .replace(/ /g, "")
-              .toUpperCase()
-              .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
+            // Search text inside document
+            // doc.delta
+            //   .replace(/ /g, "")
+            //   .toUpperCase()
+            //   .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
             doc.tags
               .map((tag: string) => {
                 return tag.toUpperCase();
@@ -74,7 +100,8 @@ export default defineComponent({
 
     return {
       searchValue,
-      filteredDocuments
+      filteredDocuments,
+      OpenEditor
     };
   }
 });

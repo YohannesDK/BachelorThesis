@@ -25,23 +25,23 @@
           ></a>
           <div class="dropdowncontainer">
             <div class="add-project-dropdown-content card shadow">
-              <ul class="list-unstyled">
+              <ul class="list-unstyled add-menu-dropdown">
                 <li class="sidebar-list">
-                  <a href="">
+                  <a href="" @click.prevent="OpenEditor()">
                     <fa icon="sticky-note" class="sidebar-menu-faicons"></fa>
                     Blank Document</a
                   >
                 </li>
                 <li class="sidebar-list">
                   <a href="">
-                    <fa icon="question" class="sidebar-menu-faicons"></fa>
-                    Question Set</a
+                    <fa icon="book" class="sidebar-menu-faicons"></fa>
+                    Course</a
                   >
                 </li>
                 <li class="sidebar-list">
                   <a href="">
-                    <fa icon="book" class="sidebar-menu-faicons"></fa>
-                    Course</a
+                    <fa icon="question" class="sidebar-menu-faicons"></fa>
+                    Question Set</a
                   >
                 </li>
                 <li class="sidebar-list">
@@ -95,11 +95,13 @@
 </template>
 
 <script lang="ts">
+import router from "@/router";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "NavBar",
   setup() {
+    //SideBar
     const sidebar = ref<HTMLDivElement>();
     const showSideBar = ref<boolean>(true);
     const toogleSideBar = () => {
@@ -114,17 +116,23 @@ export default defineComponent({
       console.log("Adding project");
     };
 
+    // Editor
+    const OpenEditor = () => {
+      router.push({ name: "EditorView", params: { DocumentId: -1 } });
+    };
+
     return {
       sidebar,
       toogleSideBar,
       showSideBar,
-      addProject
+      addProject,
+      OpenEditor
     };
   }
 });
 </script>
 
-<style>
+<style scoped>
 .sidebar-list {
   -webkit-transition: background-color 0.7s ease-out;
   -moz-transition: background-color 0.7s ease-out;
@@ -357,5 +365,17 @@ a:focus {
 
 .dropdowncontainer ul li:hover > a {
   background-color: rgb(185, 185, 185);
+}
+
+.add-menu-dropdown li:nth-child(1),
+.add-menu-dropdown li:nth-child(1) > a {
+  border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+}
+
+.add-menu-dropdown li:last-child,
+.add-menu-dropdown li:last-child > a {
+  border-bottom-right-radius: 0.8rem;
+  border-bottom-left-radius: 0.8rem;
 }
 </style>
