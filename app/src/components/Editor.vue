@@ -49,9 +49,9 @@ export default defineComponent({
         theme: "bubble"
       });
 
-      Editor.on("text-change", () => {
-        console.log(Editor.getContents());
-      });
+      // Editor.on("text-change", () => {
+      //   console.log(Editor.getContents());
+      // });
 
       if (props.docmentId !== -1) {
         Document = store.getters.getDocmentbyId(props.docmentId);
