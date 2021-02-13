@@ -107,7 +107,7 @@ export default createStore({
       {
         courseName: "Web Programming",
         courseShorthand: "DAT310",
-        documents: [0, 2, 3]
+        documents: [0]
       }
     ] as courseType[]
   },
