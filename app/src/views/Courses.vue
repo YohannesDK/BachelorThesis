@@ -3,9 +3,7 @@
   <button class="btn btn-primary" @click="ToogleModal()">Toogle Model</button>
   <button class="btn btn-secondary" @click="showModal=true">Show</button>
  
-  <new-course-modal v-if="showModal" @close="showModal = false" name="Umesh">
-    <p>dsfkdskf</p>
-  </new-course-modal>
+  <new-course-modal  v-if="showModal" @close="showModal = false" name="Umesh" />
 </template>
 
 
@@ -20,10 +18,10 @@ export default defineComponent({
     NewCourseModal
   },
   setup() {
-    const showModal = ref<boolean>(true);
+
+    const showModal = ref<boolean>(false);
     const ToogleModal = () => {
       showModal.value = !showModal.value;
-      console.log(showModal.value);
     };
 
     return {

@@ -1,7 +1,7 @@
 <template>
   <h1>halla</h1>
 
-  <div class="modal fade in modal-active">
+  <div class="modal modal-active">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -24,7 +24,6 @@
       </div>
     </div>
   </div>
-  `
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
