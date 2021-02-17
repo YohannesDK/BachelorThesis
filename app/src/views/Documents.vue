@@ -24,21 +24,28 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
-      <div class="doc-item shadow-sm" v-for="(doc, index) in filteredDocuments" :key="index" @click="OpenEditor(doc.Documentid)">
+      <div
+        class="doc-item shadow-sm"
+        v-for="(doc, index) in filteredDocuments"
+        :key="index"
+        @click="OpenEditor(doc.Documentid)"
+      >
         <div class="doc-item-thumbnail">
           {{ doc.plainText }}
         </div>
         <div class="doc-item-data-container">
           <div class="doc-item-tittle">
-            {{doc.name}}
+            {{ doc.name }}
           </div>
           <div class="doc-item-time-container">
             <span>Åpnet</span>
-            <span class="doc-item-time-data">{{doc.lastEdited}}</span>
+            <span class="doc-item-time-data">{{ doc.lastEdited }}</span>
           </div>
         </div>
       </div>
-      <h1 class="m-auto" v-if="filteredDocuments.length === 0">No documents found...</h1>
+      <h1 class="m-auto" v-if="filteredDocuments.length === 0">
+        No documents found...
+      </h1>
     </div>
   </div>
 </template>
@@ -110,7 +117,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .wrap {
   /* margin: 50px 100px; */
   display: inline-block;
@@ -235,6 +241,4 @@ export default defineComponent({
   margin-left: 6px;
   font-weight: 500;
 }
-
-
 </style>
