@@ -22,23 +22,24 @@
       <fa icon="filter" size="lg" />
     </div>
   </div>
-  <div class="container">
-    <ul class="tilesWrap d-flex justify-content-evenly flex-wrap">
-      <li v-for="(doc, index) in filteredDocuments" :key="index">
-        <h2>0{{ index }}</h2>
-        <h3>{{ doc.name }}</h3>
-        <p>
+  <div class="container" style="padding-left: 0.5%;">
+    <div class="doc-container d-flex">
+      <div class="doc-item shadow-sm" v-for="(doc, index) in filteredDocuments" :key="index" @click="OpenEditor(doc.Documentid)">
+        <div class="doc-item-thumbnail">
           {{ doc.plainText }}
-        </p>
-        <button
-          style="cursor:pointer; z-index:1;"
-          @click="OpenEditor(doc.Documentid)"
-        >
-          Open
-        </button>
-      </li>
-      <h1 v-if="filteredDocuments.length === 0">No documents found...</h1>
-    </ul>
+        </div>
+        <div class="doc-item-data-container">
+          <div class="doc-item-tittle">
+            {{doc.name}}
+          </div>
+          <div class="doc-item-time-container">
+            <span>Åpnet</span>
+            <span class="doc-item-time-data">{{doc.lastEdited}}</span>
+          </div>
+        </div>
+      </div>
+      <h1 class="m-auto" v-if="filteredDocuments.length === 0">No documents found...</h1>
+    </div>
   </div>
 </template>
 
@@ -55,7 +56,7 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = store.getters.getDocuments;
-    const length = 40;
+    const length = 180;
 
     // Editor
     const OpenEditor = (Documentid: -1) => {
@@ -109,114 +110,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.tilesWrap {
-  padding: 0;
-  margin: 50px auto;
-  list-style: none;
-  text-align: center;
-}
-.tilesWrap li {
-  display: inline-block;
-  width: 20%;
-  min-width: 200px;
-  max-width: 230px;
-  padding: 80px 20px 40px;
-  position: relative;
-  vertical-align: top;
-  margin: 10px;
-  font-family: "helvetica", san-serif;
-  min-height: 25vh;
-  background: #262a2b;
-  border: 1px solid #252727;
-  text-align: left;
-}
-.tilesWrap li h2 {
-  font-size: 114px;
-  margin: 0;
-  position: absolute;
-  opacity: 0.2;
-  top: 50px;
-  right: 10px;
-  transition: all 0.3s ease-in-out;
-}
-.tilesWrap li h3 {
-  font-size: 20px;
-  color: #b7b7b7;
-  margin-bottom: 5px;
-}
-.tilesWrap li p {
-  font-size: 16px;
-  line-height: 18px;
-  color: #b7b7b7;
-  margin-top: 5px;
-}
-.tilesWrap li button {
-  background: transparent;
-  border: 1px solid #b7b7b7;
-  padding: 10px 20px;
-  color: #b7b7b7;
-  border-radius: 3px;
-  position: relative;
-  transition: all 0.3s ease-in-out;
-  transform: translateY(-40px);
-  opacity: 0;
-  cursor: pointer;
-  overflow: hidden;
-}
-.tilesWrap li button:before {
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 120%;
-  background: #b7b7b7;
-  top: 0;
-  opacity: 0;
-  left: -140px;
-  border-radius: 0 20px 20px 0;
-  z-index: -1;
-  transition: all 0.3s ease-in-out;
-}
-.tilesWrap li:hover button {
-  transform: translateY(5px);
-  opacity: 1;
-}
-.tilesWrap li button:hover {
-  color: #262a2b;
-}
-.tilesWrap li button:hover:before {
-  left: 0;
-  opacity: 1;
-}
-.tilesWrap li:hover h2 {
-  top: 0px;
-  opacity: 0.6;
-}
-
-.tilesWrap li:before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  z-index: -1;
-  background: #fff;
-  transform: skew(2deg, 2deg);
-}
-.tilesWrap li:after {
-  content: "";
-  position: absolute;
-  width: 40%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background: rgba(255, 255, 255, 0.02);
-}
-.tilesWrap li:before {
-  background: #c9ffbf;
-  background: -webkit-linear-gradient(to right, #ffafbd, #c9ffbf);
-  background: linear-gradient(to right, #ffafbd, #c9ffbf);
-}
 
 .wrap {
   /* margin: 50px 100px; */
@@ -229,7 +122,7 @@ export default defineComponent({
 
 #document-search {
   height: 45px;
-  font-size: 40px;
+  font-size: 34px;
   display: inline-block;
   font-family: "Lato";
   font-weight: 100;
@@ -268,4 +161,80 @@ export default defineComponent({
   background: #c58308;
   color: white;
 }
+
+.doc-item {
+  border: 1px solid #dfe1e5;
+  border-radius: 3px;
+  box-shadow: none;
+  cursor: pointer;
+  opacity: 1;
+  width: fit-content;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  transition: all 0.5s;
+}
+
+.doc-item:hover {
+  cursor: pointer;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+}
+
+.doc-item-thumbnail {
+  background: linear-gradient(45deg, white, whitesmoke);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  height: 180px;
+  width: 208px;
+  background-repeat: no-repeat;
+  background-size: 208px auto;
+  border: none;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  text-align: center;
+  padding: 6%;
+  font-size: 0.77em;
+  padding-top: 19%;
+}
+
+.doc-item-data-container {
+  border-top: 1px solid #e2e2e2;
+  padding: 16px 8px 14px 16px;
+  position: relative;
+}
+
+.doc-item-tittle {
+  color: #414549;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  line-height: 18px;
+  margin-left: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.doc-item-time-container {
+  color: #80868b;
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  line-height: 24px;
+  margin-left: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 80%;
+}
+
+.doc-item-time-data {
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+
 </style>

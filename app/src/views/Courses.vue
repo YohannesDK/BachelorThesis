@@ -78,7 +78,7 @@ export default defineComponent({
 
 .course-image {
   background: goldenrod;
-  min-height: 9rem;
+  min-height: 10rem;
   width: 100%;
 }
 </style>
