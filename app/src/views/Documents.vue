@@ -64,6 +64,7 @@ export default defineComponent({
 
     onMounted(() => {
       // change deltas, to text and shorten length to 40 charachters
+      // TODO fix doc type
       documents.map(
         (doc: any) =>
           (doc.plainText = DeltaToPlainText(doc.delta)

@@ -34,6 +34,15 @@ const routes: Array<RouteRecordRaw> = [
     props: route => {
       return { DocumentId: Number(route.params.DocumentId) };
     }
+  },
+  {
+    path: "/course",
+    name: "Course",
+    component: () =>
+      import(/* webpackChunkName: "course" */ "../views/course.vue"),
+    props: route => {
+      return { CourseId: Number(route.params.CourseId) };
+    }
   }
 ];
 

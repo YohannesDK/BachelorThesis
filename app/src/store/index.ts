@@ -105,9 +105,34 @@ export default createStore({
     ] as doucmentType[],
     courses: [
       {
+        courseId: 0,
         courseName: "Web Programming",
         courseShorthand: "DAT310",
-        documents: [0, 2, 3]
+        documents: [0]
+      },
+      {
+        courseId: 1,
+        courseName: "Operating Systems",
+        courseShorthand: "DAT320",
+        documents: [1]
+      },
+      {
+        courseId: 2,
+        courseName: "Fysikk",
+        courseShorthand: "RED102",
+        documents: [1]
+      },
+      {
+        courseId: 3,
+        courseName: "Kjemi",
+        courseShorthand: "RED101",
+        documents: [1]
+      },
+      {
+        courseId: 4,
+        courseName: "Kjemi",
+        courseShorthand: "RED101",
+        documents: [1]
       }
     ] as courseType[]
   },
@@ -121,10 +146,13 @@ export default createStore({
       return state.courses;
     },
     getDocmentbyId: state => (Documentid: number) => {
-      return (
-        state.documents.filter((doc: doucmentType) => {
-          return doc.Documentid === Documentid;
-        }) || null
+      return state.documents.find(
+        (doc: doucmentType) => doc.Documentid === Documentid
+      );
+    },
+    getCoursebyId: state => (CourseId: number) => {
+      return state.courses.find(
+        (course: courseType) => course.courseId === CourseId
       );
     }
   },

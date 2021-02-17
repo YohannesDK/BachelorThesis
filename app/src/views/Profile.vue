@@ -14,13 +14,13 @@
             </div>
             <ul class="profile-card-nav list-unstyled components">
               <li class="profile-card-li active">
-                <a href="">
+                <a href="" class="text-muted">
                   <fa class="profile-li-icon" icon="user"></fa>
                   Profile
                 </a>
               </li>
               <li class="profile-card-li">
-                <a href="">
+                <a href="" class="text-muted">
                   <fa class="profile-li-icon" icon="edit" />
                   Edit Profile
                 </a>
@@ -74,7 +74,9 @@
                   v-for="(navitem, index) in navContent"
                   :key="index"
                 >
-                  <a class="nav-link" href="#">{{ navitem.header }}</a>
+                  <a class="nav-link text-muted" href="#">{{
+                    navitem.header
+                  }}</a>
                 </li>
               </ul>
             </div>

@@ -43,10 +43,10 @@ export default defineComponent({
     const TittleSetup = () => {
       // Set document title and last edited
       if (props.DocumentId !== -1) {
-        Title.value = store.getters.getDocmentbyId(props.DocumentId)[0].name;
+        Title.value = store.getters.getDocmentbyId(props.DocumentId).name;
         LastEdited.value = store.getters.getDocmentbyId(
           props.DocumentId
-        )[0].lastEdited;
+        ).lastEdited;
       }
 
       // Add Enter Event Listner

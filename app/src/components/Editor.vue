@@ -10,6 +10,7 @@ import Quill, { DeltaOperation } from "quill";
 import Delta from "quill-delta";
 import MyQuill from "@/libs/myQuill/myquill";
 import { useStore } from "vuex";
+import { doucmentType } from "@/store/interfaces/document";
 
 export default defineComponent({
   name: "Editor",
@@ -28,8 +29,7 @@ export default defineComponent({
     const store = useStore();
 
     // shared document referense
-    // TODO: fix documenttype with proxy access using index
-    let Document: DocumentType | any;
+    let Document: doucmentType;
 
     // Editor container element
     const root = ref<HTMLElement | string>("");
@@ -56,7 +56,7 @@ export default defineComponent({
       if (props.docmentId !== -1) {
         Document = store.getters.getDocmentbyId(props.docmentId);
         if (Document) {
-          SetEditorContent(Document[0].delta);
+          SetEditorContent(Document.delta);
         }
       }
     };
