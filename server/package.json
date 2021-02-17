@@ -7,7 +7,7 @@
     "server": "node ./src/server.js",
     "server:dev": "nodemon ./src/server.js",
     "lint": "eslint ./src --fix",
-    "test": "mocha --exit"
+    "test": "mocha test/**/*.js"
   },
   "keywords": [],
   "author": "Osama Billa, Yohannes D. Kassaye",
