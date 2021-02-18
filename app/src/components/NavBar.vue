@@ -83,6 +83,13 @@
           Courses
         </router-link>
       </li>
+
+      <li class="sidebar-list">
+        <router-link to="/registr">
+          <fa icon="book" class="sidebar-menu-faicons"></fa>
+          Register
+        </router-link>
+      </li>
     </ul>
 
     <div class="collapse_icon" v-if="showSideBar" @click="toogleSideBar">
@@ -96,7 +103,7 @@
 
 <script lang="ts">
 import router from "@/router";
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "NavBar",
@@ -112,6 +119,8 @@ export default defineComponent({
       showSideBar.value = !showSideBar.value;
     };
 
+    const hide = computed(() => { return router.currentRoute.value.meta.hidesidebar !== false})
+
     const addProject = () => {
       console.log("Adding project");
     };
@@ -122,6 +131,7 @@ export default defineComponent({
     };
 
     return {
+      hide,
       sidebar,
       toogleSideBar,
       showSideBar,

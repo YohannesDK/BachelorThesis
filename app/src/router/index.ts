@@ -43,6 +43,13 @@ const routes: Array<RouteRecordRaw> = [
     props: route => {
       return { CourseId: Number(route.params.CourseId) };
     }
+  },
+  {
+    path: "/registr",
+    name: "Regis",
+    meta:{hidesidebar:false},
+    component: () =>
+      import(/* webpackChunkName: "registr" */ "../views/regis.vue")
   }
 ];
 
