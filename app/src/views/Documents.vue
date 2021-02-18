@@ -24,6 +24,20 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
+
+      <div class="doc-item add-item-container shadow-sm"
+      @click="OpenEditor()">
+        <div class="add-item">
+          <span>
+            <p>New</p>
+            <p>Document</p>
+          </span>
+          <div class="add-item-icon-container shadow">
+            <fa icon="plus" />
+          </div>
+        </div>
+
+      </div>
       <div
         class="doc-item shadow-sm"
         v-for="(doc, index) in filteredDocuments"
@@ -63,7 +77,7 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = store.getters.getDocuments;
-    const length = 180;
+    const length = 150;
 
     // Editor
     const OpenEditor = (Documentid: -1) => {
@@ -164,17 +178,19 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #c58308;
-  color: white;
+  background: whitesmoke;
+  color: grey;
+  border-radius: 50%;
 }
 
-.doc-item {
+.doc-item, .add-item-container {
   border: 1px solid #dfe1e5;
-  border-radius: 3px;
+  border-radius: 8px;
   box-shadow: none;
   cursor: pointer;
   opacity: 1;
   width: fit-content;
+  height: 208px;
   margin-bottom: 20px;
   margin-right: 20px;
   transition: all 0.5s;
@@ -185,12 +201,12 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-.doc-item-thumbnail {
+.doc-item-thumbnail, .add-item {
   background: linear-gradient(45deg, white, whitesmoke);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  height: 180px;
-  width: 208px;
+  height: 156px;
+  width: 176px;
   background-repeat: no-repeat;
   background-size: 208px auto;
   border: none;
@@ -201,12 +217,72 @@ export default defineComponent({
   text-align: center;
   padding: 6%;
   font-size: 0.77em;
-  padding-top: 19%;
+  padding-top: 13%;
 }
+
+.add-item {
+  -webkit-box-align: initial;
+  align-items: initial;
+  width: 176px;
+  height: 208px;
+  border: none;
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  flex-direction: column;
+  padding: 24px 16px;
+  transition: all 0.2s ease 0s;
+  border-radius: 8px;
+  position: relative;
+  background: #4b95b7;
+  display: flex;
+  justify-content: flex-start;
+  transition: all 0.5s;
+}
+
+/* .add-item:hover{
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+} */
+
+.add-item:hover .add-item-icon-container {
+  background: white;
+  color: tomato;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+    
+}
+
+.add-item span {
+  display: block;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  text-align: left;
+  /* text-align: center; */
+}
+
+.add-item span p {
+  margin: 0;
+}
+
+.add-item-icon-container {
+  min-width: 35px;
+  min-height: 35px;
+  margin: 9px auto 0px;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.5s;
+}
+
+
 
 .doc-item-data-container {
   border-top: 1px solid #e2e2e2;
-  padding: 16px 8px 14px 16px;
+  padding: 5px 8px 14px 16px;
   position: relative;
 }
 
