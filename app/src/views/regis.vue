@@ -22,7 +22,7 @@ export default defineComponent({
             onSubmit: function(event: any) {
               console.log(event);
               console.log("Typeform successfully submitted");
-              router.push({path: "/"})
+              router.push({ path: "/" });
             }
           }
         );

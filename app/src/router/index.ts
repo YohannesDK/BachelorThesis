@@ -47,7 +47,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/registr",
     name: "Regis",
-    meta:{hidesidebar:false},
+    meta: { hidesidebar: false },
     component: () =>
       import(/* webpackChunkName: "registr" */ "../views/regis.vue")
   }

@@ -20,11 +20,13 @@ export default defineComponent({
   components: {
     NavBar
   },
-  setup(){
-    const showSideBar = computed(() => { return router.currentRoute.value.meta.hidesidebar !== false})
+  setup() {
+    const showSideBar = computed(() => {
+      return router.currentRoute.value.meta.hidesidebar !== false;
+    });
     return {
       showSideBar
-    }
+    };
   }
 });
 </script>

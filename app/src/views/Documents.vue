@@ -24,9 +24,10 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
-
-      <div class="doc-item add-item-container shadow-sm"
-      @click="OpenEditor()">
+      <div
+        class="doc-item add-item-container shadow-sm"
+        @click="OpenEditor(-1)"
+      >
         <div class="add-item">
           <span>
             <p>New</p>
@@ -36,7 +37,6 @@
             <fa icon="plus" />
           </div>
         </div>
-
       </div>
       <div
         class="doc-item shadow-sm"
@@ -131,6 +131,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.navbar > h1 {
+  color: grey;
+  padding-top: 4%;
+  margin: 0;
+  font-size: 1.8rem;
+  padding-left: 2%;
+  white-space: nowrap;
+}
 .wrap {
   /* margin: 50px 100px; */
   display: inline-block;
@@ -142,7 +150,7 @@ export default defineComponent({
 
 #document-search {
   height: 45px;
-  font-size: 34px;
+  font-size: 1.8rem;
   display: inline-block;
   font-family: "Lato";
   font-weight: 100;
@@ -183,7 +191,8 @@ export default defineComponent({
   border-radius: 50%;
 }
 
-.doc-item, .add-item-container {
+.doc-item,
+.add-item-container {
   border: 1px solid #dfe1e5;
   border-radius: 8px;
   box-shadow: none;
@@ -201,7 +210,8 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-.doc-item-thumbnail, .add-item {
+.doc-item-thumbnail,
+.add-item {
   background: linear-gradient(45deg, white, whitesmoke);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
@@ -230,6 +240,7 @@ export default defineComponent({
   color: rgb(255, 255, 255);
   flex-direction: column;
   padding: 24px 16px;
+  padding-top: 0;
   transition: all 0.2s ease 0s;
   border-radius: 8px;
   position: relative;
@@ -239,24 +250,26 @@ export default defineComponent({
   transition: all 0.5s;
 }
 
-/* .add-item:hover{
+.add-item:hover {
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
-} */
+  background: #4b95b7f3;
+}
 
-.add-item:hover .add-item-icon-container {
+/* .add-item:hover .add-item-icon-container {
   background: white;
   color: tomato;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
-    
-}
+} */
 
 .add-item span {
   display: block;
   font-size: 20px;
   line-height: 28px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   font-weight: 700;
   text-align: left;
+  margin-top: 15%;
   /* text-align: center; */
 }
 
@@ -267,7 +280,7 @@ export default defineComponent({
 .add-item-icon-container {
   min-width: 35px;
   min-height: 35px;
-  margin: 9px auto 0px;
+  margin: 13px auto 0px;
   text-align: center;
   border-radius: 50%;
   display: flex;
@@ -277,8 +290,6 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
   transition: all 0.5s;
 }
-
-
 
 .doc-item-data-container {
   border-top: 1px solid #e2e2e2;

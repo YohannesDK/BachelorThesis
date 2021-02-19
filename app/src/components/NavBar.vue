@@ -119,7 +119,9 @@ export default defineComponent({
       showSideBar.value = !showSideBar.value;
     };
 
-    const hide = computed(() => { return router.currentRoute.value.meta.hidesidebar !== false})
+    const hide = computed(() => {
+      return router.currentRoute.value.meta.hidesidebar !== false;
+    });
 
     const addProject = () => {
       console.log("Adding project");
