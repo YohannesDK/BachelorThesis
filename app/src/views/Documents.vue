@@ -99,7 +99,7 @@ export default defineComponent({
 
     // Editor
     const OpenEditor = (Documentid: -1) => {
-      router.push({ name: "EditorView", query: {did: Documentid}});
+      router.push({ name: "EditorView", query: { did: Documentid } });
     };
 
     onMounted(() => {

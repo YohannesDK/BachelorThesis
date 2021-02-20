@@ -30,13 +30,13 @@ const routes: Array<RouteRecordRaw> = [
     path: "/editor",
     name: "EditorView",
     component: () =>
-      import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue") 
+      import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue")
   },
   {
     path: "/course",
     name: "Course",
     component: () =>
-      import(/* webpackChunkName: "course" */ "../views/course.vue"),
+      import(/* webpackChunkName: "course" */ "../views/course.vue")
   },
   {
     path: "/registr",

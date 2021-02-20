@@ -41,14 +41,12 @@ export default defineComponent({
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
     const docID = Number(router.currentRoute.value.query.did);
-    
+
     const TittleSetup = () => {
       // Set document title and last edited
       if (docID !== -1) {
         Title.value = store.getters.getDocmentbyId(docID).name;
-        LastEdited.value = store.getters.getDocmentbyId(
-          docID
-        ).lastEdited;
+        LastEdited.value = store.getters.getDocmentbyId(docID).lastEdited;
       }
 
       // Add Enter Event Listner
