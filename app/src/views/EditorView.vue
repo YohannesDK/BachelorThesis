@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <Editor :docmentId="DocumentId" />
+  <Editor :docmentId="docID" />
 </template>
 
 <script lang="ts">
@@ -22,31 +22,26 @@ import { useStore } from "vuex";
 
 //components
 import Editor from "@/components/Editor.vue";
+import router from "@/router";
 
 export default defineComponent({
   name: "EditorView",
-  props: {
-    DocumentId: {
-      type: Number
-    }
-  },
   components: {
     Editor
   },
 
-  setup(props) {
+  setup() {
     const DocumentTittle = ref<HTMLHeadingElement>();
     const store = useStore();
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
+    const docID = Number(router.currentRoute.value.query.did);
 
     const TittleSetup = () => {
       // Set document title and last edited
-      if (props.DocumentId !== -1) {
-        Title.value = store.getters.getDocmentbyId(props.DocumentId).name;
-        LastEdited.value = store.getters.getDocmentbyId(
-          props.DocumentId
-        ).lastEdited;
+      if (docID !== -1) {
+        Title.value = store.getters.getDocmentbyId(docID).name;
+        LastEdited.value = store.getters.getDocmentbyId(docID).lastEdited;
       }
 
       // Add Enter Event Listner
@@ -67,7 +62,8 @@ export default defineComponent({
     return {
       DocumentTittle,
       Title,
-      LastEdited
+      LastEdited,
+      docID
     };
   }
 });

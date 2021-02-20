@@ -25,21 +25,52 @@
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
       <div
+        class="doc-item add-item-container shadow-sm"
+        @click="OpenEditor(-1)"
+      >
+        <div class="add-item">
+          <span>
+            <p>New</p>
+            <p>Document</p>
+          </span>
+          <div class="add-item-icon-container shadow">
+            <fa icon="plus" />
+          </div>
+        </div>
+      </div>
+      <div
         class="doc-item shadow-sm"
         v-for="(doc, index) in filteredDocuments"
         :key="index"
-        @click="OpenEditor(doc.Documentid)"
       >
-        <div class="doc-item-thumbnail">
+        <div class="doc-item-thumbnail" @click="OpenEditor(doc.Documentid)">
           {{ doc.plainText }}
         </div>
         <div class="doc-item-data-container">
-          <div class="doc-item-tittle">
+          <div class="doc-item-tittle" @click="OpenEditor(doc.Documentid)">
             {{ doc.name }}
           </div>
           <div class="doc-item-time-container">
             <span>Åpnet</span>
             <span class="doc-item-time-data">{{ doc.lastEdited }}</span>
+            <div
+              class="doc-item-more"
+              @click="More($event, index)"
+              @mouseleave="RemoveMore()"
+            >
+              <fa icon="ellipsis-h" />
+              <div class="dropdowncontainer" v-if="dropDownIndex === index">
+                <div class="doc-item-more-dropdown shadow-sm">
+                  <ul class="list-unstyled mb-0">
+                    <li>Open</li>
+                    <li>Rename</li>
+                    <li>Share</li>
+                    <hr />
+                    <li>Delete</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -63,14 +94,17 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = store.getters.getDocuments;
-    const length = 180;
+    const dropDownIndex = ref<number>(-1);
+    const length = 150;
 
     // Editor
     const OpenEditor = (Documentid: -1) => {
-      router.push({ name: "EditorView", params: { DocumentId: Documentid } });
+      router.push({ name: "EditorView", query: { did: Documentid } });
     };
 
     onMounted(() => {
+      document.getElementsByTagName("body");
+
       // change deltas, to text and shorten length to 40 charachters
       // TODO fix doc type
       documents.map(
@@ -107,16 +141,36 @@ export default defineComponent({
       return tempDocuments;
     });
 
+    // To add and remove dropdown
+    const More = (e: any, index: number) => {
+      console.log(e.target);
+      dropDownIndex.value = index;
+    };
+    const RemoveMore = () => {
+      dropDownIndex.value = -1;
+    };
+
     return {
       searchValue,
       filteredDocuments,
-      OpenEditor
+      OpenEditor,
+      More,
+      dropDownIndex,
+      RemoveMore
     };
   }
 });
 </script>
 
 <style scoped>
+.navbar > h1 {
+  color: grey;
+  padding-top: 4%;
+  margin: 0;
+  font-size: 1.8rem;
+  padding-left: 2%;
+  white-space: nowrap;
+}
 .wrap {
   /* margin: 50px 100px; */
   display: inline-block;
@@ -128,7 +182,7 @@ export default defineComponent({
 
 #document-search {
   height: 45px;
-  font-size: 34px;
+  font-size: 1.8rem;
   display: inline-block;
   font-family: "Lato";
   font-weight: 100;
@@ -164,17 +218,24 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #c58308;
-  color: white;
+  background: whitesmoke;
+  color: grey;
+  border-radius: 50%;
 }
 
-.doc-item {
+.doc-container {
+  flex-wrap: wrap;
+}
+
+.doc-item,
+.add-item-container {
   border: 1px solid #dfe1e5;
-  border-radius: 3px;
+  border-radius: 8px;
   box-shadow: none;
   cursor: pointer;
   opacity: 1;
   width: fit-content;
+  height: 208px;
   margin-bottom: 20px;
   margin-right: 20px;
   transition: all 0.5s;
@@ -185,12 +246,13 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-.doc-item-thumbnail {
+.doc-item-thumbnail,
+.add-item {
   background: linear-gradient(45deg, white, whitesmoke);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  height: 180px;
-  width: 208px;
+  height: 156px;
+  width: 176px;
   background-repeat: no-repeat;
   background-size: 208px auto;
   border: none;
@@ -201,12 +263,73 @@ export default defineComponent({
   text-align: center;
   padding: 6%;
   font-size: 0.77em;
-  padding-top: 19%;
+  padding-top: 13%;
+}
+
+.add-item {
+  -webkit-box-align: initial;
+  align-items: initial;
+  width: 176px;
+  height: 208px;
+  border: none;
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+  flex-direction: column;
+  padding: 24px 16px;
+  padding-top: 0;
+  transition: all 0.2s ease 0s;
+  border-radius: 8px;
+  position: relative;
+  background: #4b95b7;
+  display: flex;
+  justify-content: flex-start;
+  transition: all 0.5s;
+}
+
+.add-item:hover {
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  background: #4b95b7f3;
+}
+
+/* .add-item:hover .add-item-icon-container {
+  background: white;
+  color: tomato;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+} */
+
+.add-item span {
+  display: block;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  text-align: left;
+  margin-top: 15%;
+  /* text-align: center; */
+}
+
+.add-item span p {
+  margin: 0;
+}
+
+.add-item-icon-container {
+  min-width: 35px;
+  min-height: 35px;
+  margin: 13px auto 0px;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.5s;
 }
 
 .doc-item-data-container {
   border-top: 1px solid #e2e2e2;
-  padding: 16px 8px 14px 16px;
+  padding: 5px 8px 14px 16px;
   position: relative;
 }
 
@@ -240,5 +363,94 @@ export default defineComponent({
 .doc-item-time-data {
   margin-left: 6px;
   font-weight: 500;
+}
+
+.doc-item-more {
+  position: absolute;
+  right: 0;
+  margin-right: 4%;
+  bottom: 40%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.doc-item-more:hover {
+  background: #ededed;
+}
+
+.dropdowncontainer:hover {
+  display: block;
+}
+
+.doc-item-more .dropdowncontainer {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  min-width: 100%;
+  padding-left: 6%;
+  transition: all 1s ease;
+  color: black;
+  top: 64%;
+  width: 8vw;
+  left: 11%;
+}
+
+.doc-item-more-dropdown {
+  float: right;
+  width: 100%;
+  transition: all 0.4s;
+  border-radius: 0.8rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 100%;
+}
+
+.doc-item-more-dropdown ul li {
+  min-height: 2.5em;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  transition: background-color 0.7s ease-out;
+  background-color: white;
+  padding-left: 10px !important;
+  padding: 4%;
+}
+
+.doc-item-more-dropdown ul hr {
+  width: 92%;
+  margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.doc-item-more-dropdown ul li:hover {
+  background: whitesmoke;
+}
+
+.doc-item-more-dropdown ul li a {
+  padding: 12px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.doc-item-more-dropdown ul li:nth-child(1) {
+  border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+  padding-top: 5%;
+}
+
+.doc-item-more-dropdown ul li:last-child {
+  border-bottom-right-radius: 0.8rem;
+  border-bottom-left-radius: 0.8rem;
+  color: #bd0000;
 }
 </style>

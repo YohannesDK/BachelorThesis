@@ -1,7 +1,8 @@
 <template>
   <nav ref="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h3>My Sidebar</h3>
+      <h3 v-if="userEmpty">My Sidebar</h3>
+      <h3 v-if="!userEmpty && user[0] !== undefined">{{ user[0].username }}</h3>
     </div>
 
     <ul class="list-unstyled components">
@@ -57,7 +58,7 @@
       </div>
 
       <li class="sidebar-list">
-        <router-link to="/">
+        <router-link to="/home">
           <fa icon="home" class="sidebar-menu-faicons"></fa>
           <span>Home</span>
         </router-link>
@@ -85,6 +86,10 @@
       </li>
     </ul>
 
+    <div class="sign_out_icon" v-if="showSideBar" @click="signout">
+      <fa icon="sign-out-alt"></fa>
+    </div>
+
     <div class="collapse_icon" v-if="showSideBar" @click="toogleSideBar">
       <fa icon="compress-alt"></fa>
     </div>
@@ -96,7 +101,8 @@
 
 <script lang="ts">
 import router from "@/router";
-import { defineComponent, ref } from "vue";
+import store from "@/store";
+import { computed, defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "NavBar",
@@ -112,16 +118,41 @@ export default defineComponent({
       showSideBar.value = !showSideBar.value;
     };
 
+    const hide = computed(() => {
+      console.log(router.currentRoute.value.meta.showSideBar);
+      return router.currentRoute.value.meta.hidesidebar !== false;
+    });
+
     const addProject = () => {
       console.log("Adding project");
     };
 
+    const user = computed(() => {
+      return store.getters.getActiveUser;
+    });
+
+    console.log(user);
+
+    const userEmpty = computed(() => {
+      return !Object.entries(user).length;
+    });
+
+    const signout = () => {
+      store.dispatch("logout");
+      store.dispatch("setUser", {});
+      router.push({ path: "/" });
+    };
+
     // Editor
     const OpenEditor = () => {
-      router.push({ name: "EditorView", params: { DocumentId: -1 } });
+      router.push({ name: "EditorView", query: { did: -1 } });
     };
 
     return {
+      user,
+      userEmpty,
+      signout,
+      hide,
       sidebar,
       toogleSideBar,
       showSideBar,
@@ -172,6 +203,7 @@ export default defineComponent({
 #sidebar .sidebar-header {
   padding: 20px;
   background: #353b48;
+  text-align: center;
 }
 
 #sidebar ul.components {
@@ -282,6 +314,26 @@ a:focus {
   caret-color: red;
   transition: width 0.4s linear;
   transition: all 0.3s;
+}
+
+.sign_out_icon {
+  border: 0;
+  position: absolute;
+  top: 2.7%;
+  right: 6%;
+  min-width: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 1.8rem;
+  transition: all 0.3s;
+}
+
+.sign_out_icon:hover {
+  cursor: pointer;
+  background: #4a5368;
+  /* color: #e74c3c; */
+  border-radius: 3px;
 }
 
 .search_icon:hover,
