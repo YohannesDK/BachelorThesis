@@ -223,6 +223,10 @@ export default defineComponent({
   border-radius: 50%;
 }
 
+.doc-container {
+  flex-wrap: wrap;
+}
+
 .doc-item,
 .add-item-container {
   border: 1px solid #dfe1e5;
