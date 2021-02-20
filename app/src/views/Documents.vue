@@ -42,18 +42,35 @@
         class="doc-item shadow-sm"
         v-for="(doc, index) in filteredDocuments"
         :key="index"
-        @click="OpenEditor(doc.Documentid)"
       >
-        <div class="doc-item-thumbnail">
+        <div class="doc-item-thumbnail" @click="OpenEditor(doc.Documentid)">
           {{ doc.plainText }}
         </div>
         <div class="doc-item-data-container">
-          <div class="doc-item-tittle">
+          <div class="doc-item-tittle" @click="OpenEditor(doc.Documentid)">
             {{ doc.name }}
           </div>
           <div class="doc-item-time-container">
             <span>Åpnet</span>
             <span class="doc-item-time-data">{{ doc.lastEdited }}</span>
+            <div
+              class="doc-item-more"
+              @click="More($event, index)"
+              @mouseleave="RemoveMore()"
+            >
+              <fa icon="ellipsis-h" />
+              <div class="dropdowncontainer" v-if="dropDownIndex === index">
+                <div class="doc-item-more-dropdown shadow-sm">
+                  <ul class="list-unstyled mb-0">
+                    <li>Open</li>
+                    <li>Rename</li>
+                    <li>Share</li>
+                    <hr />
+                    <li>Delete</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +94,7 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = store.getters.getDocuments;
+    const dropDownIndex = ref<number>(-1);
     const length = 150;
 
     // Editor
@@ -85,6 +103,8 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      document.getElementsByTagName("body");
+
       // change deltas, to text and shorten length to 40 charachters
       // TODO fix doc type
       documents.map(
@@ -121,10 +141,22 @@ export default defineComponent({
       return tempDocuments;
     });
 
+    // To add and remove dropdown
+    const More = (e: any, index: number) => {
+      console.log(e.target);
+      dropDownIndex.value = index;
+    };
+    const RemoveMore = () => {
+      dropDownIndex.value = -1;
+    };
+
     return {
       searchValue,
       filteredDocuments,
-      OpenEditor
+      OpenEditor,
+      More,
+      dropDownIndex,
+      RemoveMore
     };
   }
 });
@@ -327,5 +359,94 @@ export default defineComponent({
 .doc-item-time-data {
   margin-left: 6px;
   font-weight: 500;
+}
+
+.doc-item-more {
+  position: absolute;
+  right: 0;
+  margin-right: 4%;
+  bottom: 40%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.doc-item-more:hover {
+  background: #ededed;
+}
+
+.dropdowncontainer:hover {
+  display: block;
+}
+
+.doc-item-more .dropdowncontainer {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  min-width: 100%;
+  padding-left: 6%;
+  transition: all 1s ease;
+  color: black;
+  top: 64%;
+  width: 8vw;
+  left: 11%;
+}
+
+.doc-item-more-dropdown {
+  float: right;
+  width: 100%;
+  transition: all 0.4s;
+  border-radius: 0.8rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 100%;
+}
+
+.doc-item-more-dropdown ul li {
+  min-height: 2.5em;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  transition: background-color 0.7s ease-out;
+  background-color: white;
+  padding-left: 10px !important;
+  padding: 4%;
+}
+
+.doc-item-more-dropdown ul hr {
+  width: 92%;
+  margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.doc-item-more-dropdown ul li:hover {
+  background: whitesmoke;
+}
+
+.doc-item-more-dropdown ul li a {
+  padding: 12px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.doc-item-more-dropdown ul li:nth-child(1) {
+  border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+  padding-top: 5%;
+}
+
+.doc-item-more-dropdown ul li:last-child {
+  border-bottom-right-radius: 0.8rem;
+  border-bottom-left-radius: 0.8rem;
+  color: #bd0000;
 }
 </style>

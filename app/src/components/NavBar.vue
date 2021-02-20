@@ -184,6 +184,7 @@ export default defineComponent({
 #sidebar .sidebar-header {
   padding: 20px;
   background: #353b48;
+  text-align: center;
 }
 
 #sidebar ul.components {

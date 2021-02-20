@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import router from "@/router";
+import { OnSubmitEvent } from "@typeform/embed";
 import { defineComponent, onMounted, ref } from "vue";
 
 export default defineComponent({
@@ -19,7 +20,7 @@ export default defineComponent({
           "https://f8hitt1d7ph.typeform.com/to/vRs8ZOsa",
           {
             size: 100,
-            onSubmit: function(event: any) {
+            onSubmit: function(event: OnSubmitEvent) {
               console.log(event);
               console.log("Typeform successfully submitted");
               router.push({ path: "/" });
