@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <Editor :docmentId="DocumentId" />
+  <Editor :docmentId="docID" />
 </template>
 
 <script lang="ts">
@@ -22,6 +22,7 @@ import { useStore } from "vuex";
 
 //components
 import Editor from "@/components/Editor.vue";
+import router from "@/router";
 
 export default defineComponent({
   name: "EditorView",
@@ -39,13 +40,14 @@ export default defineComponent({
     const store = useStore();
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
-
+    const docID = Number(router.currentRoute.value.query.did);
+    
     const TittleSetup = () => {
       // Set document title and last edited
-      if (props.DocumentId !== -1) {
-        Title.value = store.getters.getDocmentbyId(props.DocumentId).name;
+      if (docID !== -1) {
+        Title.value = store.getters.getDocmentbyId(docID).name;
         LastEdited.value = store.getters.getDocmentbyId(
-          props.DocumentId
+          docID
         ).lastEdited;
       }
 
@@ -67,7 +69,8 @@ export default defineComponent({
     return {
       DocumentTittle,
       Title,
-      LastEdited
+      LastEdited,
+      docID
     };
   }
 });

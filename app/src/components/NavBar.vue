@@ -129,7 +129,7 @@ export default defineComponent({
 
     // Editor
     const OpenEditor = () => {
-      router.push({ name: "EditorView", params: { DocumentId: -1 } });
+      router.push({ name: "EditorView", query: {did: -1} });
     };
 
     return {

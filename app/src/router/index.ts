@@ -30,19 +30,13 @@ const routes: Array<RouteRecordRaw> = [
     path: "/editor",
     name: "EditorView",
     component: () =>
-      import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue"),
-    props: route => {
-      return { DocumentId: Number(route.params.DocumentId) };
-    }
+      import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue") 
   },
   {
     path: "/course",
     name: "Course",
     component: () =>
       import(/* webpackChunkName: "course" */ "../views/course.vue"),
-    props: route => {
-      return { CourseId: Number(route.params.CourseId) };
-    }
   },
   {
     path: "/registr",
