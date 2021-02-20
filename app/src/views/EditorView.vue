@@ -26,16 +26,11 @@ import router from "@/router";
 
 export default defineComponent({
   name: "EditorView",
-  props: {
-    DocumentId: {
-      type: Number
-    }
-  },
   components: {
     Editor
   },
 
-  setup(props) {
+  setup() {
     const DocumentTittle = ref<HTMLHeadingElement>();
     const store = useStore();
     const Title = ref<string>("Enter Title...");

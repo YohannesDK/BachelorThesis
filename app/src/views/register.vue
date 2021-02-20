@@ -8,7 +8,7 @@ import { OnSubmitEvent } from "@typeform/embed";
 import { defineComponent, onMounted, ref } from "vue";
 
 export default defineComponent({
-  name: "Regis",
+  name: "Register",
   setup() {
     const typeormformRef = ref(null);
 
@@ -23,7 +23,7 @@ export default defineComponent({
             onSubmit: function(event: OnSubmitEvent) {
               console.log(event);
               console.log("Typeform successfully submitted");
-              router.push({ path: "/" });
+              router.push({ path: "/login" });
             }
           }
         );
