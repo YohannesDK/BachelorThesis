@@ -42,8 +42,26 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "course" */ "../views/course.vue"),
     props: route => {
       return { CourseId: Number(route.params.CourseId) };
-    }
-  }
+    },
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: () =>
+      import(/* webpackChunkName: "documents" */ "../views/Register.vue")
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () =>
+      import(/* webpackChunkName: "documents" */ "../views/Login.vue")
+  },
+  {
+    path: "/teacher",
+    name: "Teacher",
+    component: () =>
+      import(/* webpackChunkName: "documents" */ "../views/Teacher.vue")
+  },
 ];
 
 const router = createRouter({

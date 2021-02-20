@@ -9,7 +9,7 @@
                 class="profile-img"
                 src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120"
               />
-              <h1>{{ user.username }}</h1>
+              <h1>{{ fullname }}</h1>
               <p>{{ user.email }}</p>
             </div>
             <ul class="profile-card-nav list-unstyled components">
@@ -25,6 +25,7 @@
                   Edit Profile
                 </a>
               </li>
+              <button @click="Logout()">Logout</button>
             </ul>
           </div>
         </div>
@@ -37,10 +38,10 @@
             <div class="panel-inner-container">
               <div class="row">
                 <div class="user-info-row">
-                  <p><span>First Name</span> : {{ user.Firstname }}</p>
+                  <p><span>Full Name:</span> : {{ fullname }}</p>
                 </div>
                 <div class="user-info-row">
-                  <p><span>Last Name</span> : {{ user.Lastname }}</p>
+                  <p><span>Role:</span> : {{ role }}</p>
                 </div>
                 <div class="user-info-row">
                   <p><span>Birthday</span> : {{ user.Birthday }}</p>
@@ -87,7 +88,7 @@
         </div>
         <hr class="mt-0" />
         <div class="courses-container p-1" v-if="navHeader == 'Courses'">
-          courses data
+          Courses data
         </div>
         <div class="documents-container p-1" v-if="navHeader == 'Documents'">
           documents data
@@ -102,9 +103,47 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
+import axios from 'axios';
+import { component } from "vue/types/umd";
 
 export default defineComponent({
   name: "Profile",
+  components: {},
+
+  methods: {
+    Logout(){
+      localStorage.clear();
+      this.$router.push("/login")
+    },
+  },
+
+  created(){
+    if (localStorage.getItem('token') === null) {
+      this.$router.push("/login")
+    }
+  },
+
+  beforeMount(){
+        axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
+    .then(response => {
+      this.name = response.data.user.username;
+      this.role = response.data.user.role;
+      this.fullname = response.data.user.fullname;
+      this.id = response.data.user.id;
+      console.log(response.data.courses)
+      for (let i = 0; i < response.data.courses.length; i++){
+        console.log(response.data.user.username)
+        this.courseName.push(response.data.courses[i].body)
+      }
+      // if(this.role == "Teacher"){
+      //   this.$router.push("/Teacher")
+      // }
+      // if(this.role == "Student"){
+      //   this.$router.push("/Student")
+      // }
+    })
+  },
+  
   setup() {
     const profileNav = ref<HTMLDivElement>();
     const showNav = ref(false);
@@ -137,16 +176,20 @@ export default defineComponent({
     const user = {
       username: "JohnDoe123",
       Firstname: "John",
-      Lastname: "Doe",
+      Lastname: "Doe",  
       email: "JohnDoe@gmail.com",
       mobile: "+47 95029950",
       Birthday: "12 June 2000",
       gender: "Male"
     };
+    
 
-    onMounted(() => {
-      console.log(profileNav);
-    });
+    // onMounted(() => {
+    //   console.log(profileNav);
+    // });
+
+
+    
     return {
       user,
       profileNav,
@@ -154,7 +197,12 @@ export default defineComponent({
       toogleNav,
       navContent,
       Active,
-      navHeader
+      navHeader,
+      name: '',
+      role:'',
+      fullname: '',
+      id: '',
+      courseName: [] as any
     };
   }
 });

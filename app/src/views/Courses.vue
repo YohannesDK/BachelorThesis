@@ -6,17 +6,26 @@
       </h1>
     </div>
 
+
+    <form @submit.prevent="createCourse">
+    <label>Create a class </label>
+    <input id="course" v-model="course" type="text" placeholder="Class Name">
+    <input id="coursePassword" v-model="coursePassword" type="text" placeholder="Course Password">
+    
+    <button> Create Class </button>
+    </form>
+
     <div class="card-container d-flex">
       <div
         class="card shadow-sm rounded"
-        v-for="(course, index) in courses"
+        v-for="(course, index) in courseName"
         :key="index"
         @click="OpenCourse(course.courseId)"
       >
         <img src="" alt="" class="card-img-top course-image" />
         <div class="card-body">
-          <h6>{{ course.courseName }}</h6>
-          <p>{{ course.courseShorthand }}</p>
+          <h6>{{ course }}</h6>
+          <p>{{ course }}</p>
           <br />
         </div>
       </div>
@@ -29,8 +38,65 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
+import axios from 'axios';
 export default defineComponent({
   name: "Courses",
+    data(){
+    return {
+      name: '',
+      role:'',
+      fullname: '',
+      id: '',
+      courseName: [] as any,
+      course: '',
+      coursePassword: ''
+    }
+  },
+
+    created(){
+    if (localStorage.getItem('token') === null) {
+      this.$router.push("/login")
+    }
+  },
+
+
+
+  beforeMount() {
+    axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
+    .then(response => {
+      this.name = response.data.user.username;
+      this.role = response.data.user.role;
+      this.fullname = response.data.user.fullname;
+      this.id = response.data.user.id;
+      console.log(response.data.courses)
+      for (let i = 0; i < response.data.courses.length; i++){
+        console.log(response.data.courses[i].body)
+        this.courseName.push(response.data.courses[i].body)
+      }
+      // if(this.role == "Teacher"){
+      //   this.$router.push("/Teacher")
+      // }
+      // if(this.role == "Student"){
+      //   this.$router.push("/Student")
+      // }
+    })
+  },
+
+  methods: {
+      createCourse() {
+      // console.log("whaddup")
+      console.log("this it the pass" + this.coursePassword)
+      axios.post('api/createCourse', {
+      userId: this.id,
+      course: this.course,
+      coursePassword: this.coursePassword
+      }).then((response) => {
+        this.courseName.push(response.data.courses.body)
+      })
+    },
+  },
+
+
   setup() {
     const store = useStore();
     const courses = store.getters.getCourses;
@@ -52,6 +118,13 @@ export default defineComponent({
     };
   }
 });
+
+
+
+
+
+
+
 </script>
 
 <style scoped>
