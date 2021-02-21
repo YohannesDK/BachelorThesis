@@ -123,7 +123,7 @@ export default defineComponent({
     }
   },
 
-  beforeMount(){
+  beforeCreate(){
         axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
     .then(response => {
       this.name = response.data.user.username;

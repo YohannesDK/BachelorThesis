@@ -41,7 +41,7 @@ export default {
     }
   },
   
-  created(){
+  beforeCreate(){
     if (localStorage.getItem('token') === null) {
       this.$router.push("/login")
     }
@@ -49,7 +49,7 @@ export default {
   
   components: {},
   
-  beforeMount() {
+  created() {
     axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
     .then(response => {
       this.name = response.data.user.username;

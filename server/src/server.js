@@ -58,7 +58,8 @@ app.post('/api/createCourse', (request, response) => {
         models.courses.create({
             body: request.body.course,
             coursePassword: request.body.coursePassword,
-            userId: users.id
+            userId: users.id,
+            shorthand: request.body.shorthand
         })
     })
 

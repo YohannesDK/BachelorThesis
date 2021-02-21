@@ -10,6 +10,7 @@
     <form @submit.prevent="createCourse">
     <label>Create a class </label>
     <input id="course" v-model="course" type="text" placeholder="Class Name">
+    <input id="shorthand" v-model="shorthand" type="text" placeholder="Class Shorthand">
     <input id="coursePassword" v-model="coursePassword" type="text" placeholder="Course Password">
     
     <button> Create Class </button>
@@ -18,14 +19,14 @@
     <div class="card-container d-flex">
       <div
         class="card shadow-sm rounded"
-        v-for="(course, index) in courseName"
+        v-for="(course, index) in courseBody"
         :key="index"
-        @click="OpenCourse(course.courseId)"
+        @click="OpenCourse(course.id)"
       >
         <img src="" alt="" class="card-img-top course-image" />
         <div class="card-body">
-          <h6>{{ course }}</h6>
-          <p>{{ course }}</p>
+          <h6>{{ course.body }}</h6>
+          <p>{{ course.shorthand }}</p>
           <br />
         </div>
       </div>
@@ -48,12 +49,15 @@ export default defineComponent({
       fullname: '',
       id: '',
       courseName: [] as any,
+      courseSH: [] as any,
+      courseBody: [] as any,
       course: '',
+      shorthand: '',
       coursePassword: ''
     }
   },
 
-    created(){
+    beforeCreate(){
     if (localStorage.getItem('token') === null) {
       this.$router.push("/login")
     }
@@ -61,7 +65,7 @@ export default defineComponent({
 
 
 
-  beforeMount() {
+  created() {
     axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
     .then(response => {
       this.name = response.data.user.username;
@@ -72,7 +76,10 @@ export default defineComponent({
       for (let i = 0; i < response.data.courses.length; i++){
         console.log(response.data.courses[i].body)
         this.courseName.push(response.data.courses[i].body)
+        this.courseSH.push(response.data.courses[i].shorthand)
+        this.courseBody.push(response.data.courses[i])
       }
+      console.log(this.courseBody[0].userId)
       // if(this.role == "Teacher"){
       //   this.$router.push("/Teacher")
       // }
@@ -89,11 +96,17 @@ export default defineComponent({
       axios.post('api/createCourse', {
       userId: this.id,
       course: this.course,
+      shorthand: this.shorthand,
       coursePassword: this.coursePassword
       }).then((response) => {
         this.courseName.push(response.data.courses.body)
       })
     },
+
+  // OpenCourse(courseId: number) {
+  //   this.$router.push({name: "Course", params: { CourseId: courseId}})
+  // },
+
   },
 
 
@@ -104,6 +117,7 @@ export default defineComponent({
     const ToogleModal = () => {
       showModal.value = !showModal.value;
     };
+    
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
