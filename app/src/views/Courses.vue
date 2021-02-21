@@ -63,8 +63,6 @@ export default defineComponent({
     }
   },
 
-
-
   created() {
     axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
     .then(response => {
@@ -80,19 +78,11 @@ export default defineComponent({
         this.courseBody.push(response.data.courses[i])
       }
       console.log(this.courseBody[0].userId)
-      // if(this.role == "Teacher"){
-      //   this.$router.push("/Teacher")
-      // }
-      // if(this.role == "Student"){
-      //   this.$router.push("/Student")
-      // }
     })
   },
 
   methods: {
       createCourse() {
-      // console.log("whaddup")
-      console.log("this it the pass" + this.coursePassword)
       axios.post('api/createCourse', {
       userId: this.id,
       course: this.course,
@@ -103,9 +93,6 @@ export default defineComponent({
       })
     },
 
-  // OpenCourse(courseId: number) {
-  //   this.$router.push({name: "Course", params: { CourseId: courseId}})
-  // },
 
   },
 

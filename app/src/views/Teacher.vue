@@ -8,14 +8,14 @@
     <button @click="logout">Logout</button>
     <br><br>
 
-<!-- 
+
     <form @submit.prevent="createCourse">
     <label>Create a class </label>
     <input id="course" v-model="course" type="text" placeholder="Class Name">
     <input id="coursePassword" v-model="coursePassword" type="text" placeholder="Course Password">
     
     <button> Create Class </button>
-    </form> -->
+    </form>
  
 
     </div>
@@ -74,16 +74,16 @@ export default {
       localStorage.clear();
       this.$router.push("/login")
     },
-    // createCourse() {
-    //   console.log(coursePassword.value)
-    //   axios.post('api/createCourse', {
-    //   userId: this.id,
-    //   course: course.value,
-    //   coursePassword: coursePassword.value
-    //   }).then((response) => {
-    //     this.courseName.push(response.data.courses.body)
-    //   })
-    // },
+    createCourse() {
+      console.log(coursePassword.value)
+      axios.post('api/createCourse', {
+      userId: this.id,
+      course: course.value,
+      coursePassword: coursePassword.value
+      }).then((response) => {
+        this.courseName.push(response.data.courses.body)
+      })
+    },
   }
 }
 </script>

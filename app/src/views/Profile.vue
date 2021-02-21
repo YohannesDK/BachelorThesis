@@ -132,15 +132,8 @@ export default defineComponent({
       this.id = response.data.user.id;
       console.log(response.data.courses)
       for (let i = 0; i < response.data.courses.length; i++){
-        console.log(response.data.user.username)
         this.courseName.push(response.data.courses[i].body)
       }
-      // if(this.role == "Teacher"){
-      //   this.$router.push("/Teacher")
-      // }
-      // if(this.role == "Student"){
-      //   this.$router.push("/Student")
-      // }
     })
   },
   
@@ -184,9 +177,9 @@ export default defineComponent({
     };
     
 
-    // onMounted(() => {
-    //   console.log(profileNav);
-    // });
+    onMounted(() => {
+      console.log(profileNav);
+    });
 
 
     
