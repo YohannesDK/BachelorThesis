@@ -15,8 +15,7 @@ import { expect } from "chai";
 describe("Dummy test frontend", () => {
   let result;
   it("Should return 5", () => {
-    result = 2+3;
+    result = 2 + 3;
     expect(result).to.equal(5);
   });
-  console.log(result);
 });

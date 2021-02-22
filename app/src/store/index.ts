@@ -191,6 +191,15 @@ const store = createStore({
     },
     setUser: (state, user) => {
       state.activeUser = user;
+    },
+    AddNewDocument: state => {
+      state.documents.push({
+        Documentid: state.documents[state.documents.length - 1].Documentid + 1,
+        name: "Edit Tittle...",
+        delta: [],
+        tags: [],
+        lastEdited: "11 Feb 2021"
+      });
     }
   },
   actions: {
@@ -202,6 +211,9 @@ const store = createStore({
     },
     setUser: (context, user: object) => {
       context.commit("setUser", user);
+    },
+    AddNewDocument: context => {
+      context.commit("AddNewDocument");
     }
   },
   getters: {

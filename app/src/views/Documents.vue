@@ -24,10 +24,7 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
-      <div
-        class="doc-item add-item-container shadow-sm"
-        @click="OpenEditor(-1)"
-      >
+      <div class="doc-item add-item-container shadow-sm" @click="NewDocument()">
         <div class="add-item">
           <span>
             <p>New</p>
@@ -38,42 +35,11 @@
           </div>
         </div>
       </div>
-      <div
-        class="doc-item shadow-sm"
+      <document-card
         v-for="(doc, index) in filteredDocuments"
+        :document="doc"
         :key="index"
-      >
-        <div class="doc-item-thumbnail" @click="OpenEditor(doc.Documentid)">
-          {{ doc.plainText }}
-        </div>
-        <div class="doc-item-data-container">
-          <div class="doc-item-tittle" @click="OpenEditor(doc.Documentid)">
-            {{ doc.name }}
-          </div>
-          <div class="doc-item-time-container">
-            <span>Åpnet</span>
-            <span class="doc-item-time-data">{{ doc.lastEdited }}</span>
-            <div
-              class="doc-item-more"
-              @click="More($event, index)"
-              @mouseleave="RemoveMore()"
-            >
-              <fa icon="ellipsis-h" />
-              <div class="dropdowncontainer" v-if="dropDownIndex === index">
-                <div class="doc-item-more-dropdown shadow-sm">
-                  <ul class="list-unstyled mb-0">
-                    <li>Open</li>
-                    <li>Rename</li>
-                    <li>Share</li>
-                    <hr />
-                    <li>Delete</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      />
       <h1 class="m-auto" v-if="filteredDocuments.length === 0">
         No documents found...
       </h1>
@@ -82,41 +48,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
-import { DeltaToPlainText } from "@/utils/delta.utils";
+import DocumentCard from "@/components/documentCard.vue";
 import router from "@/router";
 
 export default defineComponent({
   name: "Documents",
+  components: {
+    DocumentCard
+  },
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = store.getters.getDocuments;
-    const dropDownIndex = ref<number>(-1);
-    const length = 150;
+    const documents = ref<Array<doucmentType>>(store.getters.getDocuments);
 
-    // Editor
-    const OpenEditor = (Documentid: -1) => {
-      router.push({ name: "EditorView", query: { did: Documentid } });
+    // Create New Document
+    const NewDocument = () => {
+      store.dispatch("AddNewDocument");
+      // router.push({ name: "EditorView", query: { did: -1 } });
     };
 
-    onMounted(() => {
-      document.getElementsByTagName("body");
-
-      // change deltas, to text and shorten length to 40 charachters
-      // TODO fix doc type
-      documents.map(
-        (doc: any) =>
-          (doc.plainText = DeltaToPlainText(doc.delta)
-            .substring(0, length)
-            .concat("..."))
-      );
-    });
-
     const filteredDocuments = computed(() => {
-      let tempDocuments = documents;
+      let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: doucmentType) => {
@@ -141,22 +96,10 @@ export default defineComponent({
       return tempDocuments;
     });
 
-    // To add and remove dropdown
-    const More = (e: any, index: number) => {
-      console.log(e.target);
-      dropDownIndex.value = index;
-    };
-    const RemoveMore = () => {
-      dropDownIndex.value = -1;
-    };
-
     return {
       searchValue,
       filteredDocuments,
-      OpenEditor,
-      More,
-      dropDownIndex,
-      RemoveMore
+      NewDocument
     };
   }
 });
@@ -227,7 +170,6 @@ export default defineComponent({
   flex-wrap: wrap;
 }
 
-.doc-item,
 .add-item-container {
   border: 1px solid #dfe1e5;
   border-radius: 8px;
@@ -239,31 +181,6 @@ export default defineComponent({
   margin-bottom: 20px;
   margin-right: 20px;
   transition: all 0.5s;
-}
-
-.doc-item:hover {
-  cursor: pointer;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
-}
-
-.doc-item-thumbnail,
-.add-item {
-  background: linear-gradient(45deg, white, whitesmoke);
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  height: 156px;
-  width: 176px;
-  background-repeat: no-repeat;
-  background-size: 208px auto;
-  border: none;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  /* align-items: center; */
-  text-align: center;
-  padding: 6%;
-  font-size: 0.77em;
-  padding-top: 13%;
 }
 
 .add-item {
@@ -325,132 +242,5 @@ export default defineComponent({
   padding: 8px;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
   transition: all 0.5s;
-}
-
-.doc-item-data-container {
-  border-top: 1px solid #e2e2e2;
-  padding: 5px 8px 14px 16px;
-  position: relative;
-}
-
-.doc-item-tittle {
-  color: #414549;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.15px;
-  line-height: 18px;
-  margin-left: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
-.doc-item-time-container {
-  color: #80868b;
-  display: inline-block;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-  line-height: 24px;
-  margin-left: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  white-space: nowrap;
-  width: 80%;
-}
-
-.doc-item-time-data {
-  margin-left: 6px;
-  font-weight: 500;
-}
-
-.doc-item-more {
-  position: absolute;
-  right: 0;
-  margin-right: 4%;
-  bottom: 40%;
-  width: 25px;
-  height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s;
-  border-radius: 4px;
-  z-index: 1;
-}
-
-.doc-item-more:hover {
-  background: #ededed;
-}
-
-.dropdowncontainer:hover {
-  display: block;
-}
-
-.doc-item-more .dropdowncontainer {
-  display: block;
-  position: absolute;
-  z-index: 1;
-  min-width: 100%;
-  padding-left: 6%;
-  transition: all 1s ease;
-  color: black;
-  top: 64%;
-  width: 8vw;
-  left: 11%;
-}
-
-.doc-item-more-dropdown {
-  float: right;
-  width: 100%;
-  transition: all 0.4s;
-  border-radius: 0.8rem;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  min-width: 100%;
-}
-
-.doc-item-more-dropdown ul li {
-  min-height: 2.5em;
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
-  height: fit-content;
-  transition: background-color 0.7s ease-out;
-  background-color: white;
-  padding-left: 10px !important;
-  padding: 4%;
-}
-
-.doc-item-more-dropdown ul hr {
-  width: 92%;
-  margin: auto;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.doc-item-more-dropdown ul li:hover {
-  background: whitesmoke;
-}
-
-.doc-item-more-dropdown ul li a {
-  padding: 12px 10px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.doc-item-more-dropdown ul li:nth-child(1) {
-  border-top-right-radius: 0.8rem;
-  border-top-left-radius: 0.8rem;
-  padding-top: 5%;
-}
-
-.doc-item-more-dropdown ul li:last-child {
-  border-bottom-right-radius: 0.8rem;
-  border-bottom-left-radius: 0.8rem;
-  color: #bd0000;
 }
 </style>
