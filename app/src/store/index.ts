@@ -162,8 +162,8 @@ export default createStore({
       },
       {
         courseId: 4,
-        courseName: "Kjemi",
-        courseShorthand: "RED101",
+        courseName: "Grunnleggende Programmering",
+        courseShorthand: "DAT110",
         documents: [1]
       }
     ] as courseType[]

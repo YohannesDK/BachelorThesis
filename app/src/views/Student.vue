@@ -2,19 +2,16 @@
   <div class="courses-container container d-flex ">
     <div class="pb-2 mt-4 mb-2 border-bottom">
       <h1>
-        My Courses
+        <h1>Hello {{ name }}</h1>
       </h1>
     </div>
 
 
-    <form @submit="createCourse">
-    <label>Create a class </label>
-    <input id="course" v-model="course" type="text" placeholder="Class Name">
-    <input id="shorthand" v-model="shorthand" type="text" placeholder="Class Shorthand">
-    <input id="coursePassword" v-model="coursePassword" type="text" placeholder="Course Password">
-    
-    <button> Create Class </button>
+    <form @submit.prevent="joinCourse">
+    <input id="coursePass" type="text" v-model="coursePass" placeholder="Course Password">
+    <button>Join Course</button> <br>
     </form>
+
 
     <div class="card-container d-flex">
       <div
@@ -50,10 +47,7 @@ export default defineComponent({
       role:'',
       fullname: '',
       id: '',
-      courseBody: [] as any,
-      course: '',
-      shorthand: '',
-      coursePassword: ''
+      courseBody: [] as any
     }
   },
 
@@ -82,16 +76,13 @@ export default defineComponent({
   },
 
   methods: {
-      createCourse() {
-      axios.post('api/createCourse', {
-      userId: this.id,
-      course: this.course,
-      shorthand: this.shorthand,
-      coursePassword: this.coursePassword
-      }).then((response) => {
-        this.courseBody.push(response.data.courses.body)
-      })
-    },
+    joinCourse(){
+     axios.get('/api/courseInfo', {params: {coursePass: this.coursePass}})
+    .then(response => {
+      this.courseBody.push(response.data.course)
+      console.log(this.courseBody)
+    })
+    }
   },
 
 
@@ -118,13 +109,9 @@ export default defineComponent({
   }
 });
 
-
-
-
-
-
-
 </script>
+
+
 
 <style scoped>
 .courses-container {

@@ -7,7 +7,7 @@
     </div>
 
 
-    <form @submit.prevent="createCourse">
+    <form @submit="createCourse">
     <label>Create a class </label>
     <input id="course" v-model="course" type="text" placeholder="Class Name">
     <input id="shorthand" v-model="shorthand" type="text" placeholder="Class Shorthand">
@@ -40,6 +40,8 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
 import axios from 'axios';
+import AppVue from "../App.vue";
+import courseVue from "./course.vue";
 export default defineComponent({
   name: "Courses",
     data(){
@@ -48,8 +50,6 @@ export default defineComponent({
       role:'',
       fullname: '',
       id: '',
-      courseName: [] as any,
-      courseSH: [] as any,
       courseBody: [] as any,
       course: '',
       shorthand: '',
@@ -63,6 +63,8 @@ export default defineComponent({
     }
   },
 
+
+
   created() {
     axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
     .then(response => {
@@ -70,14 +72,17 @@ export default defineComponent({
       this.role = response.data.user.role;
       this.fullname = response.data.user.fullname;
       this.id = response.data.user.id;
-      console.log(response.data.courses)
       for (let i = 0; i < response.data.courses.length; i++){
         console.log(response.data.courses[i].body)
-        this.courseName.push(response.data.courses[i].body)
-        this.courseSH.push(response.data.courses[i].shorthand)
         this.courseBody.push(response.data.courses[i])
       }
-      console.log(this.courseBody[0].userId)
+      if (this.role == "Teacher"){
+        this.$router.push("/teacher")
+      }
+
+      if (this.role == "Student") {
+        this.$router.push("/student")
+      }
     })
   },
 
@@ -89,11 +94,9 @@ export default defineComponent({
       shorthand: this.shorthand,
       coursePassword: this.coursePassword
       }).then((response) => {
-        this.courseName.push(response.data.courses.body)
+        this.courseBody.push(response.data.courses.body)
       })
     },
-
-
   },
 
 
