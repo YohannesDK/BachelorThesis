@@ -1,0 +1,13 @@
+
+#editor .ql-toolbar {
+  border: none !important;
+}
+
+#editor .ql-syntax {
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(190, 189, 189);
+  color: unset !important;
+  overflow: visible;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+

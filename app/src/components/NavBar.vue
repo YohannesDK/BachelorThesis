@@ -319,7 +319,7 @@ a:focus {
 .sign_out_icon {
   border: 0;
   position: absolute;
-  top: 2.7%;
+  top: 1rem;
   right: 6%;
   min-width: 1.8rem;
   display: flex;

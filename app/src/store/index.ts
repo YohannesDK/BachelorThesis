@@ -7,65 +7,145 @@ const store = createStore({
     documents: [
       {
         Documentid: 0,
-        name: "Tittle 1",
+        name: "Python Tutorial",
         delta: [
-          { attributes: { bold: true }, insert: "Jesus fra Nasaret" },
-          { insert: ":\nFødt Ca. 5 fvt., døde 30 evt." },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          { insert: "En historisk person" },
-          { attributes: { list: "bullet" }, insert: "\n" },
+          { attributes: { font: "serif" }, insert: "Python Indentation" },
+          { attributes: { header: 2 }, insert: "\n" },
           {
+            attributes: { font: "serif" },
             insert:
-              "Bibel forskere sier Athen ikke var gift, ikke hadde barn, ikke drept av jøder men romerne. "
-          },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          {
-            attributes: { bold: true },
-            insert: "Ulike oppfatninger, ulike skrifter:"
+              "Indentation refers to the spaces at the beginning of a code line."
           },
           { insert: "\n" },
           {
-            attributes: { underline: true },
-            insert: "Mennesker vekta forskjellen ting ved Jesus"
+            attributes: { font: "serif" },
+            insert:
+              "Where in other programming languages the indentation in code is for readability only, the indentation in Python is very important."
           },
-          { insert: "\nJesus sin død og oppstandelse" },
+          { insert: "\n" },
+          {
+            attributes: { font: "serif" },
+            insert: "Python uses indentation to indicate a block of code."
+          },
           { attributes: { list: "bullet" }, insert: "\n" },
-          { insert: "Jesus som visdomslærer " },
-          { attributes: { list: "bullet" }, insert: "\n\n" },
-          { insert: "Jesus sine undre" },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          { attributes: { bold: true }, insert: "Fire evangelier" },
+          { insert: "\nif 5 > 2:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: '  print("Five is greater than two!")' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n" },
+          {
+            attributes: { color: "#000000", font: "serif" },
+            insert: "Python will give you an error if you skip the indentation:"
+          },
+          { insert: "\n\nif 5 > 2:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: 'print("Five is greater than two!") # <- error' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n" },
+          {
+            attributes: { color: "#000000", font: "serif" },
+            insert:
+              "The number of spaces is up to you as a programmer, but it has to be at least one."
+          },
+          { insert: "\n\nif 5 > 2:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: ' print("Five is greater than two!") ' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "if 5 > 2:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: '        print("Five is greater than two!") ' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n" },
+          {
+            attributes: { color: "#000000", font: "serif" },
+            insert:
+              "You have to use the same number of spaces in the same block of code, otherwise Python will give you an error:"
+          },
+          { insert: "\nif 5 > 2:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: ' print("Five is greater than two!")' },
+          { attributes: { "code-block": true }, insert: "\n" },
           {
             insert:
-              "\nI det nye testamentet(NT) finner vi fire forfattere som har skrevet om Jesus (på gresk)."
+              '        print("Five is greater than two!") # <- syntax error'
           },
-          { attributes: { list: "bullet" }, insert: "\n" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n" },
+          { attributes: { font: "serif" }, insert: "Python Variables" },
+          { attributes: { header: 2 }, insert: "\n" },
           {
-            insert: "Det fire evangeliene; Markus, Matteus, Lukas og Johannes."
-          },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          {
+            attributes: { font: "serif" },
             insert:
-              "Skrifter som er skrevet om Jesus som ikke står i bibelen kalles apokryfer."
+              "In Python, variables are created when you assign a value to it:"
           },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          { attributes: { bold: true }, insert: "Fire evangeliene forts" },
+          { insert: "\nx = 5" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: 'y = "Hello, World!"' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n" },
+          { attributes: { font: "serif" }, insert: "Python Lists" },
+          { attributes: { header: 2 }, insert: "\n" },
           {
+            attributes: { font: "serif" },
             insert:
-              "\nSkrevet for å forkynne troen på den levende Jesus som hadde stått opp fra de døde."
+              "Lists are used to store multiple items in a single variable."
           },
-          { attributes: { list: "bullet" }, insert: "\n" },
+          { insert: "\n" },
           {
+            attributes: { font: "serif" },
             insert:
-              "Skulle styrke tilhørernes tro, gi dem trøst og oppmuntring."
+              "Lists are one of 4 built-in data types in Python used to store collections of data, the other 3 are Tuple, Set, "
           },
-          { attributes: { list: "bullet" }, insert: "\n" },
+          { insert: "\n" },
           {
-            insert:
-              "Forskjellige mennesker hadde forskjellige behov -> evangeliene vektlegger forskjellige ting. -> tilpasset tilhørernes behov."
+            attributes: { font: "serif" },
+            insert: "and Dictionary, all with different qualities and usage."
           },
-          { attributes: { list: "bullet" }, insert: "\n" },
-          { insert: "\n" }
+          { insert: "\n" },
+          {
+            attributes: { font: "serif" },
+            insert: "Lists are created using square brackets:"
+          },
+          { insert: '\nthislist = ["apple", "banana", "cherry"]' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          {
+            insert: 'print(thislist) # prints -> ["apple", "banana", "cherry"]'
+          },
+          { attributes: { "code-block": true }, insert: "\n\n" },
+          { insert: 'thislist = ["apple", "banana", "cherry"]' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "print(len(thislist)) #prints 3" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\nPython Loops" },
+          { attributes: { header: 2 }, insert: "\n" },
+          {
+            attributes: { color: "#000000" },
+            insert: "You can loop through the list items by using a "
+          },
+          {
+            attributes: {
+              color: "crimson",
+              background: "rgba(222, 222, 222, 0.3)",
+              code: true
+            },
+            insert: "for"
+          },
+          { attributes: { color: "#000000" }, insert: " loop:" },
+          { insert: '\nthislist = ["apple", "banana", "cherry"]' },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "for x in thislist:" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "  print(x)" },
+          { attributes: { "code-block": true }, insert: "\n\n" },
+          { insert: "#prints" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "  # apple" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "  # banana" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "  # cherry﻿﻿" },
+          { attributes: { "code-block": true }, insert: "\n" },
+          { insert: "\n\n\n\n\n\n\n" }
         ],
         tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
         lastEdited: "2 Feb. 2021"

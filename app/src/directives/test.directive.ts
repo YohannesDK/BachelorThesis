@@ -9,4 +9,4 @@ const Test = (el: HTMLElement, binding: any) => {
   });
 };
 
-export default Test
+export default Test;
