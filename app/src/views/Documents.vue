@@ -24,10 +24,7 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
-      <div
-        class="doc-item add-item-container shadow-sm"
-        @click="NewDocument()"
-      >
+      <div class="doc-item add-item-container shadow-sm" @click="NewDocument()">
         <div class="add-item">
           <span>
             <p>New</p>
@@ -38,7 +35,11 @@
           </div>
         </div>
       </div>
-      <document-card v-for="(doc, index) in filteredDocuments" :document="doc" :key="index" />
+      <document-card
+        v-for="(doc, index) in filteredDocuments"
+        :document="doc"
+        :key="index"
+      />
       <h1 class="m-auto" v-if="filteredDocuments.length === 0">
         No documents found...
       </h1>
@@ -182,7 +183,6 @@ export default defineComponent({
   transition: all 0.5s;
 }
 
-
 .add-item {
   -webkit-box-align: initial;
   align-items: initial;
@@ -243,6 +243,4 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
   transition: all 0.5s;
 }
-
-
 </style>

@@ -2,7 +2,7 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
     <h1>Home Page</h1>
-    <document-card :document="document"/>
+    <document-card :document="document" />
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default defineComponent({
     const document = store.getters.getDocmentbyId(0);
     return {
       document
-    }
+    };
   }
 });
 </script>

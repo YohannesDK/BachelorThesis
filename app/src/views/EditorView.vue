@@ -46,16 +46,21 @@ export default defineComponent({
 
       if (DocumentTittle.value) {
         // Add Enter Event Listner
-        DocumentTittle.value.addEventListener("keypress", (e: KeyboardEvent) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            //TODO: define setters for this
-            if (DocumentTittle.value) {
-              store.state.documents.find((doc: any) => doc.Documentid === docID).name = DocumentTittle.value.innerText
-              DocumentTittle.value.blur(); 
+        DocumentTittle.value.addEventListener(
+          "keypress",
+          (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              //TODO: define setters for this
+              if (DocumentTittle.value) {
+                store.state.documents.find(
+                  (doc: any) => doc.Documentid === docID
+                ).name = DocumentTittle.value.innerText;
+                DocumentTittle.value.blur();
+              }
             }
           }
-        });
+        );
       }
     };
 

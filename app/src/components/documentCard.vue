@@ -1,33 +1,42 @@
 <template>
   <div class="doc-item shadow-sm" v-test="{ id: 'card-container' }">
-    
-    <div class="doc-item-thumbnail" v-test="{ id: 'card-thumbnail' }"
-    @click="OpenEditor(document.Documentid)"
-    >{{documentText}}</div>
+    <div
+      class="doc-item-thumbnail"
+      v-test="{ id: 'card-thumbnail' }"
+      @click="OpenEditor(document.Documentid)"
+    >
+      {{ documentText }}
+    </div>
 
     <div class="doc-item-data-container">
-      <div class="doc-item-tittle" v-test="{ id: 'card-tittle' }"
-      @click="OpenEditor(document.Documentid)"
+      <div
+        class="doc-item-tittle"
+        v-test="{ id: 'card-tittle' }"
+        @click="OpenEditor(document.Documentid)"
       >
         {{ document.name }}
       </div>
 
       <div class="doc-item-time-container">
         <span>Åpnet</span>
-        <span class="doc-item-last-edited"
+        <span
+          class="doc-item-last-edited"
           v-test="{ id: 'card-last-edited' }"
-          >{{document.lastEdited}}</span>
-        
-        <div class="doc-item-more"
-        v-test="{id: 'card-more-button'}"
-        @click="More()"
-        @mouseleave="RemoveMore()"
+          >{{ document.lastEdited }}</span
         >
-          <fa icon="ellipsis-h"/>
+
+        <div
+          class="doc-item-more"
+          v-test="{ id: 'card-more-button' }"
+          @click="More()"
+          @mouseleave="RemoveMore()"
+        >
+          <fa icon="ellipsis-h" />
           <div class="dropdowncontainer" v-if="showDropDown">
             <div class="doc-item-more-dropdown shadow-sm">
-              <ul class="list-unstyled mb-0"
-              v-test="{id: 'card-options-dropdown'}"
+              <ul
+                class="list-unstyled mb-0"
+                v-test="{ id: 'card-options-dropdown' }"
               >
                 <li>Open</li>
                 <li>Rename</li>
@@ -37,7 +46,6 @@
               </ul>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -57,8 +65,7 @@ export default defineComponent({
     document: {
       type: Object as () => doucmentType,
       default: () => ({})
-    },
-
+    }
   },
   setup(props) {
     const documentText = ref<string>("");
@@ -67,23 +74,23 @@ export default defineComponent({
 
     const More = () => {
       showDropDown.value = true;
-    }
+    };
 
     const RemoveMore = () => {
       showDropDown.value = false;
-    }
+    };
 
     const OpenEditor = (DocumentId: number) => {
-      router.push({name: "EditorView", query: {did: DocumentId}})
-    }
+      router.push({ name: "EditorView", query: { did: DocumentId } });
+    };
 
     onMounted(() => {
       if (props.document.delta) {
-        documentText.value = DeltaToPlainText(props.document.delta).substring(0, documentTextLength)
-            .concat("...");
-      } 
-      
-    })
+        documentText.value = DeltaToPlainText(props.document.delta)
+          .substring(0, documentTextLength)
+          .concat("...");
+      }
+    });
     return {
       documentText,
       documentTextLength,
@@ -97,7 +104,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .doc-item {
   border: 1px solid #dfe1e5;
   border-radius: 8px;
@@ -116,7 +122,7 @@ export default defineComponent({
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-.doc-item-thumbnail{
+.doc-item-thumbnail {
   background: linear-gradient(45deg, white, whitesmoke);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
@@ -134,7 +140,6 @@ export default defineComponent({
   font-size: 0.77em;
   padding-top: 13%;
 }
-
 
 .doc-item-data-container {
   border-top: 1px solid #e2e2e2;
@@ -267,6 +272,3 @@ export default defineComponent({
   margin-left: 5%;
 }
 </style>
-
-
-

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { shallowMount} from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import documentCard from "@/components/documentCard.vue";
 import { doucmentType } from "@/store/interfaces/document";
 import { DeltaToPlainText } from "@/utils/delta.utils";
@@ -46,9 +46,8 @@ const dummyDocument: doucmentType = {
 
 // wrapper around our component
 const wrapper = shallowMount(documentCard, {
-  props: {document: dummyDocument}
-})
-
+  props: { document: dummyDocument }
+});
 
 describe("document card - container", () => {
   it("Document card container should exist", () => {
@@ -68,9 +67,12 @@ describe("document card - thumbnail", () => {
   });
 
   it(`thumbnail should contain the first ${wrapper.vm.documentTextLength} chars of a document (if there are enough char)`, () => {
-    expect(thumbnail.text()).to
-    .equal(DeltaToPlainText(dummyDocument.delta).substring(0, wrapper.vm.documentTextLength).concat("..."));
-  })
+    expect(thumbnail.text()).to.equal(
+      DeltaToPlainText(dummyDocument.delta)
+        .substring(0, wrapper.vm.documentTextLength)
+        .concat("...")
+    );
+  });
 });
 
 describe("document card - tittle and last edited", () => {
@@ -87,15 +89,15 @@ describe("document card - tittle and last edited", () => {
   it(`Document tittle should be: ${dummyDocument.name}`, () => {
     expect(docTittle.text()).to.include(dummyDocument.name);
   });
-  
+
   it("Document card should have a last edited part", () => {
     expect(doclastEdited.exists()).to.equal(true);
   });
-  
+
   it("Document card - last edited should not be empty", () => {
     expect(doclastEdited.text()).to.not.equal("");
   });
-  
+
   it(`Document last edited should be: ${dummyDocument.lastEdited}`, () => {
     expect(doclastEdited.text()).to.include(dummyDocument.lastEdited);
   });
@@ -113,17 +115,15 @@ describe("document card - more option", () => {
   it("Document card should have a dropdown, with more options", () => {
     if (wrapper.vm.showDropDown) {
       expect(docMoreOptionsDropdown.exists()).to.equal(true);
-    }else {
+    } else {
       expect(docMoreOptionsDropdown.exists()).to.equal(false);
     }
   });
 
-
   // TODO: finn ut av hvordan man kan sjekke om en knapp er clicked
   it("More handler should be called when user clicks on it", async () => {
-    await docMoreButton.trigger("click")
-      .then(() => {
-        console.log("halla");
-      })
-  })
+    await docMoreButton.trigger("click").then(() => {
+      console.log("halla");
+    });
+  });
 });

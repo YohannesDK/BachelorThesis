@@ -213,7 +213,7 @@ const store = createStore({
       context.commit("setUser", user);
     },
     AddNewDocument: context => {
-      context.commit("AddNewDocument")
+      context.commit("AddNewDocument");
     }
   },
   getters: {
