@@ -59,7 +59,8 @@ export default defineComponent({
 
     beforeCreate(){
     if (localStorage.getItem('token') === null) {
-      this.$router.push("/login")
+      // this.$router.push("/login")
+      console.log("halla")
     }
   },
 
@@ -111,7 +112,7 @@ export default defineComponent({
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", params: { CourseId: courseId } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
 
     return {

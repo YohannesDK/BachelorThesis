@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 import { doucmentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
 
-export default createStore({
+const store = createStore({
   state: {
     documents: [
       {
@@ -166,10 +166,56 @@ export default createStore({
         courseShorthand: "DAT110",
         documents: [1]
       }
-    ] as courseType[]
+    ] as courseType[],
+    isAuthenticated: false,
+    users: [
+      {
+        username: "Teacher123",
+        password: "1234",
+        role: "teacher"
+      },
+      {
+        username: "Student123",
+        password: "1234",
+        role: "student"
+      }
+    ],
+    activeUser: {}
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    login: state => {
+      state.isAuthenticated = true;
+    },
+    logout: state => {
+      state.isAuthenticated = false;
+    },
+    setUser: (state, user) => {
+      state.activeUser = user;
+    },
+    AddNewDocument: state => {
+      state.documents.push({
+        Documentid: state.documents[state.documents.length - 1].Documentid + 1,
+        name: "Edit Tittle...",
+        delta: [],
+        tags: [],
+        lastEdited: "11 Feb 2021"
+      });
+    }
+  },
+  actions: {
+    login: context => {
+      context.commit("login");
+    },
+    logout: context => {
+      context.commit("logout");
+    },
+    setUser: (context, user: object) => {
+      context.commit("setUser", user);
+    },
+    AddNewDocument: context => {
+      context.commit("AddNewDocument");
+    }
+  },
   getters: {
     getDocuments: state => {
       return state.documents;
@@ -186,7 +232,18 @@ export default createStore({
       return state.courses.find(
         (course: courseType) => course.courseId === CourseId
       );
+    },
+    getIsAuthenticated: state => {
+      return state.isAuthenticated;
+    },
+    getAllUsers: state => {
+      return state.users;
+    },
+    getActiveUser: state => {
+      return state.activeUser;
     }
   },
   modules: {}
 });
+
+export default store;

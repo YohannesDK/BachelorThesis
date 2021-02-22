@@ -24,25 +24,22 @@
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
-      <div
-        class="doc-item shadow-sm"
-        v-for="(doc, index) in filteredDocuments"
-        :key="index"
-        @click="OpenEditor(doc.Documentid)"
-      >
-        <div class="doc-item-thumbnail">
-          {{ doc.plainText }}
-        </div>
-        <div class="doc-item-data-container">
-          <div class="doc-item-tittle">
-            {{ doc.name }}
-          </div>
-          <div class="doc-item-time-container">
-            <span>Åpnet</span>
-            <span class="doc-item-time-data">{{ doc.lastEdited }}</span>
+      <div class="doc-item add-item-container shadow-sm" @click="NewDocument()">
+        <div class="add-item">
+          <span>
+            <p>New</p>
+            <p>Document</p>
+          </span>
+          <div class="add-item-icon-container shadow">
+            <fa icon="plus" />
           </div>
         </div>
       </div>
+      <document-card
+        v-for="(doc, index) in filteredDocuments"
+        :document="doc"
+        :key="index"
+      />
       <h1 class="m-auto" v-if="filteredDocuments.length === 0">
         No documents found...
       </h1>
@@ -51,38 +48,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
-import { DeltaToPlainText } from "@/utils/delta.utils";
+import DocumentCard from "@/components/documentCard.vue";
 import router from "@/router";
 
 export default defineComponent({
   name: "Documents",
+  components: {
+    DocumentCard
+  },
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = store.getters.getDocuments;
-    const length = 180;
+    const documents = ref<Array<doucmentType>>(store.getters.getDocuments);
 
-    // Editor
-    const OpenEditor = (Documentid: -1) => {
-      router.push({ name: "EditorView", params: { DocumentId: Documentid } });
+    // Create New Document
+    const NewDocument = () => {
+      store.dispatch("AddNewDocument");
+      // router.push({ name: "EditorView", query: { did: -1 } });
     };
 
-    onMounted(() => {
-      // change deltas, to text and shorten length to 40 charachters
-      // TODO fix doc type
-      documents.map(
-        (doc: any) =>
-          (doc.plainText = DeltaToPlainText(doc.delta)
-            .substring(0, length)
-            .concat("..."))
-      );
-    });
-
     const filteredDocuments = computed(() => {
-      let tempDocuments = documents;
+      let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: doucmentType) => {
@@ -110,13 +99,21 @@ export default defineComponent({
     return {
       searchValue,
       filteredDocuments,
-      OpenEditor
+      NewDocument
     };
   }
 });
 </script>
 
 <style scoped>
+.navbar > h1 {
+  color: grey;
+  padding-top: 4%;
+  margin: 0;
+  font-size: 1.8rem;
+  padding-left: 2%;
+  white-space: nowrap;
+}
 .wrap {
   /* margin: 50px 100px; */
   display: inline-block;
@@ -128,7 +125,7 @@ export default defineComponent({
 
 #document-search {
   height: 45px;
-  font-size: 34px;
+  font-size: 1.8rem;
   display: inline-block;
   font-family: "Lato";
   font-weight: 100;
@@ -164,81 +161,86 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #c58308;
-  color: white;
+  background: whitesmoke;
+  color: grey;
+  border-radius: 50%;
 }
 
-.doc-item {
+.doc-container {
+  flex-wrap: wrap;
+}
+
+.add-item-container {
   border: 1px solid #dfe1e5;
-  border-radius: 3px;
+  border-radius: 8px;
   box-shadow: none;
   cursor: pointer;
   opacity: 1;
   width: fit-content;
+  height: 208px;
   margin-bottom: 20px;
   margin-right: 20px;
   transition: all 0.5s;
 }
 
-.doc-item:hover {
+.add-item {
+  -webkit-box-align: initial;
+  align-items: initial;
+  width: 176px;
+  height: 208px;
+  border: none;
   cursor: pointer;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  color: rgb(255, 255, 255);
+  flex-direction: column;
+  padding: 24px 16px;
+  padding-top: 0;
+  transition: all 0.2s ease 0s;
+  border-radius: 8px;
+  position: relative;
+  background: #4b95b7;
+  display: flex;
+  justify-content: flex-start;
+  transition: all 0.5s;
 }
 
-.doc-item-thumbnail {
-  background: linear-gradient(45deg, white, whitesmoke);
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  height: 180px;
-  width: 208px;
-  background-repeat: no-repeat;
-  background-size: 208px auto;
-  border: none;
-  position: relative;
+.add-item:hover {
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  background: #4b95b7f3;
+}
+
+/* .add-item:hover .add-item-icon-container {
+  background: white;
+  color: tomato;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+} */
+
+.add-item span {
+  display: block;
+  font-size: 20px;
+  line-height: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  text-align: left;
+  margin-top: 15%;
+  /* text-align: center; */
+}
+
+.add-item span p {
+  margin: 0;
+}
+
+.add-item-icon-container {
+  min-width: 35px;
+  min-height: 35px;
+  margin: 13px auto 0px;
+  text-align: center;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
-  /* align-items: center; */
-  text-align: center;
-  padding: 6%;
-  font-size: 0.77em;
-  padding-top: 19%;
-}
-
-.doc-item-data-container {
-  border-top: 1px solid #e2e2e2;
-  padding: 16px 8px 14px 16px;
-  position: relative;
-}
-
-.doc-item-tittle {
-  color: #414549;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.15px;
-  line-height: 18px;
-  margin-left: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
-.doc-item-time-container {
-  color: #80868b;
-  display: inline-block;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-  line-height: 24px;
-  margin-left: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  white-space: nowrap;
-  width: 80%;
-}
-
-.doc-item-time-data {
-  margin-left: 6px;
-  font-weight: 500;
+  align-items: center;
+  padding: 8px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.5s;
 }
 </style>

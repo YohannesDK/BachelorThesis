@@ -104,12 +104,9 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import axios from 'axios';
-import { component } from "vue/types/umd";
 
 export default defineComponent({
   name: "Profile",
-  components: {},
-
   methods: {
     Logout(){
       localStorage.clear();

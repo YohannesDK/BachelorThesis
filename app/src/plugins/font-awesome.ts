@@ -15,7 +15,9 @@ import {
   faStickyNote,
   faQuestion,
   faLayerGroup,
-  faCalendarAlt
+  faCalendarAlt,
+  faEllipsisH,
+  faSignOutAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -35,7 +37,9 @@ library.add(
   faStickyNote,
   faQuestion,
   faLayerGroup,
-  faCalendarAlt
+  faCalendarAlt,
+  faEllipsisH,
+  faSignOutAlt
 );
 
 export { FontAwesomeIcon };

@@ -38,8 +38,10 @@ export default defineComponent({
     // Sets Editor Content
     const SetEditorContent = (ops: DeltaOperation[]) => {
       console.log(ops);
-      const delta = new Delta(ops);
-      Editor.setContents(delta);
+      if (ops.length) {
+        const delta = new Delta(ops);
+        Editor.setContents(delta);
+      }
     };
 
     const InitilizeDocment = () => {

@@ -59,7 +59,9 @@ export default defineComponent({
 
     beforeCreate(){
     if (localStorage.getItem('token') === null) {
-      this.$router.push("/login")
+      // this.$router.push("/login")
+      console.log("haha");
+      
     }
   },
 

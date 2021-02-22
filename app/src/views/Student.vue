@@ -47,13 +47,16 @@ export default defineComponent({
       role:'',
       fullname: '',
       id: '',
+      coursePass: '',
       courseBody: [] as any
     }
   },
 
     beforeCreate(){
     if (localStorage.getItem('token') === null) {
-      this.$router.push("/login")
+      // this.$router.push("/login")
+      console.log("haha");
+      
     }
   },
 

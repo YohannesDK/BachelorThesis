@@ -3,10 +3,10 @@ require('dotenv').config()
 module.exports = {
   development: {
     username: "root",
-    password: "root",
+    password: "myyoyodb8",
     database: "www",
     host: "localhost",
-    dialect: 'mysql'
+    dialect: "mysql"
   },
   test: {
     username: process.env.DB_USER,

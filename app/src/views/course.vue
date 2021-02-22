@@ -76,20 +76,16 @@
 </template>
 
 <script lang="ts">
+import router from "@/router";
 import { courseType } from "@/store/interfaces/course";
 import { defineComponent } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({
   name: "Course",
-  props: {
-    CourseId: {
-      type: Number
-    }
-  },
-
-  setup(props) {
+  setup() {
     const store = useStore();
-    const course: courseType = store.getters.getCoursebyId(props.CourseId);
+    const CourseId = Number(router.currentRoute.value.query.cid);
+    const course: courseType = store.getters.getCoursebyId(CourseId);
     const events = [
       {
         event: "Test",
