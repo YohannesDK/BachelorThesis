@@ -47,6 +47,7 @@ export default defineComponent({
       role:'',
       fullname: '',
       id: '',
+      coursePass: '',
       courseBody: [] as any
     }
   },
