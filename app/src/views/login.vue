@@ -68,7 +68,7 @@ import { checkLogin } from "@/services/api/login.service";
 import router from "@/router";
 export default defineComponent({
   name: "Login",
-    data() {
+  data() {
     return {
       input: {
         username: "",

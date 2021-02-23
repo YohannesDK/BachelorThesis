@@ -4,6 +4,12 @@ var app = express();
 var bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const dotenv = require("dotenv");
+const axios = require("axios");
+
+dotenv.config({
+    path: ".env"
+});
 
 var cors = require("cors");
 
@@ -23,6 +29,47 @@ app.use(session({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
+
+app.get("/api/register", (request, response) => {
+    axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
+        headers: {
+            "Authorization": "Bearer W3ycZBuvFezRCoasSpzvQRGD1pijYJPqWZi5CT1pbea",
+        }
+    }).then((res) => {
+        const register_info = res.data.items[0].answers;
+
+        const firstname = register_info[0].text;
+        const lastname = register_info[1].text;
+        const email = register_info[2].email;
+        const role = register_info[3].choice.label;
+        const username = register_info[4].text;
+        const password = register_info[5].text;
+        
+
+        models.users.findOne({where: {username: username} }).then(function (users){
+            
+            if(!users){
+                models.users.create({
+                    username: username,
+                    fullname: firstname + " " + lastname,
+                    password: bcrypt.hashSync(password, 10),
+                    role: role
+                });
+            }
+
+            if(users){
+                return response.json({
+                    title: "Fail",
+                    error: "Username is taken"
+                });
+            }
+
+        });
+        response.send(200);
+    }).catch((error) => {
+        console.error(error);
+    });
+});
 
 app.post("/api/users", (request, response) => {
 

@@ -6,6 +6,7 @@
 import router from "@/router";
 import { OnSubmitEvent } from "@typeform/embed";
 import { defineComponent, onMounted, ref } from "vue";
+import axios, { AxiosResponse } from "axios";
 
 export default defineComponent({
   name: "Register",
@@ -21,6 +22,10 @@ export default defineComponent({
           {
             size: 100,
             onSubmit: function(event: OnSubmitEvent) {
+              axios.get("/api/register", {}).then(res => {
+                console.log(res);
+              });
+
               console.log(event);
               console.log("Typeform successfully submitted");
               router.push({ path: "/login" });

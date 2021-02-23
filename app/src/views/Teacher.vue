@@ -6,14 +6,28 @@
       </h1>
     </div>
 
-
     <form @submit="createCourse">
-    <label>Create a class </label>
-    <input id="course" v-model="course" type="text" placeholder="Class Name">
-    <input id="shorthand" v-model="shorthand" type="text" placeholder="Class Shorthand">
-    <input id="coursePassword" v-model="coursePassword" type="text" placeholder="Course Password">
-    
-    <button> Create Class </button>
+      <label>Create a class </label>
+      <input
+        id="course"
+        v-model="course"
+        type="text"
+        placeholder="Class Name"
+      />
+      <input
+        id="shorthand"
+        v-model="shorthand"
+        type="text"
+        placeholder="Class Shorthand"
+      />
+      <input
+        id="coursePassword"
+        v-model="coursePassword"
+        type="text"
+        placeholder="Course Password"
+      />
+
+      <button>Create Class</button>
     </form>
 
     <div class="card-container d-flex">
@@ -39,63 +53,64 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
-import axios from 'axios';
+import axios from "axios";
 import AppVue from "../App.vue";
 import courseVue from "./course.vue";
 export default defineComponent({
   name: "Courses",
-    data(){
+  data() {
     return {
-      name: '',
-      role:'',
-      fullname: '',
-      id: '',
+      name: "",
+      role: "",
+      fullname: "",
+      id: "",
       courseBody: [] as any,
-      course: '',
-      shorthand: '',
-      coursePassword: ''
-    }
+      course: "",
+      shorthand: "",
+      coursePassword: ""
+    };
   },
 
-    beforeCreate(){
-    if (localStorage.getItem('token') === null) {
+  beforeCreate() {
+    if (localStorage.getItem("token") === null) {
       // this.$router.push("/login")
       console.log("haha");
-      
     }
   },
 
-
-
   created() {
-    axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
-    .then(response => {
-      this.name = response.data.user.username;
-      this.role = response.data.user.role;
-      this.fullname = response.data.user.fullname;
-      this.id = response.data.user.id;
-      console.log(response.data.courses)
-      for (let i = 0; i < response.data.courses.length; i++){
-        console.log(response.data.courses[i].body)
-        this.courseBody.push(response.data.courses[i])
-      }
-      console.log(this.courseBody[0].userId)
-    })
+    axios
+      .get("/api/userinfo", {
+        headers: { token: localStorage.getItem("token") }
+      })
+      .then(response => {
+        this.name = response.data.user.username;
+        this.role = response.data.user.role;
+        this.fullname = response.data.user.fullname;
+        this.id = response.data.user.id;
+        console.log(response.data.courses);
+        for (let i = 0; i < response.data.courses.length; i++) {
+          console.log(response.data.courses[i].body);
+          this.courseBody.push(response.data.courses[i]);
+        }
+        console.log(this.courseBody[0].userId);
+      });
   },
 
   methods: {
-      createCourse() {
-      axios.post('api/createCourse', {
-      userId: this.id,
-      course: this.course,
-      shorthand: this.shorthand,
-      coursePassword: this.coursePassword
-      }).then((response) => {
-        this.courseBody.push(response.data.courses.body)
-      })
-    },
+    createCourse() {
+      axios
+        .post("api/createCourse", {
+          userId: this.id,
+          course: this.course,
+          shorthand: this.shorthand,
+          coursePassword: this.coursePassword
+        })
+        .then(response => {
+          this.courseBody.push(response.data.courses.body);
+        });
+    }
   },
-
 
   setup() {
     const store = useStore();
@@ -104,7 +119,6 @@ export default defineComponent({
     const ToogleModal = () => {
       showModal.value = !showModal.value;
     };
-    
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
@@ -119,13 +133,6 @@ export default defineComponent({
     };
   }
 });
-
-
-
-
-
-
-
 </script>
 
 <style scoped>

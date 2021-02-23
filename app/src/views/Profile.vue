@@ -103,37 +103,40 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import axios from 'axios';
+import axios from "axios";
 
 export default defineComponent({
   name: "Profile",
   methods: {
-    Logout(){
+    Logout() {
       localStorage.clear();
-      this.$router.push("/login")
-    },
-  },
-
-  created(){
-    if (localStorage.getItem('token') === null) {
-      this.$router.push("/login")
+      this.$router.push("/login");
     }
   },
 
-  beforeCreate(){
-        axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
-    .then(response => {
-      this.name = response.data.user.username;
-      this.role = response.data.user.role;
-      this.fullname = response.data.user.fullname;
-      this.id = response.data.user.id;
-      console.log(response.data.courses)
-      for (let i = 0; i < response.data.courses.length; i++){
-        this.courseName.push(response.data.courses[i].body)
-      }
-    })
+  created() {
+    if (localStorage.getItem("token") === null) {
+      this.$router.push("/login");
+    }
   },
-  
+
+  beforeCreate() {
+    axios
+      .get("/api/userinfo", {
+        headers: { token: localStorage.getItem("token") }
+      })
+      .then(response => {
+        this.name = response.data.user.username;
+        this.role = response.data.user.role;
+        this.fullname = response.data.user.fullname;
+        this.id = response.data.user.id;
+        console.log(response.data.courses);
+        for (let i = 0; i < response.data.courses.length; i++) {
+          this.courseName.push(response.data.courses[i].body);
+        }
+      });
+  },
+
   setup() {
     const profileNav = ref<HTMLDivElement>();
     const showNav = ref(false);
@@ -166,20 +169,17 @@ export default defineComponent({
     const user = {
       username: "JohnDoe123",
       Firstname: "John",
-      Lastname: "Doe",  
+      Lastname: "Doe",
       email: "JohnDoe@gmail.com",
       mobile: "+47 95029950",
       Birthday: "12 June 2000",
       gender: "Male"
     };
-    
 
     onMounted(() => {
       console.log(profileNav);
     });
 
-
-    
     return {
       user,
       profileNav,
@@ -188,10 +188,10 @@ export default defineComponent({
       navContent,
       Active,
       navHeader,
-      name: '',
-      role:'',
-      fullname: '',
-      id: '',
+      name: "",
+      role: "",
+      fullname: "",
+      id: "",
       courseName: [] as any
     };
   }
