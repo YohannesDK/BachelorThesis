@@ -12,7 +12,7 @@
                 <img src="../assets/brand.svg" alt="logo" class="logo" />
               </div>
               <p class="login-card-description">Sign into your account</p>
-              <form @submit.prevent="login()">
+              <form @submit.prevent="loginUser()">
                 <div class="form-group">
                   <input
                     type="text"
@@ -63,34 +63,82 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
+import axios from "axios";
 import { checkLogin } from "@/services/api/login.service";
 import router from "@/router";
 export default defineComponent({
   name: "Login",
+    data() {
+    return {
+      input: {
+        username: "",
+        password: "",
+        error: ""
+      }
+    };
+  },
+  methods: {
+    loginUser() {
+      //Make post request to backend api/user which can be found in server/server.js
+      //The request to api/user runs a query and sends back a user
+      axios
+        .post("http://localhost:3000/api/user", {
+          username: this.username,
+          password: this.password
+        })
+        .then(response => {
+          //If the post request is successful
+          if (response.status === 200) {
+            // If the user is a student, redirect him to student page
+            if (response.data.role == "Student") {
+              // this.$store.commit("setAuthentication", "Student");
+              localStorage.setItem("token", response.data.token);
+              router.push("/Student");
+            }
+
+            // If the user is a teacher, redirect him to teacher page
+            if (response.data.role == "Teacher") {
+              // this.$store.commit("setAuthentication", "Student");
+              localStorage.setItem("token", response.data.token);
+              router.push("/Teacher");
+            }
+          }
+
+          // If the post request sends status 401, invalid credentials
+          // if ((response.data.title = "Login failed")) {
+          //   this.error = "invalid credentials";
+          // }
+
+          // if ((response.data.title = "User not found")) {
+          //   this.error = "invalid credentials";
+          // }
+        });
+    }
+  },
+  components: {},
   setup() {
     const store = useStore();
     const username = ref<string>("");
     const password = ref<string>("");
 
     // Login function
-    const login = () => {
-      const form = {
-        username: username.value,
-        password: password.value
-      };
-      const user = checkLogin(form);
-      console.log(user);
+    // const login = () => {
+    //   const form = {
+    //     username: username.value,
+    //     password: password.value
+    //   };
+    //   const user = checkLogin(form);
+    //   console.log(user);
 
-      if (user.length) {
-        store.dispatch("login");
-        store.dispatch("setUser", user);
-        router.push({ path: "/home" });
-      }
-    };
+    //   if (user.length) {
+    //     store.dispatch("login");
+    //     store.dispatch("setUser", user);
+    //     router.push({ path: "/home" });
+    //   }
+    // };
     return {
       username,
-      password,
-      login
+      password
     };
   }
 });
