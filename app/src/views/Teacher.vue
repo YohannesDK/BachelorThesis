@@ -60,7 +60,8 @@ export default defineComponent({
     beforeCreate(){
     if (localStorage.getItem('token') === null) {
       // this.$router.push("/login")
-      console.log("halla")
+      console.log("haha");
+      
     }
   },
 
@@ -73,17 +74,12 @@ export default defineComponent({
       this.role = response.data.user.role;
       this.fullname = response.data.user.fullname;
       this.id = response.data.user.id;
+      console.log(response.data.courses)
       for (let i = 0; i < response.data.courses.length; i++){
         console.log(response.data.courses[i].body)
         this.courseBody.push(response.data.courses[i])
       }
-      if (this.role == "Teacher"){
-        this.$router.push("/teacher")
-      }
-
-      if (this.role == "Student") {
-        this.$router.push("/student")
-      }
+      console.log(this.courseBody[0].userId)
     })
   },
 
@@ -112,7 +108,7 @@ export default defineComponent({
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", query: { cid: courseId } });
+      router.push({ name: "Course", params: { CourseId: courseId } });
     };
 
     return {
