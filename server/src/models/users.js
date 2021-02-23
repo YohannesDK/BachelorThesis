@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     role: DataTypes.STRING
   }, {
-    timestamps: false,
     sequelize,
     modelName: "users",
   });

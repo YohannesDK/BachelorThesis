@@ -6,12 +6,15 @@
       </h1>
     </div>
 
-
     <form @submit.prevent="joinCourse">
-    <input id="coursePass" type="text" v-model="coursePass" placeholder="Course Password">
-    <button>Join Course</button> <br>
+      <input
+        id="coursePass"
+        type="text"
+        v-model="coursePass"
+        placeholder="Course Password"
+      />
+      <button>Join Course</button> <br />
     </form>
-
 
     <div class="card-container d-flex">
       <div
@@ -36,58 +39,58 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
-import axios from 'axios';
+import axios from "axios";
 import AppVue from "../App.vue";
 import courseVue from "./course.vue";
 export default defineComponent({
   name: "Courses",
-    data(){
+  data() {
     return {
-      name: '',
-      role:'',
-      fullname: '',
-      id: '',
-      coursePass: '',
+      name: "",
+      role: "",
+      fullname: "",
+      id: "",
+      coursePass: "",
       courseBody: [] as any
-    }
+    };
   },
 
-    beforeCreate(){
-    if (localStorage.getItem('token') === null) {
+  beforeCreate() {
+    if (localStorage.getItem("token") === null) {
       // this.$router.push("/login")
       console.log("haha");
-      
     }
   },
 
-
-
   created() {
-    axios.get('/api/userinfo', { headers: {token: localStorage.getItem('token')}})
-    .then(response => {
-      this.name = response.data.user.username;
-      this.role = response.data.user.role;
-      this.fullname = response.data.user.fullname;
-      this.id = response.data.user.id;
-      console.log(response.data.courses)
-      for (let i = 0; i < response.data.courses.length; i++){
-        console.log(response.data.courses[i].body)
-        this.courseBody.push(response.data.courses[i])
-      }
-      console.log(this.courseBody[0].userId)
-    })
+    axios
+      .get("/api/userinfo", {
+        headers: { token: localStorage.getItem("token") }
+      })
+      .then(response => {
+        this.name = response.data.user.username;
+        this.role = response.data.user.role;
+        this.fullname = response.data.user.fullname;
+        this.id = response.data.user.id;
+        console.log(response.data.courses);
+        for (let i = 0; i < response.data.courses.length; i++) {
+          console.log(response.data.courses[i].body);
+          this.courseBody.push(response.data.courses[i]);
+        }
+        console.log(this.courseBody[0].userId);
+      });
   },
 
   methods: {
-    joinCourse(){
-     axios.get('/api/courseInfo', {params: {coursePass: this.coursePass}})
-    .then(response => {
-      this.courseBody.push(response.data.course)
-      console.log(this.courseBody)
-    })
+    joinCourse() {
+      axios
+        .get("/api/courseInfo", { params: { coursePass: this.coursePass } })
+        .then(response => {
+          this.courseBody.push(response.data.course);
+          console.log(this.courseBody);
+        });
     }
   },
-
 
   setup() {
     const store = useStore();
@@ -96,7 +99,6 @@ export default defineComponent({
     const ToogleModal = () => {
       showModal.value = !showModal.value;
     };
-    
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
@@ -111,10 +113,7 @@ export default defineComponent({
     };
   }
 });
-
 </script>
-
-
 
 <style scoped>
 .courses-container {
