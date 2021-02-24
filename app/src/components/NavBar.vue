@@ -111,11 +111,12 @@ export default defineComponent({
     const sidebar = ref<HTMLDivElement>();
     const showSideBar = ref<boolean>(true);
     const toogleSideBar = () => {
-      showSideBar.value
-        ? sidebar.value?.classList.add("active")
-        : sidebar.value?.classList.remove("active");
-
-      showSideBar.value = !showSideBar.value;
+      if (sidebar.value) {
+        showSideBar.value
+          ? sidebar.value.classList.add("active")
+          : sidebar.value.classList.remove("active");
+        showSideBar.value = !showSideBar.value;
+      }
     };
 
     const hide = computed(() => {
