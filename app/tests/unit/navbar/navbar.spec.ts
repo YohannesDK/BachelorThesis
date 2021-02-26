@@ -58,6 +58,14 @@ describe("Navbar - add new", () => {
     expect(addNewCourse.exists()).to.equal(true);
     expect(addNewCourse.text().toLowerCase()).to.equal("course");
   });
+
+  it("Dropdown should have a QuestionSet - option", () => {
+    const addQuestionSet = wrapper.find(
+      "[data-test-id='navbar-addNew-dropdown-QuestionSet']"
+    );
+    expect(addQuestionSet.exists()).to.equal(true);
+    expect(addQuestionSet.text().toLowerCase()).to.equal("question set");
+  });
 });
 
 describe("Navbar - routes", () => {
@@ -84,4 +92,5 @@ describe("Navbar - routes", () => {
   });
 
   // TODO - test routes, when they are clicked
+  // TODO - check visibiltiy on at different routes
 });

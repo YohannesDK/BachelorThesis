@@ -51,7 +51,10 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="">
+                  <a href=""
+                  v-test="{id : 'navbar-addNew-dropdown-QuestionSet'}"
+                  @click.prevent="AddNewQuestionSet()"
+                  >
                     <fa icon="question" class="sidebar-menu-faicons"></fa>
                     Question Set</a
                   >
@@ -148,6 +151,7 @@ export default defineComponent({
       console.log("Adding project");
     };
 
+    //user handling
     const user = computed(() => {
       return store.getters.getActiveUser;
     });
@@ -167,6 +171,13 @@ export default defineComponent({
       router.push({ name: "EditorView", query: { did: -1 } });
     };
 
+
+    //QuestionSet
+    const AddNewQuestionSet = () => {
+      console.log("Adding New");
+      router.push({path: "/questionset"}) 
+    }
+
     return {
       user,
       userEmpty,
@@ -175,7 +186,8 @@ export default defineComponent({
       toogleSideBar,
       showSideBar,
       addProject,
-      OpenEditor
+      OpenEditor,
+      AddNewQuestionSet
     };
   }
 });
