@@ -4,7 +4,11 @@
     <nav-bar v-if="showSideBar" @MoveBody="OnMoveBody" />
 
     <!-- page content -->
-    <div ref="appContainer" :class="{appFullWidth : showSideBar}" class="container-fluid appContainer">
+    <div
+      ref="appContainer"
+      :class="{ appFullWidth: showSideBar }"
+      class="container-fluid appContainer"
+    >
       <router-view />
     </div>
   </div>
@@ -29,13 +33,13 @@ export default defineComponent({
 
     const OnMoveBody = (showSideBar: boolean) => {
       if (appContainer.value) {
-        if (showSideBar){
-          appContainer.value.style.marginLeft = "250px"
+        if (showSideBar) {
+          appContainer.value.style.marginLeft = "250px";
         } else {
-          appContainer.value.style.marginLeft = "0"
+          appContainer.value.style.marginLeft = "0";
         }
       }
-    }
+    };
     return {
       appContainer,
       showSideBar,
