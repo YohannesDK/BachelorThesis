@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({extended : false}));
 app.get("/api/register", (request, response) => {
     axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
         headers: {
-            "Authorization": "Bearer W3ycZBuvFezRCoasSpzvQRGD1pijYJPqWZi5CT1pbea",
+            "Authorization": "Bearer " + process.env.TYPEFORM_ACCESS_TOKEN,
         }
     }).then((res) => {
         const register_info = res.data.items[0].answers;
@@ -99,8 +99,6 @@ app.post("/api/users", (request, response) => {
 
 app.post("/api/createCourse", (request, response) => {
 
-    console.log(request.body);
-
     models.users.findOne({where: {id: request.body.userId}}).then(function (users){
         models.courses.create({
             body: request.body.course,
@@ -114,7 +112,6 @@ app.post("/api/createCourse", (request, response) => {
 
 app.get("/api/courseInfo", (request, response) => {
 
-    console.log(request.query.coursePass);
     
     models.courses.findOne({where: {coursePassword: request.query.coursePass}}).then(function(course){
         if(!course){

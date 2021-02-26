@@ -12,7 +12,7 @@ import Quill, { DeltaOperation } from "quill";
 import Delta from "quill-delta";
 import MyQuill from "@/libs/myQuill/myquill";
 import { useStore } from "vuex";
-import { doucmentType } from "@/store/interfaces/document";
+import { documentType } from "@/store/interfaces/document";
 
 hljs.configure({
   languages: ["python"]
@@ -35,7 +35,7 @@ export default defineComponent({
     const store = useStore();
 
     // shared document referense
-    let Document: doucmentType;
+    let Document: documentType;
 
     // Editor container element
     const root = ref<HTMLElement | string>("");

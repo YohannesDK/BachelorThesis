@@ -77,7 +77,6 @@ export default defineComponent({
           console.log(response.data.courses[i].body);
           this.courseBody.push(response.data.courses[i]);
         }
-        console.log(this.courseBody[0].userId);
       });
   },
 

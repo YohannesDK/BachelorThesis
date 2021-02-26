@@ -271,6 +271,7 @@ export default defineComponent({
   line-height: 20px;
   color: #fff;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .login-card .forgot-password-link {

@@ -6,7 +6,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Welcome",
-    meta: { hidesidebar: false },
+    meta: { showSideBar: false },
     component: Welcome
   },
   {
@@ -47,28 +47,28 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/register",
     name: "Register",
-    meta: { hidesidebar: false },
+    meta: { showSideBar: false },
     component: () =>
       import(/* webpackChunkName: "register" */ "../views/register.vue")
   },
   {
     path: "/login",
     name: "Login",
-    meta: { hidesidebar: false },
+    meta: { showSideBar: false },
     component: () =>
-      import(/* webpackChunkName: "documents" */ "../views/login.vue")
+      import(/* webpackChunkName: "Login" */ "../views/login.vue")
   },
   {
     path: "/teacher",
     name: "Teacher",
     component: () =>
-      import(/* webpackChunkName: "documents" */ "../views/Teacher.vue")
+      import(/* webpackChunkName: "Teacher" */ "../views/Teacher.vue")
   },
   {
     path: "/student",
     name: "Student",
     component: () =>
-      import(/* webpackChunkName: "documents" */ "../views/Student.vue")
+      import(/* webpackChunkName: "Student" */ "../views/Student.vue")
   }
 ];
 
