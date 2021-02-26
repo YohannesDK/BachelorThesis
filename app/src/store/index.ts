@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { doucmentType } from "./interfaces/document";
+import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
 
 const store = createStore({
@@ -214,7 +214,7 @@ const store = createStore({
         tags: ["Test 1"],
         lastEdited: "5 Feb 2021"
       }
-    ] as doucmentType[],
+    ] as documentType[],
     courses: [
       {
         courseId: 0,
@@ -305,7 +305,7 @@ const store = createStore({
     },
     getDocmentbyId: state => (Documentid: number) => {
       return state.documents.find(
-        (doc: doucmentType) => doc.Documentid === Documentid
+        (doc: documentType) => doc.Documentid === Documentid
       );
     },
     getCoursebyId: state => (CourseId: number) => {

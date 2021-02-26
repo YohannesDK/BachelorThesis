@@ -1,5 +1,5 @@
 import { DeltaOperation } from "quill";
-export type doucmentType = {
+export type documentType = {
   Documentid: number;
   name: string;
   delta: Array<DeltaOperation>;

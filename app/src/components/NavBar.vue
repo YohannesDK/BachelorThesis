@@ -1,5 +1,7 @@
 <template>
-  <nav ref="sidebar" id="sidebar">
+  <nav ref="sidebar" id="sidebar"
+  v-test="{ id: 'navbar-container' }"
+  >
     <div class="sidebar-header">
       <h3 v-if="userEmpty">My Sidebar</h3>
       <h3 v-if="!userEmpty && user[0] !== undefined">{{ user[0].username }}</h3>
@@ -7,7 +9,9 @@
 
     <ul class="list-unstyled components">
       <div class="d-flex justify-content-center h-100 mb-1">
-        <div class="searchbar">
+        <div class="searchbar"
+        v-test="{ id: 'navbar-searchBar' }"
+        >
           <input
             class="search_input"
             type="text"
@@ -22,19 +26,26 @@
         <div class="addProject">
           <div class="add_project">Add New</div>
           <a href="#" class="add_icon" @click="addProject()"
+            v-test="{ id: 'navbar-addNew' }"
             ><fa icon="plus"></fa
           ></a>
           <div class="dropdowncontainer">
             <div class="add-project-dropdown-content card shadow">
-              <ul class="list-unstyled add-menu-dropdown">
+              <ul class="list-unstyled add-menu-dropdown"
+              v-test="{ id: 'navbar-addNew-dropdown' }" 
+              >
                 <li class="sidebar-list">
-                  <a href="" @click.prevent="OpenEditor()">
+                  <a href="" @click.prevent="OpenEditor()"
+                  v-test="{ id: 'navbar-addNew-dropdown-blank-document' }" 
+                  >
                     <fa icon="sticky-note" class="sidebar-menu-faicons"></fa>
                     Blank Document</a
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="">
+                  <a href=""
+                    v-test="{ id: 'navbar-addNew-dropdown-course' }" 
+                  >
                     <fa icon="book" class="sidebar-menu-faicons"></fa>
                     Course</a
                   >
@@ -58,28 +69,36 @@
       </div>
 
       <li class="sidebar-list">
-        <router-link to="/home">
+        <router-link to="/home"
+          v-test="{ id: 'navbar-routes-home' }" 
+        >
           <fa icon="home" class="sidebar-menu-faicons"></fa>
           <span>Home</span>
         </router-link>
       </li>
 
       <li class="sidebar-list">
-        <router-link to="/profile">
+        <router-link to="/profile"
+          v-test="{ id: 'navbar-routes-profile' }" 
+        >
           <fa icon="user" class="sidebar-menu-faicons"></fa>
           Profile
         </router-link>
       </li>
 
       <li class="sidebar-list">
-        <router-link to="/documents">
+        <router-link to="/documents"
+          v-test="{ id: 'navbar-routes-myDocument' }" 
+        >
           <fa icon="folder" class="sidebar-menu-faicons"></fa>
           My Documents
         </router-link>
       </li>
 
       <li class="sidebar-list">
-        <router-link to="/courses">
+        <router-link to="/courses"
+        v-test="{ id: 'navbar-routes-courses' }" 
+        >
           <fa icon="book" class="sidebar-menu-faicons"></fa>
           Courses
         </router-link>
@@ -90,10 +109,11 @@
       <fa icon="sign-out-alt"></fa>
     </div>
 
-    <div class="collapse_icon" v-if="showSideBar" @click="toogleSideBar">
+    <div class="collapse_icon" v-if="showSideBar" @click="toogleSideBar(), $emit('MoveBody', showSideBar)"
+    >
       <fa icon="compress-alt"></fa>
     </div>
-    <div class="expand_icon" v-if="!showSideBar" @click="toogleSideBar">
+    <div class="expand_icon" v-if="!showSideBar" @click="toogleSideBar(), $emit('MoveBody', showSideBar)">
       <fa icon="expand-alt"></fa>
     </div>
   </nav>
@@ -103,9 +123,12 @@
 import router from "@/router";
 import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
+import Test from "@/directives/test.directive.ts";
 
 export default defineComponent({
   name: "NavBar",
+  directives: { Test },
+  emits: ['MoveBody'],
   setup() {
     //SideBar
     const sidebar = ref<HTMLDivElement>();
@@ -116,13 +139,10 @@ export default defineComponent({
           ? sidebar.value.classList.add("active")
           : sidebar.value.classList.remove("active");
         showSideBar.value = !showSideBar.value;
+
       }
     };
 
-    const hide = computed(() => {
-      console.log(router.currentRoute.value.meta.showSideBar);
-      return router.currentRoute.value.meta.hidesidebar !== false;
-    });
 
     const addProject = () => {
       console.log("Adding project");
@@ -132,10 +152,9 @@ export default defineComponent({
       return store.getters.getActiveUser;
     });
 
-    console.log(user);
 
     const userEmpty = computed(() => {
-      return !Object.entries(user).length;
+      return Object.entries(user).length > 0;
     });
 
     const signout = () => {
@@ -153,7 +172,6 @@ export default defineComponent({
       user,
       userEmpty,
       signout,
-      hide,
       sidebar,
       toogleSideBar,
       showSideBar,
@@ -194,7 +212,7 @@ export default defineComponent({
   background: #353b48;
   color: #fff;
   transition: all 0.3s;
-  position: relative;
+  position: fixed;
 }
 
 #sidebar.active {
@@ -320,8 +338,8 @@ a:focus {
 .sign_out_icon {
   border: 0;
   position: absolute;
-  top: 1rem;
-  right: 6%;
+  top: 1.78rem;
+  right: 4%;
   min-width: 1.8rem;
   display: flex;
   justify-content: center;

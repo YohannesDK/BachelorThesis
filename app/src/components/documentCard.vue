@@ -55,7 +55,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
-import { doucmentType } from "@/store/interfaces/document";
+import { documentType } from "@/store/interfaces/document";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
 export default defineComponent({
@@ -63,7 +63,7 @@ export default defineComponent({
   directives: { Test },
   props: {
     document: {
-      type: Object as () => doucmentType,
+      type: Object as () => documentType,
       default: () => ({})
     }
   },

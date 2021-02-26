@@ -50,7 +50,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
-import { doucmentType } from "@/store/interfaces/document";
+import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
 import router from "@/router";
 
@@ -62,7 +62,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = ref<Array<doucmentType>>(store.getters.getDocuments);
+    const documents = ref<Array<documentType>>(store.getters.getDocuments);
 
     // Create New Document
     const NewDocument = () => {
@@ -74,7 +74,7 @@ export default defineComponent({
       let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
-        tempDocuments = tempDocuments.filter((doc: doucmentType) => {
+        tempDocuments = tempDocuments.filter((doc: documentType) => {
           return (
             doc.name
               .replace(/ /g, "")
