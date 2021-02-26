@@ -52,7 +52,6 @@ import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
-import router from "@/router";
 
 export default defineComponent({
   name: "Documents",
@@ -67,9 +66,9 @@ export default defineComponent({
     // Create New Document
     const NewDocument = () => {
       store.dispatch("AddNewDocument");
-      // router.push({ name: "EditorView", query: { did: -1 } });
     };
 
+    //for searching through document - name, tag, etc.
     const filteredDocuments = computed(() => {
       let tempDocuments = documents.value;
 

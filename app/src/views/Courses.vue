@@ -54,8 +54,7 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
 import axios from "axios";
-import AppVue from "../App.vue";
-import courseVue from "./course.vue";
+
 export default defineComponent({
   name: "Courses",
   data() {

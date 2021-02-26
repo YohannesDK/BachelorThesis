@@ -12,10 +12,9 @@ import Navbar from "@/components/NavBar.vue";
 // 5. navbar should have a Profile route
 // 6. navbar should have a My Documents route
 // 7. navbar should have a Courses route
-// 8. navbar should not be visible on welcome, register and login pages 
+// 8. navbar should not be visible on welcome, register and login pages
 
-
-const wrapper = shallowMount(Navbar)
+const wrapper = shallowMount(Navbar);
 
 describe("Navbar - container", () => {
   it("Navbar should exist", () => {
@@ -38,24 +37,28 @@ describe("Navbar - add new", () => {
   });
 
   it("Add new button should display a dropdown", () => {
-    const addNewDropdown = wrapper.find("[data-test-id='navbar-addNew-dropdown']");
+    const addNewDropdown = wrapper.find(
+      "[data-test-id='navbar-addNew-dropdown']"
+    );
     expect(addNewDropdown.exists()).to.equal(true);
   });
 
   it("Dropdown should have a Blank Document - option", () => {
-    const addNewBlankDocument= wrapper.find("[data-test-id='navbar-addNew-dropdown-blank-document']");
+    const addNewBlankDocument = wrapper.find(
+      "[data-test-id='navbar-addNew-dropdown-blank-document']"
+    );
     expect(addNewBlankDocument.exists()).to.equal(true);
-    expect(addNewBlankDocument.text().toLowerCase()).to.equal("blank document")
+    expect(addNewBlankDocument.text().toLowerCase()).to.equal("blank document");
   });
 
   it("Dropdown should have a Course - option", () => {
-    const addNewCourse= wrapper.find("[data-test-id='navbar-addNew-dropdown-course']");
+    const addNewCourse = wrapper.find(
+      "[data-test-id='navbar-addNew-dropdown-course']"
+    );
     expect(addNewCourse.exists()).to.equal(true);
-    expect(addNewCourse.text().toLowerCase()).to.equal("course")
+    expect(addNewCourse.text().toLowerCase()).to.equal("course");
   });
-
 });
-
 
 describe("Navbar - routes", () => {
   it("Navbar should have a home/dashboard route", () => {
@@ -69,7 +72,9 @@ describe("Navbar - routes", () => {
   });
 
   it("Navbar should have a My Documents route", () => {
-    const mydocumentsRoute = wrapper.find("[data-test-id='navbar-routes-myDocument']");
+    const mydocumentsRoute = wrapper.find(
+      "[data-test-id='navbar-routes-myDocument']"
+    );
     expect(mydocumentsRoute.exists()).to.equal(true);
   });
 
@@ -78,7 +83,5 @@ describe("Navbar - routes", () => {
     expect(coursesroute.exists()).to.equal(true);
   });
 
-  
   // TODO - test routes, when they are clicked
 });
-

@@ -3,7 +3,6 @@ import { shallowMount } from "@vue/test-utils";
 import documentCard from "@/components/documentCard.vue";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import { dummyDocument } from "./documentCard.utils";
-import { createApp } from "vue";
 
 // documentCard spec
 // 1. document card should have a thumbnail,
@@ -12,11 +11,10 @@ import { createApp } from "vue";
 // 3. document card should contain "last edited" part, containing exactly that
 // 4. document card should have a "more" button, which displays a dropdown menu onclick
 
-
 // wrapper around our component
 const wrapper = shallowMount(documentCard, {
-  props: { document: dummyDocument },
-})
+  props: { document: dummyDocument }
+});
 
 describe("document card - container", () => {
   it("Document card container should exist", () => {

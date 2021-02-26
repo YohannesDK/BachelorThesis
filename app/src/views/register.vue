@@ -6,7 +6,7 @@
 import router from "@/router";
 import { OnSubmitEvent } from "@typeform/embed";
 import { defineComponent, onMounted, ref } from "vue";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export default defineComponent({
   name: "Register",
