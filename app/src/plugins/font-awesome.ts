@@ -18,7 +18,8 @@ import {
   faCalendarAlt,
   faEllipsisH,
   faSignOutAlt,
-  faMinusSquare,
+  faMinusCircle,
+  faTimes,
   faCheckSquare,
   faDotCircle,
   faParagraph
@@ -44,7 +45,8 @@ library.add(
   faCalendarAlt,
   faEllipsisH,
   faSignOutAlt,
-  faMinusSquare,
+  faMinusCircle,
+  faTimes,
   faCheckSquare,
   faDotCircle,
   faParagraph

@@ -2,17 +2,21 @@
   <div
     class="question-card card"
     :class="{ shadow: showSideBar }"
-    v-test="{ id: 'question-set-card-container' }"
+    v-test="{ id: 'question-card-container' }"
     @click="$emit('focusChange')"
   >
-    <div class="question-card-inner" v-if="QuestionType === 0">
+    <div
+      class="question-card-inner"
+      v-if="QuestionType === 0"
+      v-test="{ id: 'question-card-type-ShortText' }"
+    >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
         >
-          <fa icon="minus-square" />
+          <fa icon="times" />
         </div>
       </div>
       <div class="question-card-question-answer-container">
@@ -25,6 +29,7 @@
                     class="question-input"
                     placeholder="Enter Question"
                     v-model="Question"
+                    v-test="{ id: 'question-card-type-Question' }"
                   />
                 </div>
               </div>
@@ -38,6 +43,7 @@
                     class="question-input"
                     placeholder="Enter Answer"
                     v-model="ShortAnswer"
+                    v-test="{ id: 'question-card-type-Answer' }"
                   />
                 </div>
               </div>
@@ -47,7 +53,11 @@
       </div>
     </div>
 
-    <div class="question-card-inner" v-if="QuestionType === 1">
+    <div
+      class="question-card-inner"
+      v-if="QuestionType === 1"
+      v-test="{ id: 'question-card-type-LongText' }"
+    >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
         <div
@@ -67,6 +77,7 @@
                   class="question-input longText-input"
                   placeholder="Enter Question"
                   v-model="Question"
+                  v-test="{ id: 'question-card-type-Question' }"
                 />
               </div>
             </div>
@@ -83,6 +94,7 @@
                   rows="1"
                   placeholder="Enter Answer"
                   v-model="LongTextAnswer"
+                  v-test="{ id: 'question-card-type-Answer' }"
                 ></textarea>
               </div>
             </div>
@@ -91,7 +103,11 @@
       </div>
     </div>
 
-    <div class="question-card-inner" v-if="QuestionType === 2">
+    <div
+      class="question-card-inner"
+      v-if="QuestionType === 2"
+      v-test="{ id: 'question-card-type-TrueFalse' }"
+    >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
         <div
@@ -110,6 +126,7 @@
                   class="question-input longText-input"
                   placeholder="Enter Statement"
                   v-model="Question"
+                  v-test="{ id: 'question-card-type-Question' }"
                 />
               </div>
             </div>
@@ -121,6 +138,7 @@
           class="true-false-card card"
           :class="{ 'shadow bg-success': TrueFalseAnswer === 'True' }"
           @click="TrueFalseHandler('True')"
+          v-test="{ id: 'question-card-type-Answer' }"
         >
           True
         </div>
@@ -128,13 +146,18 @@
           class="true-false-card card"
           :class="{ 'shadow bg-success': TrueFalseAnswer === 'False' }"
           @click="TrueFalseHandler('False')"
+          v-test="{ id: 'question-card-type-Answer' }"
         >
           False
         </div>
       </div>
     </div>
 
-    <div class="question-card-inner" v-if="QuestionType === 3">
+    <div
+      class="question-card-inner"
+      v-if="QuestionType === 3"
+      v-test="{ id: 'question-card-type-MultipleChoice' }"
+    >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
         <div
@@ -153,6 +176,7 @@
                   class="question-input longText-input"
                   placeholder="Enter Statement"
                   v-model="Question"
+                  v-test="{ id: 'question-card-type-Question' }"
                 />
               </div>
             </div>
@@ -165,6 +189,7 @@
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 0 }"
             @click.self="MultipleChoiceHandler($event, 0)"
+            v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">Enter Answer</p>
           </div>
@@ -172,6 +197,7 @@
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 1 }"
             @click.self="MultipleChoiceHandler($event, 1)"
+            v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">Enter Answer</p>
           </div>
@@ -181,6 +207,7 @@
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 2 }"
             @click.self="MultipleChoiceHandler($event, 2)"
+            v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">Enter Answer</p>
           </div>
@@ -188,6 +215,7 @@
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 3 }"
             @click.self="MultipleChoiceHandler($event, 3)"
+            v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">Enter Answer</p>
           </div>
@@ -197,11 +225,15 @@
 
     <div
       class="question-card-sideBar"
-      v-test="{ id: 'question-set-card-container' }"
+      v-test="{ id: 'question-card-sideBar' }"
       :class="{ 'showSideBar shadow': showSideBar }"
     >
       <ul class="list-unstyled mb-0">
-        <li class="add-new-question" @click="$emit('AddNew')">
+        <li
+          class="add-new-question"
+          @click="$emit('AddNew')"
+          v-test="{ id: 'question-card-sideBar-option-AddNew' }"
+        >
           <fa icon="plus" />
           <div class="tooltip">
             <span class="tooltiptext">New Question</span>
@@ -210,6 +242,7 @@
         <li
           :class="{ 'question-card-questionType': QuestionType === 0 }"
           @click="ChangeQuestionType(0)"
+          v-test="{ id: 'question-card-sideBar-option-ShortText' }"
         >
           <fa icon="question" />
           <div class="tooltip">
@@ -219,6 +252,7 @@
         <li
           :class="{ 'question-card-questionType': QuestionType === 1 }"
           @click="ChangeQuestionType(1)"
+          v-test="{ id: 'question-card-sideBar-option-LongText' }"
         >
           <fa icon="paragraph" />
           <div class="tooltip">
@@ -228,6 +262,7 @@
         <li
           :class="{ 'question-card-questionType': QuestionType === 2 }"
           @click="ChangeQuestionType(2)"
+          v-test="{ id: 'question-card-sideBar-option-TrueFalse' }"
         >
           <fa icon="dot-circle" />
           <div class="tooltip">
@@ -237,6 +272,7 @@
         <li
           :class="{ 'question-card-questionType': QuestionType === 3 }"
           @click="ChangeQuestionType(3)"
+          v-test="{ id: 'question-card-sideBar-option-MultipleChoice' }"
         >
           <fa icon="check-square" />
           <div class="tooltip">

@@ -1,4 +1,3 @@
-import { useStore } from "vuex";
 import store from "@/store/index";
 
 export function checkLogin(form: any) {
