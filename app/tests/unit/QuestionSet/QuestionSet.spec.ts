@@ -36,9 +36,7 @@ describe("Question Set - Tittle, Description and Save", () => {
 
   it("Question Set should have saved status as true when save is clicked", () => {
     const QSSave = wrapper.find("[data-test-id='qs-SaveBtn']");
-    console.log(wrapper.vm.Data.saved);
     QSSave.trigger("click");
-    console.log(wrapper.vm.Data.saved);
     expect(wrapper.vm.Data.saved).to.equal(true);
   });
 });

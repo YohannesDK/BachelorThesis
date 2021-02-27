@@ -151,7 +151,7 @@ export default defineComponent({
         } catch {
           // TODO: Error with testing, everything works but when running this in node
           //       it errors out, so i catch for now to avoid nasty output
-          console.log("error");
+          console.error("Undefined");
         }
       });
     };
