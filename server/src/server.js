@@ -14,7 +14,7 @@ dotenv.config({
 var cors = require("cors");
 
 const models = require("./models/index.js");
-const { response } = require("express");
+const { response, json } = require("express");
 
 app.use(cors());
 
@@ -117,6 +117,11 @@ app.get("/api/courseInfo", (request, response) => {
     console.log(request.query.coursePass);
     
     models.courses.findOne({where: {coursePassword: request.query.coursePass}}).then(function(course){
+        console.log("THIS IS MY USERID LOL" + request.query.userId)
+        models.StudentCourseJunction.create({
+            userId: request.query.userId,
+            courseId: course.id
+        })
         if(!course){
             return response.json({
                 title: "Course Not Found",
@@ -181,6 +186,7 @@ app.get("/api/userinfo", (request, response, next) =>{
     
     let token = request.headers.token;
     jwt.verify(token, "secretkey", (err, decoded )=> {
+        
 
         if(err) return response.status(401).json({
             title: "unauthorized",
@@ -197,6 +203,52 @@ app.get("/api/userinfo", (request, response, next) =>{
                 });
 
             });
+        }).catch(function(err){
+            console.log(err);
+        });
+    });
+});
+
+
+
+app.get("/api/studentCourse", (request, response, next) =>{
+
+    let courseList = []
+    
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", (err, decoded )=> {
+
+
+        const id = decoded.id
+        const username = decoded.username
+        const fullname = decoded.fullname
+        const role = decoded.role
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
+
+        models.StudentCourseJunction.findAll({where: {userId: decoded.id} }).then(function (stud){
+            for(let i = 0; i < stud.length; i++) {
+
+                models.courses.findOne({where: {id: stud[i].courseId}}).then(function (courses){
+                    courseList.push(courses.dataValues)
+                });
+            }
+            const greet = function() {
+                return response.json({
+                    title: "Fetch course info",
+                    stud,
+                    id,
+                    username,
+                    fullname,
+                    role,
+                    courseList
+                });
+            }
+
+            setTimeout(greet, 100)
+
         }).catch(function(err){
             console.log(err);
         });
