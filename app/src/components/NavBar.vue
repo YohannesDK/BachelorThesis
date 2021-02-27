@@ -51,9 +51,10 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href=""
-                  v-test="{id : 'navbar-addNew-dropdown-QuestionSet'}"
-                  @click.prevent="AddNewQuestionSet()"
+                  <a
+                    href=""
+                    v-test="{ id: 'navbar-addNew-dropdown-QuestionSet' }"
+                    @click.prevent="AddNewQuestionSet()"
                   >
                     <fa icon="question" class="sidebar-menu-faicons"></fa>
                     Question Set</a
@@ -171,12 +172,11 @@ export default defineComponent({
       router.push({ name: "EditorView", query: { did: -1 } });
     };
 
-
     //QuestionSet
     const AddNewQuestionSet = () => {
       console.log("Adding New");
-      router.push({path: "/questionset"}) 
-    }
+      router.push({ path: "/AddQuestionSet" });
+    };
 
     return {
       user,

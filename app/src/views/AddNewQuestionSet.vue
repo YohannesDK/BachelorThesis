@@ -7,20 +7,23 @@
             <span>Create a new Question Set</span>
           </div>
           <div class="QuestionSetHeader-Status">
-            <span>Unsaved</span>
+            <span>{{ Data.saved ? "Saved" : "Unsaved" }}</span>
           </div>
         </div>
         <div class="QuestionSetHeader-Button">
-          <button type="button" class="btn">Create</button>
-        </div> 
+          <button type="button" class="btn" @click="Save()">Save</button>
+        </div>
       </div>
       <div class="QuestionSetHeader-content">
-
         <div class="QuestionSetHeader-tittle-input">
           <div class="wordside" style="position:relative;">
             <div class="question-input-container">
               <div class="question-input-inner">
-                <input class="question-input" placeholder="Enter tittle">
+                <input
+                  class="question-input"
+                  placeholder="Enter tittle"
+                  v-model="Tittle"
+                />
               </div>
             </div>
           </div>
@@ -30,7 +33,11 @@
           <div class="wordside" style="position:relative;">
             <div class="question-input-container">
               <div class="question-input-inner">
-                <input class="question-input" placeholder="Enter description">
+                <input
+                  class="question-input"
+                  placeholder="Enter description"
+                  v-model="Desc"
+                />
               </div>
             </div>
           </div>
@@ -38,77 +45,113 @@
       </div>
     </div>
   </div>
-  <div class="queston-set-card-container container m-auto d-flex flex-column align-items-center">
+  <div
+    class="queston-set-card-container container m-auto d-flex flex-column align-items-center"
+  >
     <question-set-card
-      ref="questionCards"
-      v-for="(question, index) in questionlist" :key="index" 
+      :ref="
+        el => {
+          questionCards[index] = el;
+        }
+      "
+      v-for="(question, index) in questionlist"
+      :key="index"
       :focus="question.focus"
       :index="index"
       @AddNew="OnAddNew()"
       @delete="OnDelete(index)"
-      @focusChange="OnfocusChange(index)" 
+      @focusChange="OnfocusChange(index)"
     />
   </div>
 </template>
 
 <script lang="ts">
 // TODO - add animations later - https://codepen.io/Takumari85/pen/RaYwpJ
-import {defineComponent, ref} from 'vue'
-import QuestionSetCard  from "@/components/QuestionSetCard.vue";
+import { defineComponent, onBeforeUpdate, ref } from "vue";
+import QuestionSetCard from "@/components/QuestionSetCard.vue";
 export default defineComponent({
-  name: "QuestionSetView",
+  name: "AddNewQuestionSet",
   components: {
     QuestionSetCard
   },
   setup() {
-    const questionCards = ref<any>();
+    const questionCards = ref<Array<any>>([]);
     const focusIndex = ref<number>(0);
+    const Tittle = ref<string>("");
+    const Desc = ref<string>("");
     const questionlist = ref<Array<any>>([
-        {
-          dummy: "haha 1",
-          focus: true,
-        },
-        {
-          dummy: "haha 2",
-          focus: false,
-        },
-      ]);
-    
+      {
+        focus: true
+      },
+      {
+        focus: false
+      }
+    ]);
+
+    const Data = ref({
+      tittle: Tittle.value,
+      desc: Desc.value,
+      saved: false,
+      QuestionSet: questionlist.value
+    });
+
+    onBeforeUpdate(() => {
+      questionCards.value = [];
+    });
+
     // Change between question cards
     const OnfocusChange = (index: number) => {
       questionlist.value[focusIndex.value].focus = false;
-      focusIndex.value = index
+      focusIndex.value = index;
       questionlist.value[focusIndex.value].focus = true;
-    }
+    };
 
     const OnAddNew = () => {
       questionlist.value.push({
-        dummy: "haha 3",
-        focus: false,
-      })
-    }
+        focus: false
+      });
+    };
 
     const OnDelete = (index: number) => {
       if (index !== 0) {
-        questionlist.value = [...questionlist.value.slice(0, index), ...questionlist.value.slice(index + 1)]
-      }else {
+        questionlist.value = [
+          ...questionlist.value.slice(0, index),
+          ...questionlist.value.slice(index + 1)
+        ];
+        questionCards.value = [
+          ...questionCards.value.slice(0, index),
+          ...questionCards.value.slice(index + 1)
+        ];
+      } else {
         OnfocusChange(0);
       }
-    }
-    
+    };
+
+    const Save = () => {
+      Data.value.saved = true;
+      questionCards.value.forEach((ele: any) => {
+        const questionData = ele.getQuestion.call();
+        console.log(questionData);
+      });
+    };
+
     return {
       OnAddNew,
       OnDelete,
       questionCards,
       questionlist,
-      OnfocusChange
-    }
+      OnfocusChange,
+      Save,
+      Tittle,
+      Desc,
+      Data
+    };
   }
-})
+});
 </script>
 
 <style scoped>
-body{
+body {
   background: whitesmoke;
 }
 .QuestionSetHeader {
@@ -134,18 +177,18 @@ body{
   min-width: 14.25rem;
 }
 
-.QuestionSetHeader-Tittle{
+.QuestionSetHeader-Tittle {
   font-weight: 700;
   font-size: 1.25rem;
   line-height: 1.2;
-  margin: .25rem 0;
+  margin: 0.25rem 0;
   white-space: nowrap;
 }
 
-.QuestionSetHeader-Status{
+.QuestionSetHeader-Status {
   color: #939bb4;
-  margin: .25rem 0;
-  font-size: .875rem;
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
   line-height: 1.285714285714286;
   font-weight: 600;
   white-space: nowrap;
@@ -169,18 +212,18 @@ body{
 }
 
 .question-input {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    border-left: none;
-    border-top: none;
-    border-right: none;
-    width: 40%;
-    margin-bottom: 4%;
-    outline: none;
-    border-bottom: 2px solid whitesmoke;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  width: 40%;
+  margin-bottom: 4%;
+  outline: none;
+  border-bottom: 2px solid whitesmoke;
 }
 </style>

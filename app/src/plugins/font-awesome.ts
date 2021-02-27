@@ -20,7 +20,7 @@ import {
   faSignOutAlt,
   faMinusSquare,
   faCheckSquare,
-  faDotCircle, 
+  faDotCircle,
   faParagraph
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
