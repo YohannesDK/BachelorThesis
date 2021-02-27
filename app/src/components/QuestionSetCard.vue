@@ -64,7 +64,7 @@
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
         >
-          <fa icon="minus-square" />
+          <fa icon="times" />
         </div>
       </div>
 
@@ -114,7 +114,7 @@
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
         >
-          <fa icon="minus-square" />
+          <fa icon="times" />
         </div>
       </div>
       <div class="true-false-question-container">
@@ -164,7 +164,7 @@
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
         >
-          <fa icon="minus-square" />
+          <fa icon="times" />
         </div>
       </div>
       <div class="true-false-question-container">
