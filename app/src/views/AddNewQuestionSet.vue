@@ -83,6 +83,7 @@
 import { defineComponent, onBeforeUpdate, ref } from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
+import router from "@/router";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -103,10 +104,11 @@ export default defineComponent({
     ]);
 
     const Data = ref({
-      tittle: Tittle.value,
-      desc: Desc.value,
+      QSID: Number(router.currentRoute.value.query.QSID),
+      tittle: "",
+      desc: "",
       saved: false,
-      QuestionSet: questionlist.value
+      QuestionSet: [] as any[]
     });
 
     onBeforeUpdate(() => {
@@ -143,17 +145,20 @@ export default defineComponent({
     };
 
     const Save = () => {
+      Data.value.tittle = Tittle.value
+      Data.value.desc = Desc.value
       Data.value.saved = true;
       questionCards.value.forEach((ele: any) => {
         try {
           const questionData = ele.getQuestion.call();
-          console.log(questionData);
+          Data.value.QuestionSet.push(questionData);
         } catch {
           // TODO: Error with testing, everything works but when running this in node
           //       it errors out, so i catch for now to avoid nasty output
           console.error("Undefined");
         }
       });
+      console.log(Data.value);
     };
 
     return {

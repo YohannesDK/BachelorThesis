@@ -148,7 +148,8 @@ const store = createStore({
           { insert: "\n\n\n\n\n\n\n" }
         ],
         tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
-        lastEdited: "2 Feb. 2021"
+        lastEdited: "2 Feb. 2021",
+        QuestionSetID: -1
       },
       {
         Documentid: 1,
@@ -180,7 +181,8 @@ const store = createStore({
           }
         ],
         tags: ["Test 1"],
-        lastEdited: "3 Feb 2021"
+        lastEdited: "3 Feb 2021",
+        QuestionSetID: -1
       },
       {
         Documentid: 3,
@@ -212,7 +214,8 @@ const store = createStore({
           }
         ],
         tags: ["Test 1"],
-        lastEdited: "5 Feb 2021"
+        lastEdited: "5 Feb 2021",
+        QuestionSetID: -1
       }
     ] as documentType[],
     courses: [
@@ -260,6 +263,7 @@ const store = createStore({
         role: "student"
       }
     ],
+    QuestionSets : [],
     activeUser: {}
   },
   mutations: {
@@ -278,8 +282,20 @@ const store = createStore({
         name: "Edit Tittle...",
         delta: [],
         tags: [],
-        lastEdited: "11 Feb 2021"
+        lastEdited: "11 Feb 2021",
+        QuestionSetID: -1
       });
+    },
+    AddNewQuestionSet: (state, QuestionSet) => {
+      state.documents.push(QuestionSet);
+    },
+    SetDocumentQSID: (state, documentID: number) => {
+      const doc = state.documents.find(
+        (doc: documentType) => doc.Documentid === documentID
+      )
+      if (doc) {
+        doc.QuestionSetID = state.QuestionSets.length
+      }
     }
   },
   actions: {
@@ -294,6 +310,12 @@ const store = createStore({
     },
     AddNewDocument: context => {
       context.commit("AddNewDocument");
+    },
+    SetDocumentQSID: (context, documentID: number) => {
+      context.commit("SetDocumentQSID", documentID)
+    },
+    AddNewQuestionSet: (context, Data: any) => {
+      context.commit("AddNewQuestionSet", Data)
     }
   },
   getters: {
@@ -321,6 +343,17 @@ const store = createStore({
     },
     getActiveUser: state => {
       return state.activeUser;
+    },
+    getAllQuestionSets: state => {
+      return state.QuestionSets
+    },
+    getQuestionSetById: state => (QSID: number) => {
+      return state.QuestionSets.find(
+        (questionSet: any) => questionSet.QSID === QSID
+      );
+    },
+    getQuestionSetLength: state => {
+      return state.QuestionSets.length
     }
   },
   modules: {}
