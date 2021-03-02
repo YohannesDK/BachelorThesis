@@ -48,10 +48,12 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
+import axios from "axios";
 import router from "@/router";
 
 export default defineComponent({
@@ -62,15 +64,45 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = ref<Array<doucmentType>>(store.getters.getDocuments);
+    const documents = ref<Array<doucmentType>>([]);
+    // const testList = []
+    let userId = 0;
+
+      //Get request to get all the documents
+      axios
+      .get("/api/documentInfo", {
+        headers: { token: localStorage.getItem("token") }
+      })
+      .then(response => {
+        userId = response.data.document[0].userId
+        // testList.push(response.data.document)
+        documents.value = response.data.document
+        });
 
     // Create New Document
     const NewDocument = () => {
-      store.dispatch("AddNewDocument");
+
+      
+      //Post request to create an empty document
+      axios
+        .post("api/createDocument", {
+          userId: userId,
+          body: "",
+          title: "test title"
+        })
+        .then(response => {
+          console.log("cute")
+        });
+
+        // store.dispatch("AddNewDocument");
       // router.push({ name: "EditorView", query: { did: -1 } });
     };
 
     const filteredDocuments = computed(() => {
+
+
+
+
       let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
@@ -99,7 +131,7 @@ export default defineComponent({
     return {
       searchValue,
       filteredDocuments,
-      NewDocument
+      NewDocument,
     };
   }
 });

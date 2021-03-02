@@ -63,8 +63,8 @@ export default defineComponent({
   directives: { Test },
   props: {
     document: {
-      type: Object as () => doucmentType,
-      default: () => ({})
+      type: Object as () => any,
+      default: () => ({}) as any
     }
   },
   setup(props) {
@@ -80,13 +80,15 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
+    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
-      router.push({ name: "EditorView", query: { did: DocumentId } });
+      router.push({ name: "EditorView", query: { did: props.document.id } });
     };
 
     onMounted(() => {
-      if (props.document.delta) {
-        documentText.value = DeltaToPlainText(props.document.delta)
+      //This is the preview text inside document cards
+      if (JSON.parse(props.document.body)) {
+        documentText.value = DeltaToPlainText(JSON.parse(props.document.body).ops)
           .substring(0, documentTextLength)
           .concat("...");
       }

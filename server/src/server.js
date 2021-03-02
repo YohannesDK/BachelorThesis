@@ -14,11 +14,12 @@ dotenv.config({
 var cors = require("cors");
 
 const models = require("./models/index.js");
-const { response, json } = require("express");
+const { response, json, request } = require("express");
 
 app.use(cors());
 
 // session handling
+//Cookie length abit lengthy, need to change
 app.use(session({
     secret:"user_handling",
     resave: false,
@@ -30,6 +31,7 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 
+//This api call registers users
 app.get("/api/register", (request, response) => {
     axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
         headers: {
@@ -71,6 +73,7 @@ app.get("/api/register", (request, response) => {
     });
 });
 
+//This api call creates a user, probably swapped out for the api above.
 app.post("/api/users", (request, response) => {
 
     // User enters desired username, we look that username up in the database
@@ -97,6 +100,7 @@ app.post("/api/users", (request, response) => {
     });
 });
 
+//This api call creates a course
 app.post("/api/createCourse", (request, response) => {
 
     console.log(request.body);
@@ -112,12 +116,79 @@ app.post("/api/createCourse", (request, response) => {
 
 });
 
+//This api call creates a document
+app.post("/api/createDocument", (request, response) => {
+
+    console.log(request.body);
+
+        models.document.create({
+            body: request.body.body,
+            userId: request.body.userId,
+            title: request.body.title
+        });
+
+});
+
+
+//This api call saves / updates document content
+app.post("/api/alterDocument", (request, response) => {
+
+    models.document.update({body: request.body.body, title: request.body.title}, {where: {id: request.body.docID}})
+
+
+})
+
+
+//This api call retrieves all documents that belong to one user
+app.get("/api/documentInfo", (request, response) => {
+
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", (err, decoded )=> {
+        
+
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
+
+        models.document.findAll({where: {userId: decoded.id}}).then(function(document){
+            return response.json({
+                title: "fetch course",
+                document: document,
+                userId: decoded.id
+            })
+        })
+    });
+
+})
+
+//This api call retrieves one document based on query ID.
+//TODO: authorize this api call
+app.get("/api/fetchDoc", (request, response) => {
+
+        console.log(request.query.docId)        
+
+        models.document.findOne({where: {id: request.query.docId}}).then(function(document){
+            return response.json({
+                title: "fetch course",
+                document: document,
+
+            })
+        })
+
+
+})
+
+
+
+//This api call is called when a user joins a course.
+//We retrieve the course he wants to enter based on the course password
+//Then we add an entry to the StudentCourseJunction table that links that student to that course he joined
+//So that next time he logs in, we can look up his courses in the StudentCourseJunction table
 app.get("/api/courseInfo", (request, response) => {
 
-    console.log(request.query.coursePass);
     
     models.courses.findOne({where: {coursePassword: request.query.coursePass}}).then(function(course){
-        console.log("THIS IS MY USERID LOL" + request.query.userId)
         models.StudentCourseJunction.create({
             userId: request.query.userId,
             courseId: course.id
@@ -141,7 +212,7 @@ app.get("/api/courseInfo", (request, response) => {
 
 
 
-
+//This api call is called when users log in.
 app.post("/api/user", function(request, response) {
 
     models.users.findOne({where: {username: request.body.username} }).then(function (users){
@@ -181,7 +252,7 @@ app.post("/api/user", function(request, response) {
 });
 
 
-//Get user info
+//This api call gets user info
 app.get("/api/userinfo", (request, response, next) =>{
     
     let token = request.headers.token;
@@ -210,8 +281,9 @@ app.get("/api/userinfo", (request, response, next) =>{
 });
 
 
-
-app.get("/api/studentCourse", (request, response, next) =>{
+//This api call retrieves all the courses that belong to one user.
+//It is abit messy but it works
+app.get("/api/studentCourse", (request, response) =>{
 
     let courseList = []
     
