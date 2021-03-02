@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { shallowMount } from "@vue/test-utils";
 import AddNewQuestionSet from "@/views/AddNewQuestionSet.vue";
+import router from "@/router/index";
 
 // QuestionSet specs
 // 1. Questions Set container should exists
@@ -10,7 +11,16 @@ import AddNewQuestionSet from "@/views/AddNewQuestionSet.vue";
 // 5. Questions Set should have a button for saving questions
 //    save status then change from false to true
 
-const wrapper = shallowMount(AddNewQuestionSet);
+(async () => {
+  await router.isReady()
+})()
+
+
+const wrapper = shallowMount(AddNewQuestionSet, {
+  global: {
+    plugins:[router]
+  }
+});
 
 describe("Question Set - container", () => {
   it("Question Set container should exist", () => {
@@ -37,7 +47,7 @@ describe("Question Set - Tittle, Description and Save", () => {
   it("Question Set should have saved status as true when save is clicked", () => {
     const QSSave = wrapper.find("[data-test-id='qs-SaveBtn']");
     QSSave.trigger("click");
-    expect(wrapper.vm.Data.saved).to.equal(true);
+    expect(wrapper.vm.saved).to.equal(true);
   });
 });
 

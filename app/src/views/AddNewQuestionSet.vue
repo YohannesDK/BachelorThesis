@@ -8,7 +8,9 @@
               <span>Create a new Question Set</span>
             </div>
             <div class="QuestionSetHeader-Status">
-              <span>{{ Data.saved ? "Saved" : "Unsaved" }}</span>
+              <span 
+              :class="{'text-success' : saved, 'text-danger' : !saved}"
+              >{{ saved ? "Saved" : "Unsaved" }}</span>
             </div>
           </div>
           <div class="QuestionSetHeader-Button">
@@ -30,7 +32,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter tittle"
-                    v-model="Tittle"
+                    v-model="Data.Tittle"
                     v-test="{ id: 'qs-Tittle' }"
                   />
                 </div>
@@ -45,7 +47,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter description"
-                    v-model="Desc"
+                    v-model="Data.Description"
                     v-test="{ id: 'qs-Desc' }"
                   />
                 </div>
@@ -66,10 +68,11 @@
           }
         "
         v-test="{ id: 'qs-Card' }"
-        v-for="(question, index) in questionlist"
+        v-for="(question, index) in questionFocuslist"
         :key="index"
         :focus="question.focus"
         :index="index"
+        :QuestionProp="Data.QuestionSet[index]"
         @AddNew="OnAddNew()"
         @delete="OnDelete(index)"
         @focusChange="OnfocusChange(index)"
@@ -80,10 +83,12 @@
 
 <script lang="ts">
 // TODO - add animations later - https://codepen.io/Takumari85/pen/RaYwpJ
-import { defineComponent, onBeforeUpdate, ref } from "vue";
+import { defineComponent, onBeforeMount, onBeforeUpdate, ref } from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
 import router from "@/router";
+import store from "@/store";
+import { Question, QuestionSet } from "@/store/interfaces/question.type";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -95,79 +100,141 @@ export default defineComponent({
   setup() {
     const questionCards = ref<Array<any>>([]);
     const focusIndex = ref<number>(0);
+    const QSID = ref<number>(-1);
     const Tittle = ref<string>("");
     const Desc = ref<string>("");
-    const questionlist = ref<Array<any>>([
+    const saved = ref<boolean>(false);
+    const questionFocuslist = ref<Array<any>>([
       {
         focus: true
       }
     ]);
 
     const Data = ref({
-      QSID: Number(router.currentRoute.value.query.QSID),
-      tittle: "",
-      desc: "",
-      saved: false,
-      QuestionSet: [] as any[]
+      QSID: -1,
+      Tittle: "",
+      Description: "",
+      QuestionSet: [] as Question[]
     });
+
 
     onBeforeUpdate(() => {
       questionCards.value = [];
     });
 
+
+
+    // Initilize Question Set if it exists
+    const InitilizeQuestionSet = (QSID: number) => {
+      if (QSID !== -1) {
+        const QuestionSet : QuestionSet = store.getters.getQuestionSetById(QSID);
+        Data.value.QSID = QuestionSet.QSID
+        Data.value.Tittle = QuestionSet.Tittle
+        Data.value.Description = QuestionSet.Description
+        Data.value.QuestionSet = QuestionSet.QuestionSet
+
+        // Delete everything in questionFocus list
+        questionFocuslist.value.length = 0;
+
+        Data.value.QuestionSet.forEach(() => {
+          questionFocuslist.value.push({
+            focus: false
+          })
+        })
+        return;
+      }
+      Data.value.QSID = store.getters.getQuestionSetLength;
+    }
+
     // Change between question cards
     const OnfocusChange = (index: number) => {
-      questionlist.value[focusIndex.value].focus = false;
+      questionFocuslist.value[focusIndex.value].focus = false;
       focusIndex.value = index;
-      questionlist.value[focusIndex.value].focus = true;
+      questionFocuslist.value[focusIndex.value].focus = true;
     };
 
     const OnAddNew = () => {
-      questionlist.value.push({
+      questionFocuslist.value.push({
         focus: false
       });
     };
 
     const OnDelete = (index: number) => {
+      
       if (index !== 0) {
         // TODO - fix visual effect - shaking effect
-        questionlist.value = [
-          ...questionlist.value.slice(0, index),
-          ...questionlist.value.slice(index + 1)
-        ];
-        questionCards.value = [
-          ...questionCards.value.slice(0, index),
-          ...questionCards.value.slice(index + 1)
-        ];
+        // questionFocuslist.value = [
+        //   ...questionFocuslist.value.slice(0, index),
+        //   ...questionFocuslist.value.slice(index + 1)
+        // ];
+
+        // questionCards.value = [
+        //   ...questionCards.value.slice(0, index),
+        //   ...questionCards.value.slice(index + 1)
+        // ];
+        
+        // Data.value.QuestionSet = [
+        //   ...Data.value.QuestionSet.slice(0, index),
+        //   ...Data.value.QuestionSet.slice(index + 1)
+        // ];
+        questionFocuslist.value.splice(index, 1)
+        questionCards.value.splice(index, 1)
+        Data.value.QuestionSet.splice(index, 1)
+        // focusIndex.value = index-1
+
       } else {
         OnfocusChange(0);
       }
+      
     };
 
     const Save = () => {
-      Data.value.tittle = Tittle.value
-      Data.value.desc = Desc.value
-      Data.value.saved = true;
+      // Update document QuestionSetId, when saving
+      if (router.currentRoute.value.query.did) {
+        store.dispatch("SetDocumentQSID", {
+          documentid : Number(router.currentRoute.value.query.did),
+          QSID: Data.value.QSID
+        })
+      }
+
+      saved.value = true;
+      Data.value.QuestionSet.length = 0
       questionCards.value.forEach((ele: any) => {
-        try {
-          const questionData = ele.getQuestion.call();
-          Data.value.QuestionSet.push(questionData);
-        } catch {
-          // TODO: Error with testing, everything works but when running this in node
-          //       it errors out, so i catch for now to avoid nasty output
-          console.error("Undefined");
+        if (ele) {
+          try {
+            const questionData = ele.QuestionDataHandler.call();
+            console.log(questionData);
+            Data.value.QuestionSet.push(questionData);
+          } catch (e) {
+            // TODO: Error with testing, everything works but when running this in node
+            //       it errors out, so i catch for now to avoid nasty output
+            console.error("Error: ", e);
+          }
+          
         }
-      });
-      console.log(Data.value);
+      }); 
+      store.dispatch("AddNewQuestionSet", Data.value);
+      console.log(store.getters.getAllQuestionSets);
+      
     };
+
+
+    onBeforeMount(() => {
+      if (router.currentRoute.value.query.QSID) {
+        QSID.value = Number(router.currentRoute.value.query.QSID) 
+      }
+      InitilizeQuestionSet(QSID.value)
+    })
 
     return {
       OnAddNew,
       OnDelete,
       questionCards,
-      questionlist,
+      questionFocuslist,
       OnfocusChange,
+      QSID,
       Save,
+      saved,
       Tittle,
       Desc,
       Data
@@ -227,6 +294,7 @@ body {
 .queston-set-card-container {
   position: relative;
   top: -2.5rem;
+  margin-bottom: 10vh !important;
 }
 
 .QuestionSetHeader-Button button {

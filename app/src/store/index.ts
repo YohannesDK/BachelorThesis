@@ -1,6 +1,9 @@
 import { createStore } from "vuex";
 import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
+import { QuestionSet } from "./interfaces/question.type";
+import QuestionSetModule from "./modules/QuestionSet.module";
+
 
 const store = createStore({
   state: {
@@ -263,7 +266,6 @@ const store = createStore({
         role: "student"
       }
     ],
-    QuestionSets : [],
     activeUser: {}
   },
   mutations: {
@@ -286,17 +288,14 @@ const store = createStore({
         QuestionSetID: -1
       });
     },
-    AddNewQuestionSet: (state, QuestionSet) => {
-      state.documents.push(QuestionSet);
-    },
-    SetDocumentQSID: (state, documentID: number) => {
+    SetDocumentQSID: (state, Data: any) => {
       const doc = state.documents.find(
-        (doc: documentType) => doc.Documentid === documentID
+        (doc: documentType) => doc.Documentid === Data.documentid
       )
       if (doc) {
-        doc.QuestionSetID = state.QuestionSets.length
+        doc.QuestionSetID = Data.QSID
       }
-    }
+    },
   },
   actions: {
     login: context => {
@@ -311,12 +310,9 @@ const store = createStore({
     AddNewDocument: context => {
       context.commit("AddNewDocument");
     },
-    SetDocumentQSID: (context, documentID: number) => {
-      context.commit("SetDocumentQSID", documentID)
+    SetDocumentQSID: (context, Data: any) => {
+      context.commit("SetDocumentQSID", Data)
     },
-    AddNewQuestionSet: (context, Data: any) => {
-      context.commit("AddNewQuestionSet", Data)
-    }
   },
   getters: {
     getDocuments: state => {
@@ -344,19 +340,11 @@ const store = createStore({
     getActiveUser: state => {
       return state.activeUser;
     },
-    getAllQuestionSets: state => {
-      return state.QuestionSets
-    },
-    getQuestionSetById: state => (QSID: number) => {
-      return state.QuestionSets.find(
-        (questionSet: any) => questionSet.QSID === QSID
-      );
-    },
-    getQuestionSetLength: state => {
-      return state.QuestionSets.length
-    }
+
   },
-  modules: {}
+  modules: {
+    QuestionSetModule
+  }
 });
 
 export default store;

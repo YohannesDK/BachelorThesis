@@ -170,12 +170,12 @@ export default defineComponent({
     // Editor
     const OpenEditor = () => {
       router.push({ name: "EditorView", query: { did: -1 } });
+
     };
 
     //QuestionSet
     const AddNewQuestionSet = () => {
-      console.log("Adding New");
-      router.push({ path: "/AddQuestionSet" });
+      router.push({ name: "AddQuestionSet", query: { QSID: -1} });
     };
 
     return {

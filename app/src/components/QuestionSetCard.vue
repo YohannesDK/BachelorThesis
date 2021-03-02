@@ -7,7 +7,7 @@
   >
     <div
       class="question-card-inner"
-      v-if="QuestionType === 0"
+      v-if="QuestionType === QuestionTypeEnum.ShortText"
       v-test="{ id: 'question-card-type-ShortText' }"
     >
       <div class="question-card-inner-top">
@@ -55,7 +55,7 @@
 
     <div
       class="question-card-inner"
-      v-if="QuestionType === 1"
+      v-if="QuestionType === QuestionTypeEnum.LongText"
       v-test="{ id: 'question-card-type-LongText' }"
     >
       <div class="question-card-inner-top">
@@ -105,7 +105,7 @@
 
     <div
       class="question-card-inner"
-      v-if="QuestionType === 2"
+      v-if="QuestionType === QuestionTypeEnum.TrueFalse"
       v-test="{ id: 'question-card-type-TrueFalse' }"
     >
       <div class="question-card-inner-top">
@@ -136,26 +136,26 @@
       <div class="true-false-answer-container">
         <div
           class="true-false-card card"
-          :class="{ 'shadow bg-success': TrueFalseAnswer === 'True' }"
-          @click="TrueFalseHandler('True')"
+          :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1}"
+          @click="TrueFalseHandler(AnswerOptions.Option1)"
           v-test="{ id: 'question-card-type-Answer' }"
         >
-          True
+          {{TrueOption}}
         </div>
         <div
           class="true-false-card card"
-          :class="{ 'shadow bg-success': TrueFalseAnswer === 'False' }"
-          @click="TrueFalseHandler('False')"
+          :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2}"
+          @click="TrueFalseHandler(AnswerOptions.Option2)"
           v-test="{ id: 'question-card-type-Answer' }"
         >
-          False
+          {{FalseOption}}
         </div>
       </div>
     </div>
 
     <div
       class="question-card-inner"
-      v-if="QuestionType === 3"
+      v-if="QuestionType === QuestionTypeEnum.MultipleChoice"
       v-test="{ id: 'question-card-type-MultipleChoice' }"
     >
       <div class="question-card-inner-top">
@@ -187,37 +187,37 @@
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 0 }"
-            @click.self="MultipleChoiceHandler($event, 0)"
+            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option1}"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option1)"
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">Enter Answer</p>
+            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option1}}</p>
           </div>
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 1 }"
-            @click.self="MultipleChoiceHandler($event, 1)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option2)"
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">Enter Answer</p>
+            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option2}}</p>
           </div>
         </div>
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 2 }"
-            @click.self="MultipleChoiceHandler($event, 2)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option3)"
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">Enter Answer</p>
+            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option3}}</p>
           </div>
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 3 }"
-            @click.self="MultipleChoiceHandler($event, 3)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option4)"
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">Enter Answer</p>
+            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option4}}</p>
           </div>
         </div>
       </div>
@@ -240,8 +240,8 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === 0 }"
-          @click="ChangeQuestionType(0)"
+          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.ShortText }"
+          @click="ChangeQuestionType(QuestionTypeEnum.ShortText)"
           v-test="{ id: 'question-card-sideBar-option-ShortText' }"
         >
           <fa icon="question" />
@@ -250,8 +250,8 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === 1 }"
-          @click="ChangeQuestionType(1)"
+          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.LongText }"
+          @click="ChangeQuestionType(QuestionTypeEnum.LongText)"
           v-test="{ id: 'question-card-sideBar-option-LongText' }"
         >
           <fa icon="paragraph" />
@@ -260,8 +260,8 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === 2 }"
-          @click="ChangeQuestionType(2)"
+          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.TrueFalse }"
+          @click="ChangeQuestionType(QuestionTypeEnum.TrueFalse)"
           v-test="{ id: 'question-card-sideBar-option-TrueFalse' }"
         >
           <fa icon="dot-circle" />
@@ -270,8 +270,8 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === 3 }"
-          @click="ChangeQuestionType(3)"
+          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.MultipleChoice }"
+          @click="ChangeQuestionType(QuestionTypeEnum.MultipleChoice)"
           v-test="{ id: 'question-card-sideBar-option-MultipleChoice' }"
         >
           <fa icon="check-square" />
@@ -281,12 +281,15 @@
         </li>
       </ul>
     </div>
+
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, ref, watch } from "vue";
+import { defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
 import Test from "@/directives/test.directive";
+import { QuestionTypeEnum, Question, AnswerOptions, ShortTextQuestionType, LongTextQuestionType, TrueFalseQuestionType, MultipleChoiceQuestionType} from "@/store/interfaces/question.type";
+import store from "@/store";
 export default defineComponent({
   name: "QuestionSetCard",
   directives: { Test },
@@ -294,35 +297,45 @@ export default defineComponent({
     focus: {
       type: Boolean
     },
+    QuestionProp: {
+      type: Object as () => Question,
+      defailt: () => ({})
+    },
     index: {
       type: Number
     }
   },
   setup(props) {
+    const QuestionData = {} as Question;
     const showSideBar: Ref<boolean> = ref(props.focus);
     const QuestionType = ref<number>(0);
+    
     const Question = ref<string>("");
     const ShortAnswer = ref<string>("");
     const LongTextAnswer = ref<string>("");
-    const TrueFalseAnswer = ref<string>("");
+
+    const TrueOption = ref<string>("True");
+    const FalseOption = ref<string>("False");
+    const TrueFalseAnswer = ref<number>(-1);
+
+    const MultipleChoiceAnswerOptions = ref({
+      Option1: "Enter Answer",
+      Option2: "Enter Answer",
+      Option3: "Enter Answer",
+      Option4: "Enter Answer",
+    });
+
     const MultipleChoiceAnswer = ref<string>("");
     const MultipleChoiceAnswerID = ref<number>(-1);
-
-    const TrueFalseHandler = (answer: string) => {
+    
+    const TrueFalseHandler = (answer: number) => {
       TrueFalseAnswer.value = answer;
     };
 
     const MultipleChoiceHandler = (
-      event: any,
       multipleChoiceAnswerID: number
     ) => {
       MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
-      if (
-        event.target.innerText !== "" &&
-        event.target.innerText !== "Enter Answer"
-      ) {
-        MultipleChoiceAnswer.value = event.target.innerText;
-      }
     };
 
     const ChangeQuestionType = (newQuestionType: number) => {
@@ -335,9 +348,61 @@ export default defineComponent({
         showSideBar.value = newValue;
       }
     );
+   
+    const QuestionDataHandler = () : Question => {
+      if (!props.QuestionProp) {
+        QuestionData.QuestionID = store.getters.getQuestionId; 
+        store.dispatch("IncrementQuestionId")
+      }
+
+      if (QuestionType.value === QuestionTypeEnum.ShortText) {
+        QuestionData.QuestionType = QuestionTypeEnum.ShortText;
+        const ShortTextQuestion : ShortTextQuestionType = {
+          Question: Question.value,
+          Answer: ShortAnswer.value
+        }
+        QuestionData.Question = ShortTextQuestion
+
+      } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        QuestionData.QuestionType = QuestionTypeEnum.LongText;
+        const LongTextQuestion : LongTextQuestionType = {
+          Question: Question.value,
+          Answer: LongTextAnswer.value
+        }
+        QuestionData.Question = LongTextQuestion
+
+      } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        QuestionData.QuestionType = QuestionTypeEnum.TrueFalse;
+        const TrueFalseQuestion : TrueFalseQuestionType = {
+          Question: Question.value,
+          Answer: {
+            TrueOption: TrueOption.value,
+            FalseOption: FalseOption.value
+          },
+          CorrectAnswer: TrueFalseAnswer.value
+        }
+        QuestionData.Question = TrueFalseQuestion
+
+      } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        QuestionData.QuestionType = QuestionTypeEnum.MultipleChoice;
+        const MutipleChoiceQuestion : MultipleChoiceQuestionType = {
+          Question: Question.value,
+          Answer: {
+            Option1: MultipleChoiceAnswerOptions.value.Option1,
+            Option2: MultipleChoiceAnswerOptions.value.Option2,
+            Option3: MultipleChoiceAnswerOptions.value.Option3,
+            Option4: MultipleChoiceAnswerOptions.value.Option4,
+          },
+          CorrectAnswer: MultipleChoiceAnswerID.value
+        }
+        QuestionData.Question = MutipleChoiceQuestion
+      }
+      return QuestionData
+    }
 
     const getQuestion = () => {
       // Validate input here by calling a validate function
+
       const data = {
         questionType: QuestionType.value,
         question: Question.value,
@@ -355,8 +420,49 @@ export default defineComponent({
           answer: MultipleChoiceAnswer.value
         }
       };
+      const d = QuestionDataHandler()
+      console.log("Handler:", d);
+      
       return data;
     };
+
+    const InitilizeQuestion = () => {
+      if (props.QuestionProp) {
+        console.log("her");
+        
+        const question = props.QuestionProp;
+
+        QuestionData.QuestionID = question.QuestionID
+        Question.value = question.Question.Question
+        QuestionType.value = question.QuestionType
+
+        if ( QuestionType.value === QuestionTypeEnum.ShortText) {
+          ShortAnswer.value = (question.Question as ShortTextQuestionType).Answer
+        }
+        else if ( QuestionType.value === QuestionTypeEnum.LongText) {
+          LongTextAnswer.value = (question.Question as LongTextQuestionType).Answer
+        }
+        else if ( QuestionType.value === QuestionTypeEnum.TrueFalse) {
+          TrueOption.value = (question.Question as TrueFalseQuestionType).Answer.TrueOption
+          FalseOption.value = (question.Question as TrueFalseQuestionType).Answer.FalseOption
+          TrueFalseAnswer.value = (question.Question as TrueFalseQuestionType).CorrectAnswer
+        }
+        else if ( QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+          MultipleChoiceAnswerOptions.value.Option1 = (question.Question as MultipleChoiceQuestionType).Answer.Option1
+          MultipleChoiceAnswerOptions.value.Option2 = (question.Question as MultipleChoiceQuestionType).Answer.Option2
+          MultipleChoiceAnswerOptions.value.Option3 = (question.Question as MultipleChoiceQuestionType).Answer.Option3
+          MultipleChoiceAnswerOptions.value.Option4 = (question.Question as MultipleChoiceQuestionType).Answer.Option4
+          MultipleChoiceAnswerID.value = (question.Question as MultipleChoiceQuestionType).CorrectAnswer
+        }
+      }
+    }
+
+
+    onBeforeMount(() => {
+      InitilizeQuestion()
+    })
+
+
     return {
       showSideBar,
       QuestionType,
@@ -364,12 +470,18 @@ export default defineComponent({
       Question,
       ShortAnswer,
       LongTextAnswer,
+      TrueOption,
+      FalseOption,
       TrueFalseAnswer,
       TrueFalseHandler,
+      MultipleChoiceAnswerOptions,
       MultipleChoiceHandler,
       MultipleChoiceAnswer,
       MultipleChoiceAnswerID,
-      getQuestion
+      getQuestion,
+      QuestionTypeEnum,
+      AnswerOptions,
+      QuestionDataHandler
     };
   }
 });
@@ -386,6 +498,7 @@ export default defineComponent({
   margin-bottom: 1%;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   transition: all 0.5s;
+  left: -2%;
 }
 
 .question-card-sideBar {

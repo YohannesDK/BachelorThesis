@@ -96,13 +96,7 @@ export default defineComponent({
     };
 
     const OpenQuestionSet = (QSID: number) => {
-      if (QSID === -1) {
-        const newQuestionId : number = store.getters.getQuestionSetLength;
-        store.dispatch("SetDocumentQSID", props.document.Documentid);
-        router.push({ name: "AddQuestionSet", query: { QSID: newQuestionId} });
-        return;
-      }
-      router.push({ name: "AddQuestionSet", query: { QSID: QSID} });
+      router.push({ name: "AddQuestionSet", query: { QSID: QSID, did: props.document.Documentid} });
     }
 
     onMounted(() => {
