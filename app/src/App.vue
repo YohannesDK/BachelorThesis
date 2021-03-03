@@ -31,12 +31,16 @@ export default defineComponent({
       return router.currentRoute.value.meta.showSideBar !== false;
     });
 
-    const OnMoveBody = (showSideBar: boolean) => {
+    const OnMoveBody = (showSideBar: boolean, sideBarType?: number) => {
       if (appContainer.value) {
         if (showSideBar) {
           appContainer.value.style.marginLeft = "250px";
         } else {
-          appContainer.value.style.marginLeft = "0";
+          if (sideBarType === 0) {
+            appContainer.value.style.marginLeft = "0px"; 
+          }else {
+            appContainer.value.style.marginLeft = "3.3rem"; 
+          }
         }
       }
     };

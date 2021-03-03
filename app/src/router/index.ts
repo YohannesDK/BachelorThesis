@@ -69,6 +69,22 @@ const routes: Array<RouteRecordRaw> = [
     name: "Student",
     component: () =>
       import(/* webpackChunkName: "Student" */ "../views/Student.vue")
+  },
+  {
+    path: "/questionsets",
+    name: "QuestionSets",
+    component: () =>
+      import(
+        /* webpackChunkName: "QuestionSets" */ "../views/QuestionSets.vue"
+      )
+  },
+  {
+    path: "/AddQuestionSet",
+    name: "AddQuestionSet",
+    component: () =>
+      import(
+        /* webpackChunkName: "AddNewQuestionSet" */ "../views/AddNewQuestionSet.vue"
+      )
   }
 ];
 

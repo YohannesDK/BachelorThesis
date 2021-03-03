@@ -38,8 +38,18 @@
                 class="list-unstyled mb-0"
                 v-test="{ id: 'card-options-dropdown' }"
               >
-                <li>Open</li>
+                <li
+                @click="OpenEditor(document.Documentid)"
+                >Open</li>
                 <li>Rename</li>
+                <li
+                v-if="document.QuestionSetID === -1"
+                @click="OpenQuestionSet(-1)"
+                >Add Question Set</li>
+                <li
+                v-if="document.QuestionSetID !== -1"
+                @click="OpenQuestionSet(document.QuestionSetID)"
+                >Open Question Set</li>
                 <li>Share</li>
                 <hr />
                 <li>Delete</li>
@@ -58,6 +68,7 @@ import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
+import store from "@/store";
 export default defineComponent({
   name: "documentCard",
   directives: { Test },
@@ -84,6 +95,10 @@ export default defineComponent({
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
 
+    const OpenQuestionSet = (QSID: number) => {
+      router.push({ name: "AddQuestionSet", query: { QSID: QSID, did: props.document.Documentid} });
+    }
+
     onMounted(() => {
       if (props.document.delta) {
         documentText.value = DeltaToPlainText(props.document.delta)
@@ -97,7 +112,8 @@ export default defineComponent({
       showDropDown,
       More,
       RemoveMore,
-      OpenEditor
+      OpenEditor,
+      OpenQuestionSet
     };
   }
 });

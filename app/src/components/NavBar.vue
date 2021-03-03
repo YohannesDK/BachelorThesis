@@ -51,7 +51,11 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="">
+                  <a
+                    href=""
+                    v-test="{ id: 'navbar-addNew-dropdown-QuestionSet' }"
+                    @click.prevent="AddNewQuestionSet()"
+                  >
                     <fa icon="question" class="sidebar-menu-faicons"></fa>
                     Question Set</a
                   >
@@ -78,7 +82,7 @@
       <li class="sidebar-list">
         <router-link to="/profile" v-test="{ id: 'navbar-routes-profile' }">
           <fa icon="user" class="sidebar-menu-faicons"></fa>
-          Profile
+          <span>Profile</span>
         </router-link>
       </li>
 
@@ -88,33 +92,39 @@
           v-test="{ id: 'navbar-routes-myDocument' }"
         >
           <fa icon="folder" class="sidebar-menu-faicons"></fa>
-          My Documents
+          <span>My Documents</span>
         </router-link>
       </li>
 
       <li class="sidebar-list">
         <router-link to="/courses" v-test="{ id: 'navbar-routes-courses' }">
           <fa icon="book" class="sidebar-menu-faicons"></fa>
-          Courses
+          <span>Courses</span>
+        </router-link>
+      </li>
+      <li class="sidebar-list">
+        <router-link to="/questionsets" v-test="{ id: 'navbar-routes-courses' }">
+          <fa icon="clone" class="sidebar-menu-faicons"></fa>
+          <span>Question Sets</span>
         </router-link>
       </li>
     </ul>
 
-    <div class="sign_out_icon" v-if="showSideBar" @click="signout">
+    <div class="sign_out_icon" @click="signout(), $emit('MoveBody', false, 0)">
       <fa icon="sign-out-alt"></fa>
     </div>
 
     <div
       class="collapse_icon"
       v-if="showSideBar"
-      @click="toogleSideBar(), $emit('MoveBody', showSideBar)"
+      @click="smallsidebar(), $emit('MoveBody', showSideBar)"
     >
       <fa icon="compress-alt"></fa>
     </div>
     <div
       class="expand_icon"
       v-if="!showSideBar"
-      @click="toogleSideBar(), $emit('MoveBody', showSideBar)"
+      @click="smallsidebar(), $emit('MoveBody', showSideBar)"
     >
       <fa icon="expand-alt"></fa>
     </div>
@@ -148,6 +158,7 @@ export default defineComponent({
       console.log("Adding project");
     };
 
+    //user handling
     const user = computed(() => {
       return store.getters.getActiveUser;
     });
@@ -165,6 +176,21 @@ export default defineComponent({
     // Editor
     const OpenEditor = () => {
       router.push({ name: "EditorView", query: { did: -1 } });
+
+    };
+
+    const smallsidebar = () => {
+      if (sidebar.value) {
+        showSideBar.value
+          ? sidebar.value.classList.add("small-sidebar")
+          : sidebar.value.classList.remove("small-sidebar");
+        showSideBar.value = !showSideBar.value;
+      }
+    }
+
+    //QuestionSet
+    const AddNewQuestionSet = () => {
+      router.push({ name: "AddQuestionSet", query: { QSID: -1} });
     };
 
     return {
@@ -175,7 +201,9 @@ export default defineComponent({
       toogleSideBar,
       showSideBar,
       addProject,
-      OpenEditor
+      OpenEditor,
+      AddNewQuestionSet,
+      smallsidebar
     };
   }
 });
@@ -356,6 +384,7 @@ a:focus {
 
 .search_icon:hover,
 .collapse_icon:hover,
+.expand_icon:hover,
 .add_icon:hover {
   background: white;
   color: #e74c3c;
@@ -448,4 +477,56 @@ a:focus {
   border-bottom-right-radius: 0.8rem;
   border-bottom-left-radius: 0.8rem;
 }
+
+
+/* When minimizing sidebar */
+
+#sidebar.small-sidebar {
+  min-width: 3.3rem;
+  width: 3.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sidebar.small-sidebar .sidebar-header h3 {
+  display: none;
+}
+
+#sidebar.small-sidebar .addProject, #sidebar.small-sidebar .searchbar {
+  width: fit-content;
+  height: fit-content;
+  padding: 0;
+  border-radius: 50%;
+}
+
+#sidebar.small-sidebar .add_project, #sidebar.small-sidebar .search_input {
+  display: none;
+}
+
+#sidebar.small-sidebar ul li a span {
+  display: none;
+}
+
+#sidebar.small-sidebar .sign_out_icon {
+  top: 1.28rem;
+  right: unset;
+}
+
+#sidebar.small-sidebar .collapse_icon {
+  display: none;
+}
+
+#sidebar.small-sidebar .expand_icon {
+  right: unset;
+  left: 6px;
+}
+
+#sidebar.small-sidebar .dropdowncontainer {
+  width: 13em;
+  right: -482%;
+}
+
+
+
 </style>

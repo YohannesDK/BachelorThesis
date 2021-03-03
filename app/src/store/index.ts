@@ -1,6 +1,8 @@
 import { createStore } from "vuex";
 import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
+import QuestionSetModule from "./modules/QuestionSet.module";
+
 
 const store = createStore({
   state: {
@@ -148,7 +150,8 @@ const store = createStore({
           { insert: "\n\n\n\n\n\n\n" }
         ],
         tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
-        lastEdited: "2 Feb. 2021"
+        lastEdited: "2 Feb. 2021",
+        QuestionSetID: -1
       },
       {
         Documentid: 1,
@@ -180,7 +183,8 @@ const store = createStore({
           }
         ],
         tags: ["Test 1"],
-        lastEdited: "3 Feb 2021"
+        lastEdited: "3 Feb 2021",
+        QuestionSetID: -1
       },
       {
         Documentid: 3,
@@ -212,7 +216,8 @@ const store = createStore({
           }
         ],
         tags: ["Test 1"],
-        lastEdited: "5 Feb 2021"
+        lastEdited: "5 Feb 2021",
+        QuestionSetID: -1
       }
     ] as documentType[],
     courses: [
@@ -278,9 +283,18 @@ const store = createStore({
         name: "Edit Tittle...",
         delta: [],
         tags: [],
-        lastEdited: "11 Feb 2021"
+        lastEdited: "11 Feb 2021",
+        QuestionSetID: -1
       });
-    }
+    },
+    SetDocumentQSID: (state, Data: any) => {
+      const doc = state.documents.find(
+        (doc: documentType) => doc.Documentid === Data.documentid
+      )
+      if (doc) {
+        doc.QuestionSetID = Data.QSID
+      }
+    },
   },
   actions: {
     login: context => {
@@ -294,7 +308,10 @@ const store = createStore({
     },
     AddNewDocument: context => {
       context.commit("AddNewDocument");
-    }
+    },
+    SetDocumentQSID: (context, Data: any) => {
+      context.commit("SetDocumentQSID", Data)
+    },
   },
   getters: {
     getDocuments: state => {
@@ -321,9 +338,12 @@ const store = createStore({
     },
     getActiveUser: state => {
       return state.activeUser;
-    }
+    },
+
   },
-  modules: {}
+  modules: {
+    QuestionSetModule
+  }
 });
 
 export default store;
