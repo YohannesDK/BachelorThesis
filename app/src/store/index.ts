@@ -1,7 +1,6 @@
 import { createStore } from "vuex";
 import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
-import { QuestionSet } from "./interfaces/question.type";
 import QuestionSetModule from "./modules/QuestionSet.module";
 
 

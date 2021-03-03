@@ -121,8 +121,7 @@ export default defineComponent({
         window.addEventListener('beforeunload', (e) => {
           if (saved.value === false) {
             e.preventDefault()
-            e.returnValue = ''
-            alert("You have unsaved work")
+            e.returnValue = 'you have unsaved work'
           }
         })      
       }

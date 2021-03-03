@@ -22,7 +22,8 @@ import {
   faTimes,
   faCheckSquare,
   faDotCircle,
-  faParagraph
+  faParagraph,
+  faClone
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -49,7 +50,8 @@ library.add(
   faTimes,
   faCheckSquare,
   faDotCircle,
-  faParagraph
+  faParagraph,
+  faClone,
 );
 
 export { FontAwesomeIcon };
