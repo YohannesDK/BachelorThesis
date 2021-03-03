@@ -68,14 +68,15 @@
           }
         "
         v-test="{ id: 'qs-Card' }"
-        v-for="(question, index) in questionFocuslist"
-        :key="index"
-        :focus="question.focus"
+        v-for="(question, index) in Data.QuestionSet"
+        :key="question"
+        :focus="focusIndex === index"
         :index="index"
-        :QuestionProp="Data.QuestionSet[index]"
+        :QuestionProp="question"
         @AddNew="OnAddNew()"
         @delete="OnDelete(index)"
         @focusChange="OnfocusChange(index)"
+        @SaveStatus="saved = false"
       />
     </div>
   </div>
@@ -83,12 +84,13 @@
 
 <script lang="ts">
 // TODO - add animations later - https://codepen.io/Takumari85/pen/RaYwpJ
-import { defineComponent, onBeforeMount, onBeforeUpdate, ref } from "vue";
+import { defineComponent, onBeforeUpdate, onMounted, ref } from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
 import router from "@/router";
 import store from "@/store";
-import { Question, QuestionSet } from "@/store/interfaces/question.type";
+import { Question, QuestionSet, QuestionTypeEnum } from "@/store/interfaces/question.type";
+import { onBeforeRouteLeave } from "vue-router";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -103,12 +105,7 @@ export default defineComponent({
     const QSID = ref<number>(-1);
     const Tittle = ref<string>("");
     const Desc = ref<string>("");
-    const saved = ref<boolean>(false);
-    const questionFocuslist = ref<Array<any>>([
-      {
-        focus: true
-      }
-    ]);
+    const saved = ref<boolean>(true);
 
     const Data = ref({
       QSID: -1,
@@ -118,10 +115,44 @@ export default defineComponent({
     });
 
 
+    // route save guard, if the quesitons are not saved
+    const RouteSafeGuards = () => {
+      if (window !== null) {
+        window.addEventListener('beforeunload', (e) => {
+          if (saved.value === false) {
+            e.preventDefault()
+            e.returnValue = ''
+            alert("You have unsaved work")
+          }
+        })      
+      }
+    }
+    
+    onBeforeRouteLeave((to, from, next) => {
+      if (saved.value) {
+        next()
+      }else {
+        alert("You have unsaved work")
+      }
+    })
+
+
     onBeforeUpdate(() => {
       questionCards.value = [];
     });
 
+    const OnAddNew = () => {
+      saved.value = false;
+      Data.value.QuestionSet.push({
+        QuestionID: store.getters.getQuestionId,
+        QuestionType: QuestionTypeEnum.ShortText,
+        Question: {
+          Question: "",
+          Answer: ""
+        }
+      });
+      store.dispatch("IncrementQuestionId")
+    };
 
 
     // Initilize Question Set if it exists
@@ -133,54 +164,36 @@ export default defineComponent({
         Data.value.Description = QuestionSet.Description
         Data.value.QuestionSet = QuestionSet.QuestionSet
 
-        // Delete everything in questionFocus list
-        questionFocuslist.value.length = 0;
-
-        Data.value.QuestionSet.forEach(() => {
-          questionFocuslist.value.push({
-            focus: false
-          })
-        })
         return;
       }
+      // Create first element if QSID is -1
       Data.value.QSID = store.getters.getQuestionSetLength;
+      OnAddNew();
     }
 
     // Change between question cards
     const OnfocusChange = (index: number) => {
-      questionFocuslist.value[focusIndex.value].focus = false;
       focusIndex.value = index;
-      questionFocuslist.value[focusIndex.value].focus = true;
     };
 
-    const OnAddNew = () => {
-      questionFocuslist.value.push({
-        focus: false
-      });
-    };
 
-    const OnDelete = (index: number) => {
+
+    const OnDelete = (index: number) => {      
       
+      saved.value = false;
       if (index !== 0) {
         // TODO - fix visual effect - shaking effect
-        // questionFocuslist.value = [
-        //   ...questionFocuslist.value.slice(0, index),
-        //   ...questionFocuslist.value.slice(index + 1)
-        // ];
 
-        // questionCards.value = [
-        //   ...questionCards.value.slice(0, index),
-        //   ...questionCards.value.slice(index + 1)
-        // ];
+        questionCards.value = [
+          ...questionCards.value.slice(0, index),
+          ...questionCards.value.slice(index + 1)
+        ];
         
-        // Data.value.QuestionSet = [
-        //   ...Data.value.QuestionSet.slice(0, index),
-        //   ...Data.value.QuestionSet.slice(index + 1)
-        // ];
-        questionFocuslist.value.splice(index, 1)
-        questionCards.value.splice(index, 1)
-        Data.value.QuestionSet.splice(index, 1)
-        // focusIndex.value = index-1
+        Data.value.QuestionSet = [
+          ...Data.value.QuestionSet.slice(0, index),
+          ...Data.value.QuestionSet.slice(index + 1)
+        ];
+        focusIndex.value = index-1
 
       } else {
         OnfocusChange(0);
@@ -196,14 +209,13 @@ export default defineComponent({
           QSID: Data.value.QSID
         })
       }
-
-      saved.value = true;
+      // To avoid duplactes, when updating question set
       Data.value.QuestionSet.length = 0
+
       questionCards.value.forEach((ele: any) => {
         if (ele) {
           try {
             const questionData = ele.QuestionDataHandler.call();
-            console.log(questionData);
             Data.value.QuestionSet.push(questionData);
           } catch (e) {
             // TODO: Error with testing, everything works but when running this in node
@@ -214,14 +226,15 @@ export default defineComponent({
         }
       }); 
       store.dispatch("AddNewQuestionSet", Data.value);
-      console.log(store.getters.getAllQuestionSets);
-      
+      saved.value = true;
     };
 
+    onMounted(() => {
 
-    onBeforeMount(() => {
+      // add window events
+      RouteSafeGuards();
       if (router.currentRoute.value.query.QSID) {
-        QSID.value = Number(router.currentRoute.value.query.QSID) 
+        QSID.value = Number(router.currentRoute.value.query.QSID)
       }
       InitilizeQuestionSet(QSID.value)
     })
@@ -230,14 +243,14 @@ export default defineComponent({
       OnAddNew,
       OnDelete,
       questionCards,
-      questionFocuslist,
       OnfocusChange,
       QSID,
       Save,
       saved,
       Tittle,
       Desc,
-      Data
+      Data,
+      focusIndex
     };
   }
 });

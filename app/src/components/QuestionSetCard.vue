@@ -30,6 +30,7 @@
                     placeholder="Enter Question"
                     v-model="Question"
                     v-test="{ id: 'question-card-type-Question' }"
+                    @change="$emit('SaveStatus')"
                   />
                 </div>
               </div>
@@ -44,6 +45,7 @@
                     placeholder="Enter Answer"
                     v-model="ShortAnswer"
                     v-test="{ id: 'question-card-type-Answer' }"
+                    @change="$emit('SaveStatus')"
                   />
                 </div>
               </div>
@@ -78,6 +80,7 @@
                   placeholder="Enter Question"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
+                  @change="$emit('SaveStatus')"
                 />
               </div>
             </div>
@@ -95,6 +98,7 @@
                   placeholder="Enter Answer"
                   v-model="LongTextAnswer"
                   v-test="{ id: 'question-card-type-Answer' }"
+                  @change="$emit('SaveStatus')"
                 ></textarea>
               </div>
             </div>
@@ -127,6 +131,7 @@
                   placeholder="Enter Statement"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
+                  @change="$emit('SaveStatus')"
                 />
               </div>
             </div>
@@ -137,7 +142,7 @@
         <div
           class="true-false-card card"
           :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1}"
-          @click="TrueFalseHandler(AnswerOptions.Option1)"
+          @click="TrueFalseHandler(AnswerOptions.Option1), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
         >
           {{TrueOption}}
@@ -145,7 +150,7 @@
         <div
           class="true-false-card card"
           :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2}"
-          @click="TrueFalseHandler(AnswerOptions.Option2)"
+          @click="TrueFalseHandler(AnswerOptions.Option2), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
         >
           {{FalseOption}}
@@ -177,6 +182,7 @@
                   placeholder="Enter Statement"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
+                  @change="$emit('SaveStatus')"
                 />
               </div>
             </div>
@@ -188,7 +194,7 @@
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option1}"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option1)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option1), $emit('SaveStatus')"
             v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option1}}</p>
@@ -196,7 +202,7 @@
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 1 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option2)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option2), $emit('SaveStatus')"
             v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option2}}</p>
@@ -206,7 +212,7 @@
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 2 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option3)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option3), $emit('SaveStatus')"
             v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option3}}</p>
@@ -214,7 +220,7 @@
           <div
             class="true-false-card card"
             :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 3 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option4)"
+            @click.self="MultipleChoiceHandler(AnswerOptions.Option4), $emit('SaveStatus')"
             v-test="{ id: 'question-card-type-Answer' }"
           >
             <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option4}}</p>
@@ -241,7 +247,7 @@
         </li>
         <li
           :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.ShortText }"
-          @click="ChangeQuestionType(QuestionTypeEnum.ShortText)"
+          @click="ChangeQuestionType(QuestionTypeEnum.ShortText), $emit('SaveStatus')"
           v-test="{ id: 'question-card-sideBar-option-ShortText' }"
         >
           <fa icon="question" />
@@ -251,7 +257,7 @@
         </li>
         <li
           :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.LongText }"
-          @click="ChangeQuestionType(QuestionTypeEnum.LongText)"
+          @click="ChangeQuestionType(QuestionTypeEnum.LongText), $emit('SaveStatus')"
           v-test="{ id: 'question-card-sideBar-option-LongText' }"
         >
           <fa icon="paragraph" />
@@ -261,7 +267,7 @@
         </li>
         <li
           :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.TrueFalse }"
-          @click="ChangeQuestionType(QuestionTypeEnum.TrueFalse)"
+          @click="ChangeQuestionType(QuestionTypeEnum.TrueFalse), $emit('SaveStatus')"
           v-test="{ id: 'question-card-sideBar-option-TrueFalse' }"
         >
           <fa icon="dot-circle" />
@@ -271,7 +277,7 @@
         </li>
         <li
           :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.MultipleChoice }"
-          @click="ChangeQuestionType(QuestionTypeEnum.MultipleChoice)"
+          @click="ChangeQuestionType(QuestionTypeEnum.MultipleChoice), $emit('SaveStatus')"
           v-test="{ id: 'question-card-sideBar-option-MultipleChoice' }"
         >
           <fa icon="check-square" />
@@ -427,8 +433,9 @@ export default defineComponent({
     };
 
     const InitilizeQuestion = () => {
+      
       if (props.QuestionProp) {
-        console.log("her");
+        // console.log("her");
         
         const question = props.QuestionProp;
 
@@ -495,7 +502,7 @@ export default defineComponent({
   width: 90%;
   min-height: 160px;
   cursor: pointer;
-  margin-bottom: 1%;
+  margin-bottom: 3%;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   transition: all 0.5s;
   left: -2%;
@@ -754,6 +761,14 @@ export default defineComponent({
 .true-false-card p {
   padding: 0;
   margin: 0;
+  outline: none;
+  min-width: 10%;
+  max-width: 100%;
+  max-height: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  text-align: center;
 }
 
 .multiple-choice-tuple {
