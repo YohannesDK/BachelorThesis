@@ -17,7 +17,9 @@
         {{ document.name }}
       </div>
 
-      <div class="doc-item-time-container">
+      <div class="doc-item-time-container"
+      v-if="minimal === false"
+      >
         <span>Åpnet</span>
         <span
           class="doc-item-last-edited"
@@ -68,7 +70,6 @@ import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
-import store from "@/store";
 export default defineComponent({
   name: "documentCard",
   directives: { Test },
@@ -76,6 +77,10 @@ export default defineComponent({
     document: {
       type: Object as () => documentType,
       default: () => ({})
+    },
+    minimal: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
