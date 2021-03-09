@@ -3,7 +3,6 @@ import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
 import QuestionSetModule from "./modules/QuestionSet.module";
 
-
 const store = createStore({
   state: {
     documents: [
@@ -290,11 +289,11 @@ const store = createStore({
     SetDocumentQSID: (state, Data: any) => {
       const doc = state.documents.find(
         (doc: documentType) => doc.Documentid === Data.documentid
-      )
+      );
       if (doc) {
-        doc.QuestionSetID = Data.QSID
+        doc.QuestionSetID = Data.QSID;
       }
-    },
+    }
   },
   actions: {
     login: context => {
@@ -310,8 +309,8 @@ const store = createStore({
       context.commit("AddNewDocument");
     },
     SetDocumentQSID: (context, Data: any) => {
-      context.commit("SetDocumentQSID", Data)
-    },
+      context.commit("SetDocumentQSID", Data);
+    }
   },
   getters: {
     getDocuments: state => {
@@ -338,8 +337,7 @@ const store = createStore({
     },
     getActiveUser: state => {
       return state.activeUser;
-    },
-
+    }
   },
   modules: {
     QuestionSetModule

@@ -8,9 +8,9 @@
               <span>Create a new Question Set</span>
             </div>
             <div class="QuestionSetHeader-Status">
-              <span 
-              :class="{'text-success' : saved, 'text-danger' : !saved}"
-              >{{ saved ? "Saved" : "Unsaved" }}</span>
+              <span :class="{ 'text-success': saved, 'text-danger': !saved }">{{
+                saved ? "Saved" : "Unsaved"
+              }}</span>
             </div>
           </div>
           <div class="QuestionSetHeader-Button">
@@ -89,7 +89,11 @@ import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
 import router from "@/router";
 import store from "@/store";
-import { Question, QuestionSet, QuestionTypeEnum } from "@/store/interfaces/question.type";
+import {
+  Question,
+  QuestionSet,
+  QuestionTypeEnum
+} from "@/store/interfaces/question.type";
 import { onBeforeRouteLeave } from "vue-router";
 export default defineComponent({
   name: "AddNewQuestionSet",
@@ -114,27 +118,25 @@ export default defineComponent({
       QuestionSet: [] as Question[]
     });
 
-
     // route save guard, if the quesitons are not saved
     const RouteSafeGuards = () => {
       if (window !== null) {
-        window.addEventListener('beforeunload', (e) => {
+        window.addEventListener("beforeunload", e => {
           if (saved.value === false) {
-            e.preventDefault()
-            e.returnValue = 'you have unsaved work'
+            e.preventDefault();
+            e.returnValue = "you have unsaved work";
           }
-        })      
+        });
       }
-    }
-    
+    };
+
     onBeforeRouteLeave((to, from, next) => {
       if (saved.value) {
-        next()
-      }else {
-        alert("You have unsaved work")
+        next();
+      } else {
+        alert("You have unsaved work");
       }
-    })
-
+    });
 
     onBeforeUpdate(() => {
       questionCards.value = [];
@@ -150,35 +152,31 @@ export default defineComponent({
           Answer: ""
         }
       });
-      store.dispatch("IncrementQuestionId")
+      store.dispatch("IncrementQuestionId");
     };
-
 
     // Initilize Question Set if it exists
     const InitilizeQuestionSet = (QSID: number) => {
       if (QSID !== -1) {
-        const QuestionSet : QuestionSet = store.getters.getQuestionSetById(QSID);
-        Data.value.QSID = QuestionSet.QSID
-        Data.value.Tittle = QuestionSet.Tittle
-        Data.value.Description = QuestionSet.Description
-        Data.value.QuestionSet = QuestionSet.QuestionSet
+        const QuestionSet: QuestionSet = store.getters.getQuestionSetById(QSID);
+        Data.value.QSID = QuestionSet.QSID;
+        Data.value.Tittle = QuestionSet.Tittle;
+        Data.value.Description = QuestionSet.Description;
+        Data.value.QuestionSet = QuestionSet.QuestionSet;
 
         return;
       }
       // Create first element if QSID is -1
       Data.value.QSID = store.getters.getQuestionSetLength;
       OnAddNew();
-    }
+    };
 
     // Change between question cards
     const OnfocusChange = (index: number) => {
       focusIndex.value = index;
     };
 
-
-
-    const OnDelete = (index: number) => {      
-      
+    const OnDelete = (index: number) => {
       saved.value = false;
       if (index !== 0) {
         // TODO - fix visual effect - shaking effect
@@ -187,29 +185,27 @@ export default defineComponent({
           ...questionCards.value.slice(0, index),
           ...questionCards.value.slice(index + 1)
         ];
-        
+
         Data.value.QuestionSet = [
           ...Data.value.QuestionSet.slice(0, index),
           ...Data.value.QuestionSet.slice(index + 1)
         ];
-        focusIndex.value = index-1
-
+        focusIndex.value = index - 1;
       } else {
         OnfocusChange(0);
       }
-      
     };
 
     const Save = () => {
       // Update document QuestionSetId, when saving
       if (router.currentRoute.value.query.did) {
         store.dispatch("SetDocumentQSID", {
-          documentid : Number(router.currentRoute.value.query.did),
+          documentid: Number(router.currentRoute.value.query.did),
           QSID: Data.value.QSID
-        })
+        });
       }
       // To avoid duplactes, when updating question set
-      Data.value.QuestionSet.length = 0
+      Data.value.QuestionSet.length = 0;
 
       questionCards.value.forEach((ele: any) => {
         if (ele) {
@@ -221,22 +217,20 @@ export default defineComponent({
             //       it errors out, so i catch for now to avoid nasty output
             console.error("Error: ", e);
           }
-          
         }
-      }); 
+      });
       store.dispatch("AddNewQuestionSet", Data.value);
       saved.value = true;
     };
 
     onMounted(() => {
-
       // add window events
       RouteSafeGuards();
       if (router.currentRoute.value.query.QSID) {
-        QSID.value = Number(router.currentRoute.value.query.QSID)
+        QSID.value = Number(router.currentRoute.value.query.QSID);
       }
-      InitilizeQuestionSet(QSID.value)
-    })
+      InitilizeQuestionSet(QSID.value);
+    });
 
     return {
       OnAddNew,

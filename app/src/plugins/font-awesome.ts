@@ -51,7 +51,7 @@ library.add(
   faCheckSquare,
   faDotCircle,
   faParagraph,
-  faClone,
+  faClone
 );
 
 export { FontAwesomeIcon };

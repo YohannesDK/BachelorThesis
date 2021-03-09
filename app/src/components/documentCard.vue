@@ -17,9 +17,7 @@
         {{ document.name }}
       </div>
 
-      <div class="doc-item-time-container"
-      v-if="minimal === false"
-      >
+      <div class="doc-item-time-container" v-if="minimal === false">
         <span>Åpnet</span>
         <span
           class="doc-item-last-edited"
@@ -40,18 +38,20 @@
                 class="list-unstyled mb-0"
                 v-test="{ id: 'card-options-dropdown' }"
               >
-                <li
-                @click="OpenEditor(document.Documentid)"
-                >Open</li>
+                <li @click="OpenEditor(document.Documentid)">Open</li>
                 <li>Rename</li>
                 <li
-                v-if="document.QuestionSetID === -1"
-                @click="OpenQuestionSet(-1)"
-                >Add Question Set</li>
+                  v-if="document.QuestionSetID === -1"
+                  @click="OpenQuestionSet(-1)"
+                >
+                  Add Question Set
+                </li>
                 <li
-                v-if="document.QuestionSetID !== -1"
-                @click="OpenQuestionSet(document.QuestionSetID)"
-                >Open Question Set</li>
+                  v-if="document.QuestionSetID !== -1"
+                  @click="OpenQuestionSet(document.QuestionSetID)"
+                >
+                  Open Question Set
+                </li>
                 <li>Share</li>
                 <hr />
                 <li>Delete</li>
@@ -101,8 +101,11 @@ export default defineComponent({
     };
 
     const OpenQuestionSet = (QSID: number) => {
-      router.push({ name: "AddQuestionSet", query: { QSID: QSID, did: props.document.Documentid} });
-    }
+      router.push({
+        name: "AddQuestionSet",
+        query: { QSID: QSID, did: props.document.Documentid }
+      });
+    };
 
     onMounted(() => {
       if (props.document.delta) {

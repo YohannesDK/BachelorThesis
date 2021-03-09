@@ -5,5 +5,5 @@ export type documentType = {
   delta: Array<DeltaOperation>;
   tags: string[];
   lastEdited: string;
-  QuestionSetID: number,
+  QuestionSetID: number;
 };

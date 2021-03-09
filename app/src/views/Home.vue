@@ -1,17 +1,21 @@
 <template>
   <div class="home">
-    <div class="jumbotron text-white jumbotron-cover shadow"
-    :style="{
-      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.89)), url(\'' + require('@/assets/woodBackground.jpg') + '\')'
-    }"
+    <div
+      class="jumbotron text-white jumbotron-cover shadow"
+      :style="{
+        backgroundImage:
+          'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.89)), url(\'' +
+          require('@/assets/woodBackground.jpg') +
+          '\')'
+      }"
     >
-    <div class="welcome-message-container d-flex justify-content-between">
-      <div class="welcome-message-inner">
-        <h1 class="welcome-message">Good Morning!</h1>
-        <p>Yohannes</p>
+      <div class="welcome-message-container d-flex justify-content-between">
+        <div class="welcome-message-inner">
+          <h1 class="welcome-message">Good Morning!</h1>
+          <p>Yohannes</p>
+        </div>
+        <p>4 Mars 2020</p>
       </div>
-      <p>4 Mars 2020</p>
-    </div>
     </div>
     <div class="dashboard-container d-flex">
       <div class="dashboard-container-inner row d-flex justify-content-evenly">
@@ -20,27 +24,27 @@
             <div class="tittle p-1">
               Recents
             </div>
-             <nav class="navbar recents-nav">
-               <ul class="nav p-1">
-
-                 <li class="nav-item"
-                 :class="{'nav-active' : navItem.active}"
-                 @click="Active(navItem.id)"
-                 v-for="navItem in navContent"
-                 :key="navItem"
-                 >
-                   <a class="nav-link text-muted">{{navItem.header}}</a>
-                 </li>
-               </ul>
-             </nav>
+            <nav class="navbar recents-nav">
+              <ul class="nav p-1">
+                <li
+                  class="nav-item"
+                  :class="{ 'nav-active': navItem.active }"
+                  @click="Active(navItem.id)"
+                  v-for="navItem in navContent"
+                  :key="navItem"
+                >
+                  <a class="nav-link text-muted">{{ navItem.header }}</a>
+                </li>
+              </ul>
+            </nav>
           </div>
           <div class="dashboard-card-info d-flex">
             <div class="documents-container d-flex p-1" v-if="navHeaderId == 0">
               <document-card
-              v-for="doc in Documents"
-              :key="doc.Documentid"
-              :document="doc"
-              :minimal="true"
+                v-for="doc in Documents"
+                :key="doc.Documentid"
+                :document="doc"
+                :minimal="true"
               />
             </div>
             <div class="courses-container " v-if="navHeaderId == 1">
@@ -61,7 +65,7 @@
               </div>
             </div>
           </div>
-         </div>
+        </div>
         <div class="dashboard-card d-flex card col col-md-2 shadow">
           <div class="dashboard-card-nav">
             <div class="tittle p-1">
@@ -70,25 +74,22 @@
             <div class="dashboard-card-">
               <ul class="list-unstyled p-1">
                 <li
-                v-for="notification in Notifications"
-                :key="notification.id"
+                  v-for="notification in Notifications"
+                  :key="notification.id"
                 >
                   <div class="card notification-card d-flex shadow-sm">
                     <h1 class="notification">
-                      {{notification.Notification}}
+                      {{ notification.Notification }}
                     </h1>
                     <p class="notification-date">
-                      {{notification.date}}
+                      {{ notification.date }}
                     </p>
-
                   </div>
                 </li>
               </ul>
             </div>
           </div>
-          
         </div>
-
       </div>
     </div>
   </div>
@@ -155,11 +156,9 @@ export default defineComponent({
       navContent.value[id].active = true;
       navHeaderId.value = id;
       LastActive = id;
-    }
-    const Documents = computed(() => store.getters.getDocuments)
-    const Courses = computed(() => store.getters.getCourses)
-
-
+    };
+    const Documents = computed(() => store.getters.getDocuments);
+    const Courses = computed(() => store.getters.getCourses);
 
     return {
       Notifications,
@@ -168,11 +167,10 @@ export default defineComponent({
       Active,
       Documents,
       Courses
-    }
+    };
   }
 });
 </script>
-
 
 <style scoped>
 .jumbotron-cover {
@@ -229,7 +227,7 @@ export default defineComponent({
   font-size: 1.3rem;
 }
 
-.recents-nav{
+.recents-nav {
   padding-top: 0;
   padding-bottom: 0;
   position: relative;
@@ -239,11 +237,11 @@ export default defineComponent({
   padding-left: 0;
 }
 
-.recents-nav ul li .nav-link{
+.recents-nav ul li .nav-link {
   cursor: pointer;
 }
 
-.recents-nav ul li .nav-link:hover{
+.recents-nav ul li .nav-link:hover {
   border-bottom: 1px solid;
 }
 
@@ -252,15 +250,14 @@ export default defineComponent({
   border-bottom: 1px solid;
 }
 
-.text-muted{
-  color: #6c757d!important;
+.text-muted {
+  color: #6c757d !important;
 }
 
 .dashboard-card-info {
   overflow-y: hidden;
   overflow-x: auto;
   margin-bottom: 0.5rem;
-
 }
 
 .courses-container {
@@ -288,15 +285,14 @@ export default defineComponent({
   width: 100%;
 }
 
-
 .dashboard-card-info::-webkit-scrollbar {
   width: 2px;
   height: 0.5rem;
   margin-top: 1%;
 }
- 
+
 .dashboard-card-info::-webkit-scrollbar-thumb {
-  background: rgb(177, 176, 176); 
+  background: rgb(177, 176, 176);
   border-radius: 9px;
 }
 
@@ -306,11 +302,11 @@ export default defineComponent({
   border-radius: 8px;
 }
 
-.notification-card .notification{
+.notification-card .notification {
   font-size: 1rem;
 }
 
-.notification-card .notification-date{
+.notification-card .notification-date {
   font-size: 0.7rem;
 }
 </style>
