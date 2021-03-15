@@ -1,12 +1,13 @@
 <template>
   <div class="container" @contextmenu.prevent="showToolBar()">
-    <button @click.prevent="updateDoc">SAVE</button>
-    <div ref="root" id="editor" spellcheck="false"></div>
+    <!-- <button @click.prevent="updateDoc">SAVE</button> -->
+    <div style="overflow-x: hidden;" ref="root" id="editor" spellcheck="false"></div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
 import katex from "katex";
 import hljs, { highlight } from "highlight.js";
 import Quill, { DeltaOperation } from "quill";
@@ -16,6 +17,7 @@ import router from "@/router";
 import axios from "axios";
 import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
+import AppVue from "../App.vue";
 
 hljs.configure({
   languages: ["python"]
@@ -65,6 +67,8 @@ export default defineComponent({
       ["clean"] // remove formatting button
     ];
 
+
+    console.log()
     // Sets Editor Content
     const SetEditorContent = (ops: DeltaOperation[]) => {
       if (ops.length) {
@@ -77,6 +81,21 @@ export default defineComponent({
   let usID = 0;
   // @ts-ignore
   const docID = router.currentRoute._rawValue.query.did;
+
+
+  onBeforeRouteLeave((to, from) =>{
+      axios
+        .post("api/alterDocument", {
+          userId: usID,
+          docID: docID,
+          body: JSON.stringify(Editor.getContents()),
+          title: document.getElementsByClassName('documentTitle')[0].innerHTML
+        })
+        .then(response => {
+          console.log("updated")
+        });
+  })
+  
 
   onBeforeMount(() => {
 
@@ -187,8 +206,15 @@ export default defineComponent({
 #editor {
   min-height: 40vh;
   border: none;
+  overflow-x: hidden;
 }
 .ql-container {
   font-size: 0.97rem;
 }
+
+.container .ql-container .ql-editor {
+  font-size: 18px;
+  overflow-x: hidden; 
+}
+
 </style>

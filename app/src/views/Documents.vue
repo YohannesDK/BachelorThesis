@@ -54,6 +54,7 @@ import { useStore } from "vuex";
 import { doucmentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
 import axios from "axios";
+import jwt from "jsonwebtoken";
 import router from "@/router";
 
 export default defineComponent({
@@ -65,8 +66,13 @@ export default defineComponent({
     const store = useStore();
     const searchValue = ref<string>("");
     const documents = ref<Array<doucmentType>>([]);
-    // const testList = []
     let userId = 0;
+    const token = localStorage.getItem("token")
+    // const jwt = require("jsonwebtoken");
+
+      jwt.verify(token, "secretkey", (err, decoded )=> {
+        userId = decoded.id
+      })
 
       //Get request to get all the documents
       axios
@@ -74,8 +80,6 @@ export default defineComponent({
         headers: { token: localStorage.getItem("token") }
       })
       .then(response => {
-        userId = response.data.document[0].userId
-        // testList.push(response.data.document)
         documents.value = response.data.document
         });
 
@@ -99,8 +103,6 @@ export default defineComponent({
     };
 
     const filteredDocuments = computed(() => {
-
-
 
 
       let tempDocuments = documents.value;

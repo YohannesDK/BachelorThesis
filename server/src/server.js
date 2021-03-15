@@ -116,6 +116,62 @@ app.post("/api/createCourse", (request, response) => {
 
 });
 
+
+app.get("/api/fetchCourseDoc", (request, response) => {
+
+    let documentList = []
+
+    console.log(request.query.cid)
+
+    models.CourseDocumentRelation.findAll({where: {course_id: request.query.cid} }).then(function (docs){
+        for(let i = 0; i < docs.length; i++) {
+            models.document.findOne({where: {id: docs[i].document_id}}).then(function (courses){
+                documentList.push(courses.dataValues.body)
+            });
+        }
+
+        const delayReturn = function() {
+            return response.json({
+                title: "Fetch course documents",
+                documentList
+            });
+        }
+
+        setTimeout(delayReturn, 100)
+
+        })
+
+
+    // models.document.findAll({where: {course_id: request.query.docId}}).then(function(document){
+    //     return response.json({
+    //         title: "fetch course",
+    //         document: document,
+
+    //     })
+    // })
+
+
+});
+
+
+//This api call creates a document
+app.post("/api/linkDocument", (request, response) => {
+
+    console.log(request.body.documentId);
+    console.log(parseInt(request.body.courseId));
+
+
+        models.CourseDocumentRelation.create({
+            course_id: request.body.courseId,
+            document_id: request.body.documentId,
+        });
+
+});
+
+
+
+
+
 //This api call creates a document
 app.post("/api/createDocument", (request, response) => {
 
@@ -166,7 +222,6 @@ app.get("/api/documentInfo", (request, response) => {
 //TODO: authorize this api call
 app.get("/api/fetchDoc", (request, response) => {
 
-        console.log(request.query.docId)        
 
         models.document.findOne({where: {id: request.query.docId}}).then(function(document){
             return response.json({

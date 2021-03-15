@@ -37,6 +37,7 @@
 <script lang="ts">
 // https://codepen.io/umeshagouda/pen/QggMve
 import { defineComponent, ref } from "vue";
+import { onBeforeRouteLeave} from "vue-router";
 import { useStore } from "vuex";
 import router from "@/router";
 import axios from "axios";
@@ -54,6 +55,8 @@ export default defineComponent({
       courseBody: [] as any
     };
   },
+
+
 
   beforeCreate() {
     if (localStorage.getItem("token") === null) {
@@ -98,9 +101,10 @@ export default defineComponent({
       showModal.value = !showModal.value;
     };
 
+
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", params: { CourseId: courseId } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
 
     return {

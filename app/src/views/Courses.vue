@@ -35,7 +35,7 @@
         class="card shadow-sm rounded"
         v-for="(course, index) in courseBody"
         :key="index"
-        @click="OpenCourse(3)"
+        @click="OpenCourse(course.id)"
       >
         <img src="" alt="" class="card-img-top course-image" />
         <div class="card-body">
@@ -127,7 +127,7 @@ export default defineComponent({
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", query: { cid: 3 } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
 
     return {

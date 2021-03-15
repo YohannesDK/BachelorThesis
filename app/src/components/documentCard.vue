@@ -39,6 +39,7 @@
                 v-test="{ id: 'card-options-dropdown' }"
               >
                 <li>Open</li>
+                <li @click="addDoc()">Add to course</li>
                 <li>Rename</li>
                 <li>Share</li>
                 <hr />
@@ -56,6 +57,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
 import { doucmentType } from "@/store/interfaces/document";
+import axios from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
 export default defineComponent({
@@ -72,6 +74,9 @@ export default defineComponent({
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
 
+    // @ts-ignore
+    const courseID = router.currentRoute._rawValue.query.cid;
+
     const More = () => {
       showDropDown.value = true;
     };
@@ -80,17 +85,35 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
+    const addDoc = () => {
+      console.log("added this one" + props.document.id)
+      axios
+        .post("api/linkDocument", {
+          documentId: props.document.id,
+          courseId: courseID
+        })
+        .then(response => {
+          console.log(response)
+        });
+
+
+    }
+
     //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
       router.push({ name: "EditorView", query: { did: props.document.id } });
     };
 
     onMounted(() => {
+      console.log("her")
+      console.log(props.document)
       //This is the preview text inside document cards
-      if (JSON.parse(props.document.body)) {
+      if (props.document.body != "") {
         documentText.value = DeltaToPlainText(JSON.parse(props.document.body).ops)
           .substring(0, documentTextLength)
           .concat("...");
+      } else {
+        documentText.value = "Empty Document"
       }
     });
     return {
@@ -99,7 +122,8 @@ export default defineComponent({
       showDropDown,
       More,
       RemoveMore,
-      OpenEditor
+      OpenEditor,
+      addDoc
     };
   }
 });
