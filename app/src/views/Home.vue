@@ -11,20 +11,30 @@
     >
       <div class="welcome-message-container d-flex justify-content-between">
         <div class="welcome-message-inner">
-          <h1 class="welcome-message">Good Morning!</h1>
-          <p>Yohannes</p>
+          <h1 class="welcome-message"
+          v-test="{ id: 'dashboard-welcome-message' }"
+          >Good Morning!</h1>
+          <p
+          v-test="{ id: 'dashboard-username' }"
+          >Yohannes</p>
         </div>
-        <p>4 Mars 2020</p>
+        <p
+        v-test="{ id: 'dashboard-date' }"
+        >4 Mars 2020</p>
       </div>
     </div>
     <div class="dashboard-container d-flex">
       <div class="dashboard-container-inner row d-flex justify-content-evenly">
-        <div class="dashboard-card d-flex card col col-md-9 shadow">
+        <div class="dashboard-card d-flex card col col-md-9 shadow"
+        v-test="{ id: 'dashboard-recents-card' }"
+        >
           <div class="dashboard-card-nav pb-0">
             <div class="tittle p-1">
               Recents
             </div>
-            <nav class="navbar recents-nav">
+            <nav class="navbar recents-nav"
+            v-test="{ id: 'dashboard-recents-card-navbar' }"
+            >
               <ul class="nav p-1">
                 <li
                   class="nav-item"
@@ -33,7 +43,10 @@
                   v-for="navItem in navContent"
                   :key="navItem"
                 >
-                  <a class="nav-link text-muted">{{ navItem.header }}</a>
+                  <a class="nav-link text-muted"
+                  
+                  v-test="{ id: 'dashboard-recents-card-navbar-option' }"
+                  >{{ navItem.header }}</a>
                 </li>
               </ul>
             </nav>
@@ -97,13 +110,15 @@
 
 <script lang="ts">
 import store from "@/store";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
+import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
 export default defineComponent({
   name: "Home",
   components: {
     documentCard
   },
+  directives: {Test},
   setup() {
     const Notifications = ref([
       {
@@ -129,7 +144,7 @@ export default defineComponent({
     ]);
     const navContent = ref([
       {
-        header: "Documens",
+        header: "Documents",
         active: true,
         id: 0
       },

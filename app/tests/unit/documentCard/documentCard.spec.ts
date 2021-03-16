@@ -13,7 +13,7 @@ import { dummyDocument } from "./documentCard.utils";
 
 // wrapper around our component
 const wrapper = shallowMount(documentCard, {
-  props: { document: dummyDocument }
+  props: { document: dummyDocument, minimal: false }
 });
 
 describe("document card - container", () => {
