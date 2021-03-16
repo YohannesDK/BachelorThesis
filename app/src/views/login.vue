@@ -66,6 +66,7 @@ import { useStore } from "vuex";
 import axios from "axios";
 import { checkLogin } from "@/services/api/login.service";
 import router from "@/router";
+import store from "@/store";
 export default defineComponent({
   name: "Login",
   data() {
@@ -89,6 +90,8 @@ export default defineComponent({
         .then(response => {
           //If the post request is successful
           if (response.status === 200) {
+            // set active user
+            store.dispatch("setUser", {username: response.data.username});
             // If the user is a student, redirect him to student page
             if (response.data.role == "Student") {
               // this.$store.commit("setAuthentication", "Student");

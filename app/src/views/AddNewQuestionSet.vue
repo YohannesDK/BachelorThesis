@@ -95,6 +95,7 @@ import {
   QuestionTypeEnum
 } from "@/store/interfaces/question.type";
 import { onBeforeRouteLeave } from "vue-router";
+import { day, month, year } from "@/utils/calender.utils";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -115,7 +116,8 @@ export default defineComponent({
       QSID: -1,
       Tittle: "",
       Description: "",
-      QuestionSet: [] as Question[]
+      QuestionSet: [] as Question[],
+      LastEdited: `${day} ${month} ${year}`
     });
 
     // route save guard, if the quesitons are not saved
@@ -163,7 +165,6 @@ export default defineComponent({
         Data.value.Tittle = QuestionSet.Tittle;
         Data.value.Description = QuestionSet.Description;
         Data.value.QuestionSet = QuestionSet.QuestionSet;
-
         return;
       }
       // Create first element if QSID is -1

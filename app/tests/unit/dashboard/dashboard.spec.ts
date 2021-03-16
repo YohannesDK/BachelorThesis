@@ -71,4 +71,11 @@ describe("Dashboard - recents card", () => {
   it("recents card navbar should have resources as the fourth nav item", () => {
     expect(recentsCardNavBarOptions[3].text().toLowerCase()).to.equal("resources");
   });
+});
+
+describe("Dashboard - notifications card", () => {
+  it("notifications card should exists", () => {
+    const notificationcard = wrapper.find("[data-test-id='dashboard-notification-card']")
+    expect(notificationcard.exists()).to.equal(true)
+  })
 })

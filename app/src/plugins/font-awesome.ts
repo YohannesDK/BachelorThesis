@@ -23,7 +23,9 @@ import {
   faCheckSquare,
   faDotCircle,
   faParagraph,
-  faClone
+  faClone,
+  faEllipsisV,
+  faCaretDown
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -51,7 +53,9 @@ library.add(
   faCheckSquare,
   faDotCircle,
   faParagraph,
-  faClone
+  faClone,
+  faEllipsisV,
+  faCaretDown
 );
 
 export { FontAwesomeIcon };

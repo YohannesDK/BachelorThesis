@@ -16,11 +16,11 @@
           >Good Morning!</h1>
           <p
           v-test="{ id: 'dashboard-username' }"
-          >Yohannes</p>
+          >{{user.username}}</p>
         </div>
         <p
         v-test="{ id: 'dashboard-date' }"
-        >4 Mars 2020</p>
+        >{{day}} {{month}} {{year}}</p>
       </div>
     </div>
     <div class="dashboard-container d-flex">
@@ -79,7 +79,8 @@
             </div>
           </div>
         </div>
-        <div class="dashboard-card d-flex card col col-md-2 shadow">
+        <div class="dashboard-card d-flex card col col-md-2 shadow"
+          v-test="{ id: 'dashboard-notification-card' }">
           <div class="dashboard-card-nav">
             <div class="tittle p-1">
               Notifications
@@ -113,6 +114,7 @@ import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
+import {day, month, year} from "@/utils/calender.utils";
 export default defineComponent({
   name: "Home",
   components: {
@@ -174,14 +176,18 @@ export default defineComponent({
     };
     const Documents = computed(() => store.getters.getDocuments);
     const Courses = computed(() => store.getters.getCourses);
-
+    const user = computed(() => store.getters.getActiveUser);
     return {
       Notifications,
       navContent,
       navHeaderId,
       Active,
       Documents,
-      Courses
+      Courses,
+      user,
+      day,
+      month,
+      year
     };
   }
 });
