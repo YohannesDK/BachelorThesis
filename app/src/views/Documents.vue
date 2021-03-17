@@ -61,7 +61,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = ref<Array<documentType>>(store.getters.getDocuments);
+    const documents = computed(() => store.getters.getDocuments) 
 
     // Create New Document
     const NewDocument = () => {

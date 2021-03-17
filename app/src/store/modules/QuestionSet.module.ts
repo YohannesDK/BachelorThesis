@@ -22,6 +22,12 @@ export default {
     },
     IncrementQuestionId: (state: any) => {
       state.QuestionId++;
+    },
+    DeleteQuestionSet: (state: any, QSID: number) => {
+      const index = state.QuestionSets.map((item: QuestionSet) => item.QSID).indexOf(QSID)
+      if (index > -1) {
+        state.QuestionSets.splice(index, 1)
+      }
     }
   },
   actions: {
@@ -30,7 +36,11 @@ export default {
     },
     IncrementQuestionId: (context: any) => {
       context.commit("IncrementQuestionId");
+    },
+    DeleteQuestionSet: (context: any, QSID: number) => {
+      context.commit("DeleteQuestionSet", QSID)
     }
+    
   },
   getters: {
     getAllQuestionSets: (state: any) => {

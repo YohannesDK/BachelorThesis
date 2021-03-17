@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
 import QuestionSetModule from "./modules/QuestionSet.module";
+import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {
@@ -293,6 +294,14 @@ const store = createStore({
       if (doc) {
         doc.QuestionSetID = Data.QSID;
       }
+    },
+    DeleteQuestionSetFromDocument: (state, QSID: number) => {
+      const doc = state.documents.find(
+        (doc: documentType) => doc.QuestionSetID === QSID 
+      );
+      if (doc) {
+        doc.QuestionSetID = -1;
+      }
     }
   },
   actions: {
@@ -310,6 +319,9 @@ const store = createStore({
     },
     SetDocumentQSID: (context, Data: any) => {
       context.commit("SetDocumentQSID", Data);
+    },
+    DeleteQuestionSetFromDocument: (context, QSID: number) => {
+      context.commit("DeleteQuestionSetFromDocument", QSID)
     }
   },
   getters: {
@@ -341,7 +353,9 @@ const store = createStore({
   },
   modules: {
     QuestionSetModule
-  }
+  },
+  // uncomment this on to persist state
+  // plugins: [createPersistedState()]
 });
 
 export default store;
