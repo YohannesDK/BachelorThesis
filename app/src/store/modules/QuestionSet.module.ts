@@ -14,6 +14,8 @@ export default {
           QS.Description = QuestionSet.Description;
           QS.Tittle = QuestionSet.Tittle;
           QS.QuestionSet = QuestionSet.QuestionSet;
+          QS.DocumentID = QuestionSet.DocumentID;
+          QS.CourseId = QuestionSet.CourseId;
         }
       });
       if (!found) {
@@ -28,7 +30,13 @@ export default {
       if (index > -1) {
         state.QuestionSets.splice(index, 1)
       }
+    },
+    AttachDocumentToQuestionSet: (state: any, data:any) => {
+      data.documentToAttachTo.forEach((ele: any) => {
+        console.log(ele);
+      });
     }
+
   },
   actions: {
     AddNewQuestionSet: (context: any, QuestionSet: QuestionSet) => {
@@ -39,6 +47,9 @@ export default {
     },
     DeleteQuestionSet: (context: any, QSID: number) => {
       context.commit("DeleteQuestionSet", QSID)
+    },
+    AttachDocumentToQuestionSet: (context: any, data: any) => {
+      context.commit("AttachDocumentToQuestionSet", data) 
     }
     
   },

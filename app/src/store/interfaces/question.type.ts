@@ -64,4 +64,6 @@ export type QuestionSet = {
   Description: string;
   QuestionSet: Array<Question>;
   LastEdited?: string;
+  DocumentID?: number;
+  CourseId?: number;
 };

@@ -151,7 +151,7 @@ const store = createStore({
         ],
         tags: ["DAT310", "WebProg", "Vue", "NodeJS"],
         lastEdited: "2 Feb. 2021",
-        QuestionSetID: -1
+        QuestionSetID: []
       },
       {
         Documentid: 1,
@@ -184,7 +184,7 @@ const store = createStore({
         ],
         tags: ["Test 1"],
         lastEdited: "3 Feb 2021",
-        QuestionSetID: -1
+        QuestionSetID: []
       },
       {
         Documentid: 3,
@@ -217,7 +217,7 @@ const store = createStore({
         ],
         tags: ["Test 1"],
         lastEdited: "5 Feb 2021",
-        QuestionSetID: -1
+        QuestionSetID: []
       }
     ] as documentType[],
     courses: [
@@ -284,7 +284,7 @@ const store = createStore({
         delta: [],
         tags: [],
         lastEdited: "11 Feb 2021",
-        QuestionSetID: -1
+        QuestionSetID: []
       });
     },
     SetDocumentQSID: (state, Data: any) => {
@@ -292,17 +292,17 @@ const store = createStore({
         (doc: documentType) => doc.Documentid === Data.documentid
       );
       if (doc) {
-        doc.QuestionSetID = Data.QSID;
+        doc.QuestionSetID.push(Data.QSID);
       }
     },
-    DeleteQuestionSetFromDocument: (state, QSID: number) => {
-      const doc = state.documents.find(
-        (doc: documentType) => doc.QuestionSetID === QSID 
-      );
-      if (doc) {
-        doc.QuestionSetID = -1;
-      }
-    }
+    // DeleteQuestionSetFromDocument: (state, QSID: number) => {
+    //   const doc = state.documents.find(
+    //     (doc: documentType) => doc.QuestionSetID === QSID 
+    //   );
+    //   if (doc) {
+    //     doc.QuestionSetID = -1;
+    //   }
+    // }
   },
   actions: {
     login: context => {

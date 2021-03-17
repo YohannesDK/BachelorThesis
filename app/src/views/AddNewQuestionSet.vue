@@ -117,7 +117,9 @@ export default defineComponent({
       Tittle: "",
       Description: "",
       QuestionSet: [] as Question[],
-      LastEdited: `${day} ${month} ${year}`
+      LastEdited: `${day} ${month} ${year}`,
+      DocumentID: -1,
+      CourseID: -1
     });
 
     // route save guard, if the quesitons are not saved
@@ -198,12 +200,13 @@ export default defineComponent({
     };
 
     const Save = () => {
-      // Update document QuestionSetId, when saving
+      // Update document QuestionSetId, and questionst documentid, when saving
       if (router.currentRoute.value.query.did) {
         store.dispatch("SetDocumentQSID", {
           documentid: Number(router.currentRoute.value.query.did),
           QSID: Data.value.QSID
         });
+        Data.value.DocumentID = Number(router.currentRoute.value.query.did); 
       }
       // To avoid duplactes, when updating question set
       Data.value.QuestionSet.length = 0;

@@ -2,18 +2,25 @@
   <div class="container d-flex flex-column justify-content-end p-1 align-items-center"
   style="margin-top:3%;"
   >
-    <div class="navbar" style="margin: auto; margin-left:0;">
+    <modal ref="Modal">
+      <template v-slot:content>
+        <attach-document-to-question-set :QSID="AttachQSID" />
+      </template>
+
+    </modal>
+    <div class="navbar questionnav" style="margin: auto; margin-left:0;">
       <h1 class="questionsetheader">My Question Sets</h1>
+      <div :class="{'plusicontop': QuestionSets.length > 0}" class="plusicon" v-if="QuestionSets.length > 0" @click="AddNewQuestionSet">
+        <fa icon="plus" />
+      </div>
     </div>
     <table class="table questionsettable">
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col"
-          >
+          <th scope="col">
             <div class="th-container"
             @click="updateSortOption(0)"
-            :class="{'sortactive' : sortOptions === 0}"
             >
               <span>Tittle</span>
               <div class="th-icon-container">
@@ -26,7 +33,6 @@
           >
             <div class="th-container"
             @click="updateSortOption(1)"
-            :class="{'sortactive' : sortOptions === 1}"
             >
               <span>Questions</span>
               <div class="th-icon-container">
@@ -39,7 +45,6 @@
           >
             <div class="th-container"
             @click="updateSortOption(2)"
-            :class="{'sortactive' : sortOptions === 2}"
             >
               <span>Last Edited</span>
               <div class="th-icon-container">
@@ -78,6 +83,10 @@
                     @click="OpenQuestionSet(questionset.QSID)"
                     >Open</li>
                     <li>Rename</li>
+                    <li v-if="questionset.DocumentID === -1"
+                    @click="attachToDocument(questionset.QSID)"
+                    >Attach To Document</li>
+                    <li v-if="questionset.DocumentID !== -1">Open Attached Document</li>
                     <li>Share</li>
                     <hr />
                     <li
@@ -91,7 +100,9 @@
         </tr>
         <tr v-if="QuestionSets.length === 0">
           <td colspan="4" style="text-align: center; border-bottom: 0;">
-            <h1 class="m-auto">No Question Sets</h1>
+            <div class="plusicon" @click="AddNewQuestionSet">
+              <fa icon="plus" />
+            </div>
           </td>
         </tr>
       </tbody>
@@ -100,20 +111,38 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, Ref, ref } from 'vue';
 import store from "@/store";
 import Test from "@/directives/test.directive";
 import router from '@/router';
 import { QuestionSet } from '@/store/interfaces/question.type';
+import Modal from "@/components/ModalComponent.vue";
+import { documentType } from '@/store/interfaces/document';
+import AttachDocumentToQuestionSet from '@/components/AttachDocumentToQuestionSet.vue';
 
 export default defineComponent({
   name: "Questions",
   directives: {
     Test
   },
+  components: {
+    Modal,
+    AttachDocumentToQuestionSet
+  },
   setup() {
-    const sortOptions = ref<number>(-1);
+    const displaytype = ref<string>("");
+    const AttachQSID = ref<number>(-1);
+    const Modal = ref<any>();
 
+    // drop down logic
+    const dropdownIndex = ref<number>(-1);
+
+    const ShowDropDown = (index: number ) => {
+      dropdownIndex.value = index;
+    }
+
+    // sort and show questions sets
+    const sortOptions = ref<number>(-1);
     const QuestionSets = computed(() => {
       if (sortOptions.value === -1) {
         return store.getters.getAllQuestionSets
@@ -136,7 +165,6 @@ export default defineComponent({
       }
 
     });
-
     const updateSortOption = (newoption: number) => {
       if (sortOptions.value === newoption) {
         sortOptions.value = -1 
@@ -145,10 +173,9 @@ export default defineComponent({
       sortOptions.value = newoption
     }
 
-    const dropdownIndex = ref<number>(-1);
-
-    const ShowDropDown = (index: number ) => {
-      dropdownIndex.value = index;
+    // Question set actions
+    const AddNewQuestionSet = () => {
+      router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
     }
 
     const OpenQuestionSet = (QSID: number) => {
@@ -157,19 +184,40 @@ export default defineComponent({
         query: { QSID: QSID}
       });
     };
-
     const DeleteQuestionSet = (QSID: number) => {
       store.dispatch("DeleteQuestionSet", QSID)
       store.dispatch("DeleteQuestionSetFromDocument", QSID)
     }
+
+    const attachToDocument = (QSID: number) => {
+      //remove dropdown
+      dropdownIndex.value = -1;
+
+      //give prop right QSID value
+      AttachQSID.value = QSID;
+
+      if (Modal.value) {
+        try {
+          Modal.value.showModal.call()
+        } catch (e) {
+          console.error(e)
+        }
+      }
+    }
+
     return {
+      displaytype,
+      Modal,
       QuestionSets,
       ShowDropDown,
       dropdownIndex,
       OpenQuestionSet,
       sortOptions,
       updateSortOption,
-      DeleteQuestionSet
+      DeleteQuestionSet,
+      attachToDocument,
+      AddNewQuestionSet,
+      AttachQSID
     }
   }
 })
@@ -177,12 +225,44 @@ export default defineComponent({
 
 <style scoped>
 
+.questionnav {
+  margin: auto auto auto 0px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.plusicon{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3a7892;
+  color: white;
+  transition: all 0.3s;
+  margin: auto;
+  margin-top: 1rem;
+}
+
+.plusicon:hover{
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  cursor: pointer;
+}
+
+.plusicontop {
+  margin: 0 1% 0 0 !important;
+}
+
 .questionsetheader{
   color: grey;
   padding-top: 4%;
   margin: 0;
   font-size: 1.8rem;
-  padding-left: 2%;
+  /* padding-left: 2%; */
   white-space: nowrap;
 }
 
@@ -238,12 +318,6 @@ export default defineComponent({
 .th-icon-container:hover {
   background-color: rgba(229, 231, 238, 0.514);
   cursor: pointer;
-}
-
-.sortactive {
-  background-color: rgba(229, 231, 238, 0.514);
-  text-decoration: underline;
-  border-bottom: 1px solid rgba(229, 231, 238, 0.514);
 }
 
 .table-questionsets-row{
