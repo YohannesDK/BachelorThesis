@@ -11,8 +11,6 @@
       <div class="modal-content-inner">
         <slot name="content" :settings="settingschoiche"> </slot>
         <div class="settingsCard">
-          <p>Settings</p>
-          <hr class="m-0" />
           <ul class="list-unstyled">
             <li
               :class="{ active: settingschoiche === 0 }"
@@ -125,9 +123,10 @@ export default defineComponent({
   padding: 20px;
   border: 1px solid #888;
   margin-bottom: 5%;
-  margin-left: 20rem;
   border: 5px solid whitesmoke;
   border-radius: 15px;
+  position: relative;
+  left: 1%;
 }
 
 .modal-content-inner {

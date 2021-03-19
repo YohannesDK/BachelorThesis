@@ -102,7 +102,7 @@
                     <li>Rename</li>
                     <li>Practise</li>
                     <li @click="attachToDocument(questionset.QSID)">
-                      Attach To Document
+                      Attach Question Set
                     </li>
                     <li>Share</li>
                     <hr />
