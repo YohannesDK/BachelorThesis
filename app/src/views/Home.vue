@@ -11,29 +11,32 @@
     >
       <div class="welcome-message-container d-flex justify-content-between">
         <div class="welcome-message-inner">
-          <h1 class="welcome-message"
-          v-test="{ id: 'dashboard-welcome-message' }"
-          >Good Morning!</h1>
-          <p
-          v-test="{ id: 'dashboard-username' }"
-          >{{user.username}}</p>
+          <h1
+            class="welcome-message"
+            v-test="{ id: 'dashboard-welcome-message' }"
+          >
+            Good Morning!
+          </h1>
+          <p v-test="{ id: 'dashboard-username' }">{{ user.username }}</p>
         </div>
-        <p
-        v-test="{ id: 'dashboard-date' }"
-        >{{day}} {{month}} {{year}}</p>
+        <p v-test="{ id: 'dashboard-date' }">
+          {{ day }} {{ month }} {{ year }}
+        </p>
       </div>
     </div>
     <div class="dashboard-container d-flex">
       <div class="dashboard-container-inner row d-flex justify-content-evenly">
-        <div class="dashboard-card d-flex card col col-md-9 shadow"
-        v-test="{ id: 'dashboard-recents-card' }"
+        <div
+          class="dashboard-card d-flex card col col-md-9 shadow"
+          v-test="{ id: 'dashboard-recents-card' }"
         >
           <div class="dashboard-card-nav pb-0">
             <div class="tittle p-1">
               Recents
             </div>
-            <nav class="navbar recents-nav"
-            v-test="{ id: 'dashboard-recents-card-navbar' }"
+            <nav
+              class="navbar recents-nav"
+              v-test="{ id: 'dashboard-recents-card-navbar' }"
             >
               <ul class="nav p-1">
                 <li
@@ -43,10 +46,11 @@
                   v-for="navItem in navContent"
                   :key="navItem"
                 >
-                  <a class="nav-link text-muted"
-                  
-                  v-test="{ id: 'dashboard-recents-card-navbar-option' }"
-                  >{{ navItem.header }}</a>
+                  <a
+                    class="nav-link text-muted"
+                    v-test="{ id: 'dashboard-recents-card-navbar-option' }"
+                    >{{ navItem.header }}</a
+                  >
                 </li>
               </ul>
             </nav>
@@ -79,8 +83,10 @@
             </div>
           </div>
         </div>
-        <div class="dashboard-card d-flex card col col-md-2 shadow"
-          v-test="{ id: 'dashboard-notification-card' }">
+        <div
+          class="dashboard-card d-flex card col col-md-2 shadow"
+          v-test="{ id: 'dashboard-notification-card' }"
+        >
           <div class="dashboard-card-nav">
             <div class="tittle p-1">
               Notifications
@@ -114,13 +120,13 @@ import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
-import {day, month, year} from "@/utils/calender.utils";
+import { day, month, year } from "@/utils/calender.utils";
 export default defineComponent({
   name: "Home",
   components: {
     documentCard
   },
-  directives: {Test},
+  directives: { Test },
   setup() {
     const Notifications = ref([
       {

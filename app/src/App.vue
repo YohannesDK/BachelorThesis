@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <!-- Sidebar -->
-    <nav-bar v-if="showSideBar" @MoveBody="OnMoveBody" />
+    <nav-bar v-show="showSideBar" @MoveBody="OnMoveBody" />
 
     <!-- page content -->
     <div
@@ -10,6 +10,7 @@
       class="container-fluid appContainer"
     >
       <router-view />
+      <loading-screen v-if="showLoading" />
     </div>
   </div>
 </template>
@@ -18,17 +19,24 @@
 import { computed, defineComponent, ref } from "vue";
 import NavBar from "@/components/NavBar.vue";
 import router from "@/router";
+import LoadingScreen from "@/components/LoadingScreen.vue";
+import store from "./store";
 
 export default defineComponent({
   name: "App",
   components: {
-    NavBar
+    NavBar,
+    LoadingScreen
   },
   setup() {
     const appContainer = ref<HTMLDivElement>();
 
     const showSideBar = computed(() => {
       return router.currentRoute.value.meta.showSideBar !== false;
+    });
+
+    const showLoading = computed(() => {
+      return store.getters.getIsLoading === true;
     });
 
     const OnMoveBody = (showSideBar: boolean, sideBarType?: number) => {
@@ -47,7 +55,8 @@ export default defineComponent({
     return {
       appContainer,
       showSideBar,
-      OnMoveBody
+      OnMoveBody,
+      showLoading
     };
   }
 });

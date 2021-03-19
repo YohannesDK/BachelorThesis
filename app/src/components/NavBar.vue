@@ -1,8 +1,7 @@
 <template>
   <nav ref="sidebar" id="sidebar" v-test="{ id: 'navbar-container' }">
     <div class="sidebar-header">
-      <h3 v-if="userEmpty">My Sidebar</h3>
-      <h3 v-if="!userEmpty && user[0] !== undefined">{{ user[0].username }}</h3>
+      <img src="../assets/AppLogo.svg" alt="logo" class="logo" />
     </div>
 
     <ul class="list-unstyled components">
@@ -212,6 +211,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.logo {
+  max-width: 30%;
+}
 .sidebar-list {
   -webkit-transition: background-color 0.7s ease-out;
   -moz-transition: background-color 0.7s ease-out;

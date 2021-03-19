@@ -1,16 +1,29 @@
 <template>
-  <div class="container d-flex flex-column justify-content-end p-1 align-items-center"
-  style="margin-top:3%;"
+  <div
+    class="container d-flex flex-column justify-content-end p-1 align-items-center"
+    style="margin-top:3%;"
   >
     <modal ref="Modal">
-      <template v-slot:content>
-        <attach-document-to-question-set :QSID="AttachQSID" />
+      <template v-slot:content="slotProps">
+        <attach-document-to-question-set
+          :QSID="AttachQSID"
+          v-if="slotProps.settings === 0"
+        />
+        <attach-course-to-question-set-vue
+          :QSID="AttachQSID"
+          v-if="slotProps.settings === 1"
+        />
       </template>
-
     </modal>
+
     <div class="navbar questionnav" style="margin: auto; margin-left:0;">
       <h1 class="questionsetheader">My Question Sets</h1>
-      <div :class="{'plusicontop': QuestionSets.length > 0}" class="plusicon" v-if="QuestionSets.length > 0" @click="AddNewQuestionSet">
+      <div
+        :class="{ plusicontop: QuestionSets.length > 0 }"
+        class="plusicon"
+        v-if="QuestionSets.length > 0"
+        @click="AddNewQuestionSet"
+      >
         <fa icon="plus" />
       </div>
     </div>
@@ -19,37 +32,38 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">
-            <div class="th-container"
-            @click="updateSortOption(0)"
-            >
+            <div class="th-container" @click="updateSortOption(0)">
               <span>Tittle</span>
               <div class="th-icon-container">
-                <fa v-if="sortOptions !== 0" icon="caret-down"/>
-                <fa v-if="sortOptions === 0" icon="caret-up"/>
+                <fa v-if="sortOptions !== 0" icon="caret-down" />
+                <fa v-if="sortOptions === 0" icon="caret-up" />
               </div>
             </div>
           </th>
-          <th scope="col"
-          >
-            <div class="th-container"
-            @click="updateSortOption(1)"
-            >
+          <th scope="col">
+            <div class="th-container" @click="updateSortOption(0)">
+              <span>Description</span>
+              <div class="th-icon-container">
+                <fa v-if="sortOptions !== 0" icon="caret-down" />
+                <fa v-if="sortOptions === 0" icon="caret-up" />
+              </div>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="th-container" @click="updateSortOption(1)">
               <span>Questions</span>
               <div class="th-icon-container">
-                <fa v-if="sortOptions !== 1" icon="caret-down"/>
-                <fa v-if="sortOptions === 1" icon="caret-up"/>
+                <fa v-if="sortOptions !== 1" icon="caret-down" />
+                <fa v-if="sortOptions === 1" icon="caret-up" />
               </div>
             </div>
           </th>
-          <th scope="col"
-          >
-            <div class="th-container"
-            @click="updateSortOption(2)"
-            >
+          <th scope="col">
+            <div class="th-container" @click="updateSortOption(2)">
               <span>Last Edited</span>
               <div class="th-icon-container">
-                <fa v-if="sortOptions !== 2" icon="caret-down"/>
-                <fa v-if="sortOptions === 2" icon="caret-up"/>
+                <fa v-if="sortOptions !== 2" icon="caret-down" />
+                <fa v-if="sortOptions === 2" icon="caret-up" />
               </div>
             </div>
           </th>
@@ -57,41 +71,51 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="table-questionsets-row" v-for="(questionset, index) in QuestionSets" :key="index"
+        <tr
+          class="table-questionsets-row"
+          v-for="(questionset, index) in QuestionSets"
+          :key="index"
         >
           <th scope="row">{{ index + 1 }}</th>
           <td>{{ questionset.Tittle }}</td>
+          <td>{{ questionset.Description.substring(0, 25) + "..." }}</td>
           <td>{{ questionset.QuestionSet.length }}</td>
           <td>{{ questionset.LastEdited }}</td>
-          <td class="d-flex justify-content-end"
-          >
-            <div class="actions-button"
-            @click="ShowDropDown(index)"
-            @mouseleave="dropdownIndex = -1"
+          <td class="d-flex justify-content-end">
+            <div
+              class="actions-button"
+              @click="ShowDropDown(index)"
+              @mouseleave="dropdownIndex = -1"
             >
               <fa icon="ellipsis-v" />
-              <div class="dropdowncontainer"
-              v-if="dropdownIndex === index"
-              @mouseleave="dropdownIndex = -1"
+              <div
+                class="dropdowncontainer"
+                v-if="dropdownIndex === index"
+                @mouseleave="dropdownIndex = -1"
               >
                 <div class="doc-item-more-dropdown shadow-sm">
                   <ul
                     class="list-unstyled mb-0"
                     v-test="{ id: 'card-options-dropdown' }"
                   >
-                    <li
-                    @click="OpenQuestionSet(questionset.QSID)"
-                    >Open</li>
+                    <li @click="OpenQuestionSet(questionset.QSID)">Open</li>
                     <li>Rename</li>
-                    <li v-if="questionset.DocumentID === -1"
-                    @click="attachToDocument(questionset.QSID)"
-                    >Attach To Document</li>
-                    <li v-if="questionset.DocumentID !== -1">Open Attached Document</li>
+                    <li>Practise</li>
+                    <li @click="attachToDocument(questionset.QSID)">
+                      Attach To Document
+                    </li>
                     <li>Share</li>
                     <hr />
                     <li
-                    @click="DeleteQuestionSet(questionset.QSID)"
-                    >Delete</li>
+                      @click="
+                        DeleteQuestionSet(
+                          questionset.DocumentID,
+                          questionset.QSID
+                        )
+                      "
+                    >
+                      Delete
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -99,7 +123,7 @@
           </td>
         </tr>
         <tr v-if="QuestionSets.length === 0">
-          <td colspan="4" style="text-align: center; border-bottom: 0;">
+          <td colspan="5" style="text-align: center; border-bottom: 0;">
             <div class="plusicon" @click="AddNewQuestionSet">
               <fa icon="plus" />
             </div>
@@ -111,14 +135,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, Ref, ref } from 'vue';
+import { computed, defineComponent, ref } from "vue";
 import store from "@/store";
 import Test from "@/directives/test.directive";
-import router from '@/router';
-import { QuestionSet } from '@/store/interfaces/question.type';
+import router from "@/router";
+import { QuestionSet } from "@/store/interfaces/question.type";
 import Modal from "@/components/ModalComponent.vue";
-import { documentType } from '@/store/interfaces/document';
-import AttachDocumentToQuestionSet from '@/components/AttachDocumentToQuestionSet.vue';
+import AttachDocumentToQuestionSet from "@/components/AttachDocumentToQuestionSet.vue";
+import AttachCourseToQuestionSetVue from "@/components/AttachCourseToQuestionSet.vue";
 
 export default defineComponent({
   name: "Questions",
@@ -127,7 +151,8 @@ export default defineComponent({
   },
   components: {
     Modal,
-    AttachDocumentToQuestionSet
+    AttachDocumentToQuestionSet,
+    AttachCourseToQuestionSetVue
   },
   setup() {
     const displaytype = ref<string>("");
@@ -137,57 +162,69 @@ export default defineComponent({
     // drop down logic
     const dropdownIndex = ref<number>(-1);
 
-    const ShowDropDown = (index: number ) => {
+    const ShowDropDown = (index: number) => {
       dropdownIndex.value = index;
-    }
+    };
 
     // sort and show questions sets
     const sortOptions = ref<number>(-1);
     const QuestionSets = computed(() => {
       if (sortOptions.value === -1) {
-        return store.getters.getAllQuestionSets
-      }
-      else if (sortOptions.value === 0) {
-        return store.getters.getAllQuestionSets.
-          sort((a:QuestionSet, b: QuestionSet) => (a.Tittle > b.Tittle) ? 1 : (b.Tittle > a.Tittle) ? -1 : 0)
-      }
-      else if (sortOptions.value === 1) {
-        return store.getters.getAllQuestionSets.
-          sort((a:QuestionSet, b: QuestionSet) => (a.QuestionSet.length > b.QuestionSet.length) ? 1 : (b.QuestionSet.length > a.QuestionSet.length) ? -1 : 0)
-      } else if (sortOptions.value === 2){
-        
-        return store.getters.getAllQuestionSets.
-          sort((a:QuestionSet, b: QuestionSet) => {
+        return store.getters.getAllQuestionSets;
+      } else if (sortOptions.value === 0) {
+        return store.getters.getAllQuestionSets.sort(
+          (a: QuestionSet, b: QuestionSet) =>
+            a.Tittle > b.Tittle ? 1 : b.Tittle > a.Tittle ? -1 : 0
+        );
+      } else if (sortOptions.value === 1) {
+        return store.getters.getAllQuestionSets.sort(
+          (a: QuestionSet, b: QuestionSet) =>
+            a.QuestionSet.length > b.QuestionSet.length
+              ? 1
+              : b.QuestionSet.length > a.QuestionSet.length
+              ? -1
+              : 0
+        );
+      } else if (sortOptions.value === 2) {
+        return store.getters.getAllQuestionSets.sort(
+          (a: QuestionSet, b: QuestionSet) => {
             if (a.LastEdited && b.LastEdited) {
-              return (a.LastEdited > b.LastEdited) ? 1 : (b.LastEdited > a.LastEdited) ? -1 : 0
+              return a.LastEdited > b.LastEdited
+                ? 1
+                : b.LastEdited > a.LastEdited
+                ? -1
+                : 0;
             }
-          })
+          }
+        );
       }
-
     });
     const updateSortOption = (newoption: number) => {
       if (sortOptions.value === newoption) {
-        sortOptions.value = -1 
+        sortOptions.value = -1;
         return;
       }
-      sortOptions.value = newoption
-    }
+      sortOptions.value = newoption;
+    };
 
     // Question set actions
     const AddNewQuestionSet = () => {
       router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
-    }
+    };
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
         name: "AddQuestionSet",
-        query: { QSID: QSID}
+        query: { QSID: QSID }
       });
     };
-    const DeleteQuestionSet = (QSID: number) => {
-      store.dispatch("DeleteQuestionSet", QSID)
-      store.dispatch("DeleteQuestionSetFromDocument", QSID)
-    }
+    const DeleteQuestionSet = (DocumentID: number[], QSID: number) => {
+      store.dispatch("DeleteQuestionSet", QSID);
+      store.dispatch("DeleteQuestionSetFromAllDocuments", {
+        DocumentIds: DocumentID,
+        QSID: QSID
+      });
+    };
 
     const attachToDocument = (QSID: number) => {
       //remove dropdown
@@ -198,12 +235,12 @@ export default defineComponent({
 
       if (Modal.value) {
         try {
-          Modal.value.showModal.call()
+          Modal.value.showModal.call();
         } catch (e) {
-          console.error(e)
+          console.error(e);
         }
       }
-    }
+    };
 
     return {
       displaytype,
@@ -218,13 +255,12 @@ export default defineComponent({
       attachToDocument,
       AddNewQuestionSet,
       AttachQSID
-    }
+    };
   }
-})
+});
 </script>
 
 <style scoped>
-
 .questionnav {
   margin: auto auto auto 0px;
   width: 100%;
@@ -234,7 +270,7 @@ export default defineComponent({
   align-items: flex-end;
 }
 
-.plusicon{
+.plusicon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -248,7 +284,7 @@ export default defineComponent({
   margin-top: 1rem;
 }
 
-.plusicon:hover{
+.plusicon:hover {
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
   cursor: pointer;
 }
@@ -257,7 +293,7 @@ export default defineComponent({
   margin: 0 1% 0 0 !important;
 }
 
-.questionsetheader{
+.questionsetheader {
   color: grey;
   padding-top: 4%;
   margin: 0;
@@ -280,20 +316,18 @@ export default defineComponent({
   position: relative;
 }
 
-.actions-button:hover{
+.actions-button:hover {
   background-color: whitesmoke;
 }
 
-.questionsettable{
+.questionsettable {
   vertical-align: -webkit-baseline-middle;
   vertical-align: baseline;
   vertical-align: -moz-baseline;
 }
 
-.questionsettable th {
-  /* padding-bottom: 0; */
-}
-
+/* .questionsettable th:not(:first-child, :last-child) {
+} */
 .th-container {
   display: flex;
   align-items: center;
@@ -320,7 +354,7 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.table-questionsets-row{
+.table-questionsets-row {
   transition: all 0.3s;
 }
 
@@ -400,5 +434,4 @@ export default defineComponent({
   border-bottom-left-radius: 0.8rem;
   color: #bd0000;
 }
-
 </style>

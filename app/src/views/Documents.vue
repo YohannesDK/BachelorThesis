@@ -61,7 +61,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents = computed(() => store.getters.getDocuments) 
+    const documents = computed(() => store.getters.getDocuments);
 
     // Create New Document
     const NewDocument = () => {
@@ -74,6 +74,7 @@ export default defineComponent({
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: documentType) => {
+          console.log(doc.name, doc.QuestionSetID);
           return (
             doc.name
               .replace(/ /g, "")

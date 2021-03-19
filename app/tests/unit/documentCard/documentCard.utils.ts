@@ -31,5 +31,5 @@ export const dummyDocument: documentType = {
   ],
   tags: ["Test 1"],
   lastEdited: "5 Feb 2021",
-  QuestionSetID: -1
+  QuestionSetID: []
 };

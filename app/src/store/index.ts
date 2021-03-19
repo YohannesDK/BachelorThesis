@@ -187,7 +187,7 @@ const store = createStore({
         QuestionSetID: []
       },
       {
-        Documentid: 3,
+        Documentid: 2,
         name: "Lorem",
         delta: [
           { insert: "Hei Tittle" },
@@ -265,7 +265,8 @@ const store = createStore({
         role: "student"
       }
     ],
-    activeUser: {}
+    activeUser: {},
+    loading: false
   },
   mutations: {
     login: state => {
@@ -292,19 +293,52 @@ const store = createStore({
         (doc: documentType) => doc.Documentid === Data.documentid
       );
       if (doc) {
+        doc.QuestionSetID.forEach((ele: number) => {
+          if (ele === Data.QSID) {
+            return;
+          }
+        });
         doc.QuestionSetID.push(Data.QSID);
       }
     },
-    // DeleteQuestionSetFromDocument: (state, QSID: number) => {
-    //   const doc = state.documents.find(
-    //     (doc: documentType) => doc.QuestionSetID === QSID 
-    //   );
-    //   if (doc) {
-    //     doc.QuestionSetID = -1;
-    //   }
-    // }
+    DeleteQuestionSetFromDocument: (state, Data: any) => {
+      console.log(Data);
+      const doc = state.documents.find(
+        (doc: documentType) => doc.Documentid === Data.documentid
+      );
+      if (doc) {
+        const QSIDIndex = doc.QuestionSetID.map((QSID: number) => QSID).indexOf(
+          Data.QSID
+        );
+        if (QSIDIndex !== -1) {
+          doc.QuestionSetID.splice(QSIDIndex, 1);
+        }
+        console.log(doc.QuestionSetID);
+      }
+    },
+    DeleteQuestionSetFromAllDocuments: (state, Data: any) => {
+      Data.DocumentIds.forEach((documentid: number) => {
+        const doc = state.documents.find(
+          (doc: documentType) => doc.Documentid === documentid
+        );
+        if (doc) {
+          const QSIDIndex = doc.QuestionSetID.map(
+            (QSID: number) => QSID
+          ).indexOf(Data.QSID);
+          if (QSIDIndex !== -1) {
+            doc.QuestionSetID.splice(QSIDIndex, 1);
+          }
+        }
+      });
+    },
+    loading: (state, loadingstatus) => {
+      state.loading = loadingstatus;
+    }
   },
   actions: {
+    loading: (context, loadingstatus) => {
+      context.commit("loading", loadingstatus);
+    },
     login: context => {
       context.commit("login");
     },
@@ -320,13 +354,19 @@ const store = createStore({
     SetDocumentQSID: (context, Data: any) => {
       context.commit("SetDocumentQSID", Data);
     },
-    DeleteQuestionSetFromDocument: (context, QSID: number) => {
-      context.commit("DeleteQuestionSetFromDocument", QSID)
+    DeleteQuestionSetFromDocument: (context, Data: any) => {
+      context.commit("DeleteQuestionSetFromDocument", Data);
+    },
+    DeleteQuestionSetFromAllDocuments: (context, Data: any) => {
+      context.commit("DeleteQuestionSetFromAllDocuments", Data);
     }
   },
   getters: {
     getDocuments: state => {
       return state.documents;
+    },
+    getIsLoading: state => {
+      return state.loading;
     },
     getCourses: state => {
       return state.courses;
@@ -353,7 +393,7 @@ const store = createStore({
   },
   modules: {
     QuestionSetModule
-  },
+  }
   // uncomment this on to persist state
   // plugins: [createPersistedState()]
 });

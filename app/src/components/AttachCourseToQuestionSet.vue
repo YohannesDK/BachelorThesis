@@ -9,17 +9,7 @@
       />
     </div>
     <ul class="list-unstyled documentlist card shadow">
-      <li v-for="doc in searcheddocuments" :key="doc">
-        <toogle-switch-attach-document
-          :documentId="doc.DocumentId"
-          :documentName="doc.documentName"
-          :attached="doc.status"
-          @update="updateDocumentQuestionSet"
-        />
-      </li>
-      <p class="m-auto" v-if="searcheddocuments.length === 0">
-        No documents...
-      </p>
+      <h1>courses</h1>
     </ul>
   </div>
   <div class="savebtn" :class="{ saved: saved }" @click="save">
@@ -31,10 +21,10 @@
 import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
 import { computed, defineComponent, onMounted, ref } from "vue";
-import ToogleSwitchAttachDocument from "@/components/ToogleSwitchAttachDocument.vue";
+// import ToogleSwitchAttachDocument from '@/components/ToogleSwitchAttachDocument.vue';
 export default defineComponent({
-  components: { ToogleSwitchAttachDocument },
-  name: "AttachDocument",
+  // components: { ToogleSwitchAttachDocument },
+  name: "Attachcourse",
   props: {
     QSID: {
       type: Number,

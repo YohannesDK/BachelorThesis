@@ -1,11 +1,15 @@
 <template>
   <label class="label-container">
-    <span class="switch" :class="{'checked': checked}" @click="updateClick"></span>
+    <span
+      class="switch"
+      :class="{ checked: checked }"
+      @click="updateClick"
+    ></span>
     <span class="label">{{ documentName }}</span>
   </label>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from "vue";
 export default defineComponent({
   name: "ToogleSwitch",
   props: {
@@ -16,22 +20,26 @@ export default defineComponent({
     documentName: {
       type: String,
       default: ""
+    },
+    attached: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["update"],
   setup(props, { emit }) {
-    const checked = ref<boolean>(false);
+    const checked = ref<boolean>(props.attached);
 
     const updateClick = () => {
-      checked.value = !checked.value
-        emit("update", {did: props.documentId, status: checked.value});
-    }
+      checked.value = !checked.value;
+      emit("update", { did: props.documentId, status: checked.value });
+    };
     return {
       checked,
       updateClick
-    }
+    };
   }
-})
+});
 </script>
 
 <style scoped>
@@ -40,15 +48,17 @@ export default defineComponent({
   display: flex;
   align-items: center;
   width: fit-content;
+  width: 13rem;
   margin-top: 1rem;
 }
 
 .label {
   margin-left: 12px;
   color: #1a202c;
-  /* overflow: hidden; */
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 9rem;
 }
 
 .switch {
@@ -85,8 +95,6 @@ export default defineComponent({
 .switch.checked::before {
   border-color: #4fd1c5;
   /* Move the inner circle to the right */
-  transform: translateX(
-    calc(50px - calc(50px / 2))
-  );
+  transform: translateX(calc(50px - calc(50px / 2)));
 }
 </style>

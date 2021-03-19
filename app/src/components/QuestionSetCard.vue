@@ -352,7 +352,8 @@ export default defineComponent({
   directives: { Test },
   props: {
     focus: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     QuestionProp: {
       type: Object as () => Question,

@@ -112,14 +112,14 @@ export default defineComponent({
     const Desc = ref<string>("");
     const saved = ref<boolean>(true);
 
-    const Data = ref({
+    const Data = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
       QuestionSet: [] as Question[],
       LastEdited: `${day} ${month} ${year}`,
-      DocumentID: -1,
-      CourseID: -1
+      DocumentID: [],
+      CourseId: []
     });
 
     // route save guard, if the quesitons are not saved
@@ -206,7 +206,7 @@ export default defineComponent({
           documentid: Number(router.currentRoute.value.query.did),
           QSID: Data.value.QSID
         });
-        Data.value.DocumentID = Number(router.currentRoute.value.query.did); 
+        Data.value.DocumentID.push(Number(router.currentRoute.value.query.did));
       }
       // To avoid duplactes, when updating question set
       Data.value.QuestionSet.length = 0;

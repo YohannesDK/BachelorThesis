@@ -26,17 +26,44 @@ export default {
       state.QuestionId++;
     },
     DeleteQuestionSet: (state: any, QSID: number) => {
-      const index = state.QuestionSets.map((item: QuestionSet) => item.QSID).indexOf(QSID)
+      const index = state.QuestionSets.map(
+        (item: QuestionSet) => item.QSID
+      ).indexOf(QSID);
       if (index > -1) {
-        state.QuestionSets.splice(index, 1)
+        state.QuestionSets.splice(index, 1);
       }
     },
-    AttachDocumentToQuestionSet: (state: any, data:any) => {
-      data.documentToAttachTo.forEach((ele: any) => {
-        console.log(ele);
-      });
-    }
+    AttachDocumentToQuestionSet: (state: any, data: any) => {
+      console.log(data);
+      const index = state.QuestionSets.map(
+        (item: QuestionSet) => item.QSID
+      ).indexOf(data.QSID);
+      if (index > -1) {
+        const questionset: QuestionSet = state.QuestionSets[index];
+        const existsAtIndex = questionset.DocumentID.map(
+          (docid: number) => docid
+        ).indexOf(data.documentid);
 
+        if (existsAtIndex === -1) {
+          console.log("her");
+          state.QuestionSets[index].DocumentID.push(data.documentid);
+        }
+      }
+    },
+    RemoveDocumentFromQuestionSet: (state: any, data: any) => {
+      const index = state.QuestionSets.map(
+        (item: QuestionSet) => item.QSID
+      ).indexOf(data.QSID);
+      if (index > -1) {
+        const questionset: QuestionSet = state.QuestionSets[index];
+        const docindex = questionset.DocumentID.map(
+          (docid: number) => docid
+        ).indexOf(data.documentid);
+        if (docindex > -1) {
+          questionset.DocumentID.splice(docindex, 1);
+        }
+      }
+    }
   },
   actions: {
     AddNewQuestionSet: (context: any, QuestionSet: QuestionSet) => {
@@ -46,12 +73,14 @@ export default {
       context.commit("IncrementQuestionId");
     },
     DeleteQuestionSet: (context: any, QSID: number) => {
-      context.commit("DeleteQuestionSet", QSID)
+      context.commit("DeleteQuestionSet", QSID);
     },
     AttachDocumentToQuestionSet: (context: any, data: any) => {
-      context.commit("AttachDocumentToQuestionSet", data) 
+      context.commit("AttachDocumentToQuestionSet", data);
+    },
+    RemoveDocumentFromQuestionSet: (context: any, data: any) => {
+      context.commit("RemoveDocumentFromQuestionSet", data);
     }
-    
   },
   getters: {
     getAllQuestionSets: (state: any) => {

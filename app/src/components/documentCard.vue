@@ -40,10 +40,7 @@
               >
                 <li @click="OpenEditor(document.Documentid)">Open</li>
                 <li>Rename</li>
-                <li
-                  v-if="document.QuestionSetID.length === 0"
-                  @click="OpenQuestionSet(-1)"
-                >
+                <li @click="OpenQuestionSet(-1)">
                   Add New Question Set
                 </li>
                 <li>Share</li>

@@ -9,7 +9,8 @@
           <div class="col-md-7 login-card-form-col">
             <div class="card-body">
               <div class="brand-wrapper">
-                <img src="../assets/brand.svg" alt="logo" class="logo" />
+                <img src="../assets/AppLogo.svg" alt="logo" class="logo" />
+                <h1>ItsCanvas</h1>
               </div>
               <p class="login-card-description">Sign into your account</p>
               <form @submit.prevent="loginUser()">
@@ -91,7 +92,7 @@ export default defineComponent({
           //If the post request is successful
           if (response.status === 200) {
             // set active user
-            store.dispatch("setUser", {username: response.data.username});
+            store.dispatch("setUser", { username: response.data.username });
             // If the user is a student, redirect him to student page
             if (response.data.role == "Student") {
               // this.$store.commit("setAuthentication", "Student");
@@ -208,10 +209,19 @@ export default defineComponent({
 
 .brand-wrapper {
   margin-bottom: 19px;
+  display: flex;
+  align-items: flex-end;
+  height: fit-content;
+}
+
+.brand-wrapper > h1 {
+  margin: 0;
+  padding-left: 1%;
 }
 
 .brand-wrapper .logo {
   height: 37px;
+  margin-bottom: 0.1rem;
 }
 
 .login-card-description {
