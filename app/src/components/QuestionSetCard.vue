@@ -5,6 +5,7 @@
     v-test="{ id: 'question-card-container' }"
     @click="$emit('focusChange')"
   >
+    <!-- Short Text question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.ShortText"
@@ -55,6 +56,7 @@
       </div>
     </div>
 
+    <!-- Long Text question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.LongText"
@@ -107,6 +109,7 @@
       </div>
     </div>
 
+    <!-- True / False question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.TrueFalse"
@@ -162,6 +165,7 @@
       </div>
     </div>
 
+    <!-- Multiple choice question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.MultipleChoice"
@@ -252,10 +256,12 @@
       </div>
     </div>
 
+    <!-- QuestionCard SideBar -->
     <div
       class="question-card-sideBar"
       v-test="{ id: 'question-card-sideBar' }"
       :class="{ 'showSideBar shadow': showSideBar }"
+      v-if="QuestionCardType === 0"
     >
       <ul class="list-unstyled mb-0">
         <li
@@ -346,6 +352,7 @@ import {
   TrueFalseQuestionType,
   MultipleChoiceQuestionType
 } from "@/store/interfaces/question.type";
+import { QuestionCardType } from "@/store/constants/questionCard.const";
 import store from "@/store";
 export default defineComponent({
   name: "QuestionSetCard",
@@ -361,9 +368,14 @@ export default defineComponent({
     },
     index: {
       type: Number
+    },
+    QuestionCardType: {
+      type: Number,
+      default: QuestionCardType.EditQuestions
     }
   },
   setup(props) {
+    
     const QuestionData = {} as Question;
     const showSideBar: Ref<boolean> = ref(props.focus);
     const QuestionType = ref<number>(0);

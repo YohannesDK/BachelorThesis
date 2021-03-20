@@ -27,7 +27,9 @@ import {
   faEllipsisV,
   faCaretDown,
   faCaretUp,
-  faCheck
+  faCheck,
+  faCog,
+  faInfo
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -59,7 +61,9 @@ library.add(
   faEllipsisV,
   faCaretDown,
   faCaretUp,
-  faCheck
+  faCheck,
+  faCog,
+  faInfo
 );
 
 export { FontAwesomeIcon };

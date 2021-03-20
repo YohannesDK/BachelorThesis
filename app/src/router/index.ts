@@ -85,12 +85,18 @@ const routes: Array<RouteRecordRaw> = [
       )
   },
   {
-    path: "/Test",
-    name: "Test",
-    meta: { showSideBar: false },
+    path: "/questiontest",
+    name: "questiontest",
     component: () =>
       import(/* webpackChunkName: "Test" */ "../views/QuestionTest.vue")
+  },
+  {
+    path: "/PageNotFound",
+    name: "PageNotFound",
+    component: () =>
+      import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")
   }
+
 ];
 
 const router = createRouter({
