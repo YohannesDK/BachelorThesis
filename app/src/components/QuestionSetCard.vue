@@ -176,6 +176,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -203,14 +204,15 @@
             class="true-false-card card"
             :class="{
               'shadow bg-success':
-                MultipleChoiceAnswerID === AnswerOptions.Option1
+                MultipleChoiceAnswerID === AnswerOptions.Option1 && QuestionCardType === 0,
+              'shadow bg-secondary' : MultipleChoiceAnswerID === AnswerOptions.Option1 && QuestionCardType === 1
             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option1), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">
+            <p :contenteditable="QuestionCardType === 0 ? true : false">
               {{ MultipleChoiceAnswerOptions.Option1 }}
             </p>
           </div>
@@ -248,7 +250,7 @@
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">
+            <p contenteditable="true" @input="UpdateMultpleChoiceAnswer($event, 3)">
               {{ MultipleChoiceAnswerOptions.Option4 }}
             </p>
           </div>
@@ -406,6 +408,18 @@ export default defineComponent({
       MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
     };
 
+    const UpdateMultpleChoiceAnswer = (e: any, multiplechoiceoption: number) => {
+      if (multiplechoiceoption === 0) {
+        MultipleChoiceAnswerOptions.value.Option1 = e.target.innerText 
+      } else if (multiplechoiceoption === 1) {
+        MultipleChoiceAnswerOptions.value.Option2 = e.target.innerText 
+      } else if (multiplechoiceoption === 2) {
+        MultipleChoiceAnswerOptions.value.Option3 = e.target.innerText 
+      } else if (multiplechoiceoption === 3) {
+        MultipleChoiceAnswerOptions.value.Option4 = e.target.innerText 
+      }
+    }
+
     const ChangeQuestionType = (newQuestionType: number) => {
       QuestionType.value = newQuestionType;
     };
@@ -466,7 +480,7 @@ export default defineComponent({
     };
 
     const getQuestion = () => {
-      // Validate input here by calling a validate function
+      // TODO - Validate input here by calling a validate function
 
       const data = {
         questionType: QuestionType.value,
@@ -536,6 +550,7 @@ export default defineComponent({
       TrueFalseHandler,
       MultipleChoiceAnswerOptions,
       MultipleChoiceHandler,
+      UpdateMultpleChoiceAnswer,
       MultipleChoiceAnswer,
       MultipleChoiceAnswerID,
       getQuestion,

@@ -176,6 +176,7 @@ export default defineComponent({
       }
       // Create first element if QSID is -1
       Data.value.QSID = store.getters.getQuestionSetLength;
+      Data.value.CreateBy = User.value.UserName;
       OnAddNew();
     };
 
@@ -228,6 +229,10 @@ export default defineComponent({
           }
         }
       });
+
+      if (Data.value.CreateBy === "") {
+        Data.value.CreateBy = User.value.UserName;
+      }
       store.dispatch("AddNewQuestionSet", Data.value);
       saved.value = true;
     };

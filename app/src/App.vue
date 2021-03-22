@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import NavBar from "@/components/NavBar.vue";
 import router from "@/router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
@@ -45,7 +45,7 @@ export default defineComponent({
           appContainer.value.style.marginLeft = "250px";
         } else {
           // TODO - fix this navbar shit
-          if (sideBarType === 0 || router.currentRoute.value.name === "TakeTest") {
+          if (sideBarType === 0 ) {
             appContainer.value.style.marginLeft = "0px";
           } else {
             appContainer.value.style.marginLeft = "3.3rem";
@@ -53,6 +53,14 @@ export default defineComponent({
         }
       }
     };
+
+    onMounted(() => {
+      if (appContainer.value) {
+        if ( router.currentRoute.value.name === "TakeTest") {
+            appContainer.value.style.marginLeft = "0px";
+        }
+      }
+    })
     return {
       appContainer,
       showSideBar,
