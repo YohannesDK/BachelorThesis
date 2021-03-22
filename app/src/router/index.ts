@@ -1,3 +1,4 @@
+import store from "@/store";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Welcome from "../views/welcome.vue";
@@ -88,7 +89,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/questiontest",
     name: "questiontest",
     component: () =>
-      import(/* webpackChunkName: "Test" */ "../views/QuestionTest.vue")
+      import(/* webpackChunkName: "questiontest" */ "../views/QuestionTest.vue")
+  },
+  {
+    path: "/TakeTest",
+    name: "TakeTest",
+    meta: { showSideBar: false },
+    component: () =>
+      import(/* webpackChunkName: "TakeTest" */ "../views/TakeTest.vue")
   },
   {
     path: "/PageNotFound",
@@ -103,5 +111,12 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 });
+
+
+router.beforeEach((to, from, next) => {
+  const isauth = store.getters.getIsAuthenticated;
+  if (to.name !== 'Login' && !isauth) next({name: 'Login'})
+  else next()
+})
 
 export default router;

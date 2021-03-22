@@ -138,6 +138,7 @@ import router from "@/router";
 import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive.ts";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
 
 export default defineComponent({
   name: "NavBar",
@@ -170,8 +171,15 @@ export default defineComponent({
     });
 
     const signout = () => {
+      const emptyUser: UserType = {
+        UserName: "",
+        Role: RoleType.Student,
+        FirstName: "",
+        LastName: ""
+      }
+
       store.dispatch("logout");
-      store.dispatch("setUser", {});
+      store.dispatch("setUser", emptyUser);
       window.location.href = "/";
     };
 

@@ -66,6 +66,7 @@ import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
 import { checkLogin } from "@/services/api/login.service";
+import { UserType } from "@/store/interfaces/user.types";
 import router from "@/router";
 import store from "@/store";
 export default defineComponent({
@@ -92,19 +93,26 @@ export default defineComponent({
           //If the post request is successful
           if (response.status === 200) {
             // set active user
-            store.dispatch("setUser", { username: response.data.username });
+            const user: UserType = {
+              UserName: response.data.username,
+              Role: response.data.role.toUpperCase(),
+              FirstName: "None Yet"
+            }
+            store.dispatch("setUser", user);
+            store.dispatch("login");
+
             // If the user is a student, redirect him to student page
             if (response.data.role == "Student") {
               // this.$store.commit("setAuthentication", "Student");
               localStorage.setItem("token", response.data.token);
-              router.push("/Student");
+              router.push("/Home");
             }
 
             // If the user is a teacher, redirect him to teacher page
             if (response.data.role == "Teacher") {
               // this.$store.commit("setAuthentication", "Student");
               localStorage.setItem("token", response.data.token);
-              router.push("/Teacher");
+              router.push("/Home");
             }
           }
 

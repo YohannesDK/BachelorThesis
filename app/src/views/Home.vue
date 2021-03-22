@@ -17,7 +17,7 @@
           >
             Good Morning!
           </h1>
-          <p v-test="{ id: 'dashboard-username' }">{{ user.username }}</p>
+          <p v-test="{ id: 'dashboard-username' }">{{ user.FirstName }}</p>
         </div>
         <p v-test="{ id: 'dashboard-date' }">
           {{ day }} {{ month }} {{ year }}
@@ -303,7 +303,7 @@ export default defineComponent({
 
 .card:hover {
   cursor: pointer;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  /* box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important; */
 }
 
 .course-image {

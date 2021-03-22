@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
+import { UserType, RoleType } from "./interfaces/user.types";
 import QuestionSetModule from "./modules/QuestionSet.module";
 import createPersistedState from "vuex-persistedstate";
 
@@ -253,18 +254,13 @@ const store = createStore({
       }
     ] as courseType[],
     isAuthenticated: false,
-    users: [
-      {
-        username: "Teacher123",
-        password: "1234",
-        role: "teacher"
-      },
-      {
-        username: "Student123",
-        password: "1234",
-        role: "student"
-      }
-    ],
+    user: {
+      UserName: "",
+      Role: RoleType.Student,
+      FirstName: "",
+      LastName: ""
+    } as UserType,
+    
     activeUser: {},
     loading: false
   },
@@ -275,8 +271,11 @@ const store = createStore({
     logout: state => {
       state.isAuthenticated = false;
     },
-    setUser: (state, user) => {
-      state.activeUser = user;
+    setUser: (state, user: UserType) => {
+      state.user.UserName = user.UserName
+      state.user.Role = user.Role
+      state.user.FirstName = user.FirstName
+      state.user.LastName = user.LastName
     },
     AddNewDocument: state => {
       state.documents.push({
@@ -345,7 +344,7 @@ const store = createStore({
     logout: context => {
       context.commit("logout");
     },
-    setUser: (context, user: object) => {
+    setUser: (context, user: UserType) => {
       context.commit("setUser", user);
     },
     AddNewDocument: context => {
@@ -384,11 +383,8 @@ const store = createStore({
     getIsAuthenticated: state => {
       return state.isAuthenticated;
     },
-    getAllUsers: state => {
-      return state.users;
-    },
     getActiveUser: state => {
-      return state.activeUser;
+      return state.user;
     }
   },
   modules: {

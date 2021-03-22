@@ -6,7 +6,7 @@
     <!-- page content -->
     <div
       ref="appContainer"
-      :class="{ appFullWidth: showSideBar }"
+      :class="{ appFullWidth: showSideBar}"
       class="container-fluid appContainer"
     >
       <router-view />
@@ -44,7 +44,8 @@ export default defineComponent({
         if (showSideBar) {
           appContainer.value.style.marginLeft = "250px";
         } else {
-          if (sideBarType === 0) {
+          // TODO - fix this navbar shit
+          if (sideBarType === 0 || router.currentRoute.value.name === "TakeTest") {
             appContainer.value.style.marginLeft = "0px";
           } else {
             appContainer.value.style.marginLeft = "3.3rem";

@@ -84,7 +84,7 @@
 
 <script lang="ts">
 // TODO - add animations later - https://codepen.io/Takumari85/pen/RaYwpJ
-import { defineComponent, onBeforeUpdate, onMounted, ref } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeUpdate, onMounted, ref } from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
 import router from "@/router";
@@ -96,6 +96,7 @@ import {
 } from "@/store/interfaces/question.type";
 import { onBeforeRouteLeave } from "vue-router";
 import { day, month, year } from "@/utils/calender.utils";
+import { UserType } from "@/store/interfaces/user.types";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -116,11 +117,14 @@ export default defineComponent({
       QSID: -1,
       Tittle: "",
       Description: "",
+      CreateBy: "",
       QuestionSet: [] as Question[],
       LastEdited: `${day} ${month} ${year}`,
       DocumentID: [],
       CourseId: []
     });
+
+    const User: ComputedRef<UserType> = computed(() => store.getters.getActiveUser)
 
     // route save guard, if the quesitons are not saved
     const RouteSafeGuards = () => {
@@ -165,6 +169,7 @@ export default defineComponent({
         const QuestionSet: QuestionSet = store.getters.getQuestionSetById(QSID);
         Data.value.QSID = QuestionSet.QSID;
         Data.value.Tittle = QuestionSet.Tittle;
+        Data.value.CreateBy = User.value.UserName;
         Data.value.Description = QuestionSet.Description;
         Data.value.QuestionSet = QuestionSet.QuestionSet;
         return;

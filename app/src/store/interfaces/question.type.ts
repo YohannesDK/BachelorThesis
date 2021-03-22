@@ -63,6 +63,7 @@ export type QuestionSet = {
   Tittle: string;
   Description: string;
   QuestionSet: Array<Question>;
+  CreateBy: string;
   LastEdited?: string;
   DocumentID: number[];
   CourseId: number[];

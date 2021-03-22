@@ -60,7 +60,8 @@
           <div class="timesettings"
           v-if="settingsOption === 0"
           >
-            Time
+            <!-- Time -->
+            <input type="text" class="m-auto">
           </div>
 
           <div class="answersettings"
@@ -90,13 +91,11 @@
 </template>
 
 <script lang="ts">
-import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import router from "@/router";
 import store from "@/store";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import { defineComponent, onMounted, ref } from "vue";
 export default defineComponent({
-  // components: { QuestionSetCard },
   name: "QuestionTest",
   setup() {
     const settingsOption = ref<number>(0);
@@ -109,6 +108,7 @@ export default defineComponent({
       Tittle: "",
       Description: "",
       QuestionSet: [],
+      CreateBy: "",
       LastEdited: "",
       DocumentID: [],
       CourseId: []
@@ -116,11 +116,7 @@ export default defineComponent({
     
 
     const OpenTest = () => {
-      store.dispatch("loading", true)
-      setTimeout(() => {
-        store.dispatch("loading", false)
-        router.push("/")
-      }, 3000);
+      router.push({name: "TakeTest", query: {QSID: QuestionSet.value.QSID}})
     }
 
 
