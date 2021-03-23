@@ -37,6 +37,7 @@
 <script lang="ts">
 // https://codepen.io/umeshagouda/pen/QggMve
 import { defineComponent, ref } from "vue";
+import { onBeforeRouteLeave} from "vue-router";
 import { useStore } from "vuex";
 import router from "@/router";
 import axios from "axios";
@@ -55,27 +56,28 @@ export default defineComponent({
     };
   },
 
+
+
   beforeCreate() {
     if (localStorage.getItem("token") === null) {
-      // this.$router.push("/login")
-      console.log("haha");
+      this.$router.push("/login")
     }
   },
 
   created() {
     axios
-      .get("/api/userinfo", {
+      .get("/api/studentCourse", {
         headers: { token: localStorage.getItem("token") }
       })
       .then(response => {
-        this.name = response.data.user.username;
-        this.role = response.data.user.role;
-        this.fullname = response.data.user.fullname;
-        this.id = response.data.user.id;
-        console.log(response.data.courses);
-        for (let i = 0; i < response.data.courses.length; i++) {
-          console.log(response.data.courses[i].body);
-          this.courseBody.push(response.data.courses[i]);
+        this.name = response.data.username;
+        this.role = response.data.role;
+        this.fullname = response.data.fullname;
+        this.id = response.data.id
+        console.log(response.data.username);
+        for (let i = 0; i < response.data.courseList.length; i++) {
+          console.log(response.data.courseList[i].body);
+          this.courseBody.push(response.data.courseList[i]);
         }
       });
   },
@@ -83,7 +85,7 @@ export default defineComponent({
   methods: {
     joinCourse() {
       axios
-        .get("/api/courseInfo", { params: { coursePass: this.coursePass } })
+        .get("/api/courseInfo", { params: { coursePass: this.coursePass, userId: this.id} })
         .then(response => {
           this.courseBody.push(response.data.course);
           console.log(this.courseBody);
@@ -99,9 +101,10 @@ export default defineComponent({
       showModal.value = !showModal.value;
     };
 
+
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", params: { CourseId: courseId } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
 
     return {

@@ -38,18 +38,16 @@
                 class="list-unstyled mb-0"
                 v-test="{ id: 'card-options-dropdown' }"
               >
-                <li
-                @click="OpenEditor(document.Documentid)"
-                >Open</li>
+                <li>Open</li>
+                <li @click="addDoc()">Add to course</li>
                 <li>Rename</li>
                 <li
-                v-if="document.QuestionSetID === -1"
-                @click="OpenQuestionSet(-1)"
-                >Add Question Set</li>
-                <li
+                @click="OpenQuestionSet()"
+                >Open Question Sets</li>
+                <!-- <li
                 v-if="document.QuestionSetID !== -1"
                 @click="OpenQuestionSet(document.QuestionSetID)"
-                >Open Question Set</li>
+                >Open Question Set</li> -->
                 <li>Share</li>
                 <hr />
                 <li>Delete</li>
@@ -66,6 +64,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
+import axios from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
 import store from "@/store";
@@ -74,14 +73,17 @@ export default defineComponent({
   directives: { Test },
   props: {
     document: {
-      type: Object as () => documentType,
-      default: () => ({})
+      type: Object as () => any,
+      default: () => ({}) as any
     }
   },
   setup(props) {
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
+
+    // @ts-ignore
+    const courseID = router.currentRoute._rawValue.query.cid;
 
     const More = () => {
       showDropDown.value = true;
@@ -91,19 +93,45 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
+    const addDoc = () => {
+      console.log("added this one" + props.document.id)
+      axios
+        .post("api/linkDocument", {
+          documentId: props.document.id,
+          courseId: courseID
+        })
+        .then(response => {
+          console.log(response)
+        });
+    }
+
+    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
-      router.push({ name: "EditorView", query: { did: DocumentId } });
+      router.push({ name: "EditorView", query: { did: props.document.id } });
     };
 
-    const OpenQuestionSet = (QSID: number) => {
-      router.push({ name: "AddQuestionSet", query: { QSID: QSID, did: props.document.Documentid} });
+    const OpenQuestionSet = () => {
+
+      // axios
+      //   .post("api/createQS", {
+      //     documentId: props.document.id,
+      //   })
+      //   .then(response => {
+      //     console.log("cute")
+      //   });
+
+      router.push({ name: "QuestionSets", query: { did: props.document.id} });
     }
 
     onMounted(() => {
-      if (props.document.delta) {
-        documentText.value = DeltaToPlainText(props.document.delta)
+
+      //This is the preview text inside document cards
+      if (props.document.body != "") {
+        documentText.value = DeltaToPlainText(JSON.parse(props.document.body).ops)
           .substring(0, documentTextLength)
           .concat("...");
+      } else {
+        documentText.value = "Empty Document"
       }
     });
     return {
@@ -113,7 +141,8 @@ export default defineComponent({
       More,
       RemoveMore,
       OpenEditor,
-      OpenQuestionSet
+      OpenQuestionSet,
+      addDoc
     };
   }
 });

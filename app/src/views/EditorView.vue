@@ -40,8 +40,8 @@ export default defineComponent({
     const TittleSetup = () => {
       // Set document title and last edited
       if (docID !== -1) {
-        Title.value = store.getters.getDocmentbyId(docID).name;
-        LastEdited.value = store.getters.getDocmentbyId(docID).lastEdited;
+        // Title.value = store.getters.getDocmentbyId(docID).name;
+        // LastEdited.value = store.getters.getDocmentbyId(docID).lastEdited;
       }
 
       if (DocumentTittle.value) {
