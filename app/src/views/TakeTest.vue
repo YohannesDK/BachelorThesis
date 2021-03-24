@@ -81,7 +81,10 @@ import QuestionSetCard from '@/components/QuestionSetCard.vue';
 import router from '@/router'
 import store from '@/store'
 import { QuestionSet } from "@/store/interfaces/question.type";
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, Ref } from 'vue';
+import { TestQuestionAndAnswer, TestData } from "@/store/interfaces/QuestionTest.types";
+import { date } from "@/utils/calender.utils";
+import { UserType } from '@/store/interfaces/user.types';
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
@@ -99,6 +102,14 @@ export default defineComponent({
       LastEdited: "",
       DocumentID: [],
       CourseId: []
+    })
+    
+    const TestData: Ref<TestData> = ref<TestData>({
+      TestID: -1,
+      userName: "",
+      date: date,
+      QSID: -1,
+      TestData: []
     })
 
     const OnfocusChange = (index: number) => {
@@ -119,12 +130,15 @@ export default defineComponent({
         if (ele) {
           try {
             const testData = ele.getTestData.call()
-            console.log(testData);
+            TestData.value.TestData.push(testData)
           } catch (e) {
             console.error(e)
           }
         }
       })
+      console.log(TestData.value);
+      store.dispatch("AddTestData", TestData.value)
+      router.push({name: "QuestionSets"})    
     }
 
     const Quit = () => {
@@ -136,6 +150,7 @@ export default defineComponent({
 
 
     const InitilizeTest = () => {
+      const user: UserType = store.getters.getActiveUser;
       if (router.currentRoute.value.query.QSID) {
         const qs: QuestionSet = store.getters.getQuestionSetById(Number(router.currentRoute.value.query.QSID))
         QuestionSet.value.QSID = qs.QSID
@@ -143,7 +158,16 @@ export default defineComponent({
         QuestionSet.value.Description = qs.Description
         QuestionSet.value.QuestionSet = qs.QuestionSet
       }
-    }
+
+      // initilize test data
+      if (TestData.value.TestID === -1) {
+        TestData.value.TestID = store.getters.getTestID;
+        TestData.value.QSID = QuestionSet.value.QSID;
+        TestData.value.userName = user.UserName;
+
+        store.dispatch("IncrementTestID");
+        }
+      };
 
     onMounted(() => {
       store.dispatch("loading", true)
@@ -356,15 +380,19 @@ export default defineComponent({
   border-color: transparent rgba(245, 245, 245, 0.767) transparent transparent;
 }
 
-@media only screen and (max-width: 1440px) {
+@media only screen and (max-width: 1680px) {
   .test-sidebar {
-    right: 4%;
+    right: 11%;
   }
   .test-info {
     background: white;
+    width: 8%;
   }
   .test-info.hide {
-    right: 0.5%;
+    right: 8%;
+  }
+  .test-handin, .test-quit {
+    right: 8%;
   }
 }
 

@@ -139,6 +139,7 @@ import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive.ts";
 import { RoleType, UserType } from "@/store/interfaces/user.types";
+import { Logout } from "@/services/api/auth.service";
 
 export default defineComponent({
   name: "NavBar",
@@ -177,10 +178,8 @@ export default defineComponent({
         FirstName: "",
         LastName: ""
       }
-
-      store.dispatch("logout");
       store.dispatch("setUser", emptyUser);
-      window.location.href = "/";
+      Logout();
     };
 
     // Editor

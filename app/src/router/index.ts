@@ -114,8 +114,11 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
+  const publicRoutes = ['Login', 'Welcome'];
+  const authRequired = !publicRoutes.includes(to.name as string);
   const isauth = store.getters.getIsAuthenticated;
-  if (to.name !== 'Login' && !isauth) next({name: 'Login'})
+
+  if (authRequired && isauth) next({name: 'Login'})
   else next()
 })
 

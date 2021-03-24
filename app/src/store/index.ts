@@ -3,6 +3,7 @@ import { documentType } from "./interfaces/document";
 import { courseType } from "./interfaces/course";
 import { UserType, RoleType } from "./interfaces/user.types";
 import QuestionSetModule from "./modules/QuestionSet.module";
+import QuestionTestModule from './modules/QuestionTest.module'
 import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
@@ -380,15 +381,16 @@ const store = createStore({
         (course: courseType) => course.courseId === CourseId
       );
     },
-    getIsAuthenticated: state => {
-      return state.isAuthenticated;
+    getIsAuthenticated: () => {
+      return !localStorage.getItem('token');
     },
     getActiveUser: state => {
       return state.user;
     }
   },
   modules: {
-    QuestionSetModule
+    QuestionSetModule,
+    QuestionTestModule
   }
   // uncomment this on to persist state
   // plugins: [createPersistedState()]

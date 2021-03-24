@@ -18,4 +18,4 @@ const day = date.getDate();
 const month = monthNames[date.getMonth()];
 const year = date.getFullYear();
 
-export { day, month, year };
+export { date, day, month, year };

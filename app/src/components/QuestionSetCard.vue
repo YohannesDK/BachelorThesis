@@ -372,6 +372,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
+import { TestQuestionAndAnswer } from "@/store/interfaces/QuestionTest.types";
 import Test from "@/directives/test.directive";
 import {
   QuestionTypeEnum,
@@ -580,26 +581,36 @@ export default defineComponent({
       }
     }
 
-    const getTestData = () => {
-      const TestData = {
-        questionType: QuestionType.value,
-        questionID: QuestionData.QuestionID,
-        answer: -1 as string | number
-      }
+    const getTestData = () : TestQuestionAndAnswer => {
+      let TestQuestionAndAnswer!: TestQuestionAndAnswer;
+
       if (QuestionType.value === QuestionTypeEnum.ShortText) {
-        TestData.answer = TestShortAnswer.value
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.ShortText,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TestShortAnswer.value
+        }
+      } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.LongText,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TestLongTextAnswer.value
+        }
+      } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.TrueFalse,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TrueFalseAnswer.value
+        }
+      } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.MultipleChoice,
+          QuestionID: QuestionData.QuestionID,
+          Answer: MultipleChoiceAnswerID.value
+        }
       }
-      else if (QuestionType.value === QuestionTypeEnum.LongText) {
-        TestData.answer = TestLongTextAnswer.value
-      }
-      else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
-        TestData.answer = TrueFalseAnswer.value 
-      }
-      else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
-        TestData.answer = MultipleChoiceAnswerID.value
-      }
-      return TestData
-    }
+      return TestQuestionAndAnswer;
+    };
 
 
     const Answered = computed(() => {

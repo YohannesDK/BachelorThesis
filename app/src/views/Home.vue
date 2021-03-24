@@ -121,6 +121,7 @@ import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
 import { day, month, year } from "@/utils/calender.utils";
+import { authHeader } from "@/services/api/helpers/auth-header.helper";
 export default defineComponent({
   name: "Home",
   components: {
@@ -180,6 +181,8 @@ export default defineComponent({
       navHeaderId.value = id;
       LastActive = id;
     };
+    authHeader();
+    
     const Documents = computed(() => store.getters.getDocuments);
     const Courses = computed(() => store.getters.getCourses);
     const user = computed(() => store.getters.getActiveUser);
