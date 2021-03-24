@@ -16,6 +16,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -32,6 +33,7 @@
                     v-model="Question"
                     v-test="{ id: 'question-card-type-Question' }"
                     @change="$emit('SaveStatus')"
+                    :disabled="QuestionCardType === 1"
                   />
                 </div>
               </div>
@@ -47,6 +49,15 @@
                     v-model="ShortAnswer"
                     v-test="{ id: 'question-card-type-Answer' }"
                     @change="$emit('SaveStatus')"
+                    v-if="QuestionCardType === 0"
+                  />
+                  <input
+                    class="question-input"
+                    placeholder="Enter Answer"
+                    v-model="TestShortAnswer"
+                    v-test="{ id: 'question-card-type-Answer' }"
+                    @change="$emit('SaveStatus')"
+                    v-if="QuestionCardType === 1"
                   />
                 </div>
               </div>
@@ -67,6 +78,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -83,6 +95,7 @@
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
                   @change="$emit('SaveStatus')"
+                  :disabled="QuestionCardType === 1"
                 />
               </div>
             </div>
@@ -101,6 +114,16 @@
                   v-model="LongTextAnswer"
                   v-test="{ id: 'question-card-type-Answer' }"
                   @change="$emit('SaveStatus')"
+                  v-if="QuestionCardType === 0"
+                ></textarea>
+                <textarea
+                  class="question-input longText-input longText-textarea"
+                  rows="1"
+                  placeholder="Enter Answer"
+                  v-model="TestLongTextAnswer"
+                  v-test="{ id: 'question-card-type-Answer' }"
+                  @change="$emit('SaveStatus')"
+                  v-if="QuestionCardType === 1"
                 ></textarea>
               </div>
             </div>
@@ -120,6 +143,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -135,6 +159,7 @@
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
                   @change="$emit('SaveStatus')"
+                  :disabled="QuestionCardType === 1 ? true : false"
                 />
               </div>
             </div>
@@ -145,7 +170,7 @@
         <div
           class="true-false-card card"
           :class="{
-            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1 
           }"
           @click="TrueFalseHandler(AnswerOptions.Option1), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
@@ -155,7 +180,7 @@
         <div
           class="true-false-card card"
           :class="{
-            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2 
           }"
           @click="TrueFalseHandler(AnswerOptions.Option2), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
@@ -192,6 +217,7 @@
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
                   @change="$emit('SaveStatus')"
+                  :disabled="QuestionCardType === 1 ? true : false"
                 />
               </div>
             </div>
@@ -204,27 +230,27 @@
             class="true-false-card card"
             :class="{
               'shadow bg-success':
-                MultipleChoiceAnswerID === AnswerOptions.Option1 && QuestionCardType === 0,
-              'shadow bg-secondary' : MultipleChoiceAnswerID === AnswerOptions.Option1 && QuestionCardType === 1
+                MultipleChoiceAnswerID === AnswerOptions.Option1 
             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option1), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p :contenteditable="QuestionCardType === 0 ? true : false">
+            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option1)">
               {{ MultipleChoiceAnswerOptions.Option1 }}
             </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 1 }"
+            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option2 
+            }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option2), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">
+            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option2)">
               {{ MultipleChoiceAnswerOptions.Option2 }}
             </p>
           </div>
@@ -232,25 +258,27 @@
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 2 }"
+            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option3 
+             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option3), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">
+            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option3)">
               {{ MultipleChoiceAnswerOptions.Option3 }}
             </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 3 }"
+            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option4 
+            }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option4), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true" @input="UpdateMultpleChoiceAnswer($event, 3)">
+            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option4)">
               {{ MultipleChoiceAnswerOptions.Option4 }}
             </p>
           </div>
@@ -343,7 +371,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
 import Test from "@/directives/test.directive";
 import {
   QuestionTypeEnum,
@@ -377,9 +405,19 @@ export default defineComponent({
     }
   },
   setup(props) {
+
+    // focus watcher, for UI
+    const showSideBar: Ref<boolean> = ref(props.focus);
+    watch(
+      () => props.focus,
+      newValue => {
+        showSideBar.value = newValue;
+      }
+    );    
+
+    //#region - Edit / Create logic
     
     const QuestionData = {} as Question;
-    const showSideBar: Ref<boolean> = ref(props.focus);
     const QuestionType = ref<number>(0);
 
     const Question = ref<string>("");
@@ -424,12 +462,7 @@ export default defineComponent({
       QuestionType.value = newQuestionType;
     };
 
-    watch(
-      () => props.focus,
-      newValue => {
-        showSideBar.value = newValue;
-      }
-    );
+
 
     const QuestionDataHandler = (): Question => {
       if (!props.QuestionProp) {
@@ -532,9 +565,62 @@ export default defineComponent({
         }
       }
     };
+    //#endregion
+
+    //#region - question test logic
+    const TestShortAnswer = ref<string>("");
+    const TestLongTextAnswer = ref<string>("");
+
+    const InitilizeTestQuestion = () => {
+      if (props.QuestionCardType === 1) {
+       MultipleChoiceAnswerID.value = -1; 
+       TrueFalseAnswer.value = -1;
+       // TODO - kanskje gjøre det samme for shorttext og longtext, sette v-model til "",
+       //        slipper dobbel input i template da...
+      }
+    }
+
+    const getTestData = () => {
+      const TestData = {
+        questionType: QuestionType.value,
+        questionID: QuestionData.QuestionID,
+        answer: -1 as string | number
+      }
+      if (QuestionType.value === QuestionTypeEnum.ShortText) {
+        TestData.answer = TestShortAnswer.value
+      }
+      else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        TestData.answer = TestLongTextAnswer.value
+      }
+      else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        TestData.answer = TrueFalseAnswer.value 
+      }
+      else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        TestData.answer = MultipleChoiceAnswerID.value
+      }
+      return TestData
+    }
+
+
+    const Answered = computed(() => {
+      if (QuestionType.value === QuestionTypeEnum.ShortText) {
+        return TestShortAnswer.value === "" 
+      }
+      else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        return TestLongTextAnswer.value === "" 
+      }
+      else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        return TrueFalseAnswer.value === -1 
+      }
+      else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        return MultipleChoiceAnswerID.value === -1 
+      }
+    }) 
+    //#endregion
 
     onBeforeMount(() => {
       InitilizeQuestion();
+      InitilizeTestQuestion();
     });
 
     return {
@@ -556,7 +642,11 @@ export default defineComponent({
       getQuestion,
       QuestionTypeEnum,
       AnswerOptions,
-      QuestionDataHandler
+      QuestionDataHandler,
+      TestShortAnswer,
+      TestLongTextAnswer,
+      Answered,
+      getTestData
     };
   }
 });
@@ -843,5 +933,10 @@ export default defineComponent({
   display: flex;
   justify-content: space-evenly;
   width: 100%;
+}
+
+
+input:disabled {
+  background: transparent;
 }
 </style>

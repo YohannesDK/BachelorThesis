@@ -39,6 +39,10 @@ export default defineComponent({
       return store.getters.getIsLoading === true;
     });
 
+    const currentRouteName = computed(() => {
+      return router.currentRoute.value.name
+    })
+
     const OnMoveBody = (showSideBar: boolean, sideBarType?: number) => {
       if (appContainer.value) {
         if (showSideBar) {
@@ -54,9 +58,11 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    // TODO - fix this navbar shit
+    computed(() => {
       if (appContainer.value) {
-        if ( router.currentRoute.value.name === "TakeTest") {
+        if ( currentRouteName.value === "TakeTest") {
+            console.log("taketest");
             appContainer.value.style.marginLeft = "0px";
         }
       }

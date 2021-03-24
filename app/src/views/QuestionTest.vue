@@ -5,7 +5,7 @@
   </div>
   <div class="container">
     <div class="questionset-settings-container row">
-      <div class="questionset-inner col-8 card shadow">
+      <div class="questionset-inner col-8">
         <div class="col-sm-8">
           <fa icon="info" class="icon" />
           <ul class="list-unstyled">
@@ -47,7 +47,7 @@
           </ul>
         </div>
       </div>
-      <div class="settings-inner col-3 card shadow">
+      <div class="settings-inner col-3">
         <div class="settings-nav">
           <fa icon="cog" class="icon" />
           <ul class="list-unstyled settings-list">
@@ -61,18 +61,18 @@
           v-if="settingsOption === 0"
           >
             <!-- Time -->
-            <input type="text" class="m-auto">
+            Time settings
           </div>
 
           <div class="answersettings"
           v-if="settingsOption === 1"
           >
-            Answer
+            Answer settings
           </div>
           <div class="othersettings"
           v-if="settingsOption === 2"
           >
-            other
+            Other settings
           </div>
         </div>
       </div>

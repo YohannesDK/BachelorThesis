@@ -8,7 +8,7 @@
         v-model="searchvalue"
       />
     </div>
-    <ul class="list-unstyled documentlist card shadow">
+    <ul class="list-unstyled documentlist">
       <li v-for="doc in searcheddocuments" :key="doc">
         <toogle-switch-attach-document
           :documentId="doc.DocumentId"

@@ -29,7 +29,8 @@ import {
   faCaretUp,
   faCheck,
   faCog,
-  faInfo
+  faInfo,
+  faFlag
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -63,7 +64,8 @@ library.add(
   faCaretUp,
   faCheck,
   faCog,
-  faInfo
+  faInfo,
+  faFlag
 );
 
 export { FontAwesomeIcon };
