@@ -99,7 +99,7 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "TakeTest" */ "../views/TakeTest.vue")
   },
   {
-    path: "/PageNotFound",
+    path: '/:pathMatch(.*)*',
     name: "PageNotFound",
     component: () =>
       import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")

@@ -28,6 +28,7 @@ export function Login(username: string, password: string) {
         }
         store.dispatch("setUser", user);
         store.dispatch("login");
+        console.log(response.data);
         localStorage.setItem("token", response.data.token);
         router.push({name: "Home" });
       }

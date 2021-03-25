@@ -17,7 +17,7 @@
           >
             Good Morning!
           </h1>
-          <p v-test="{ id: 'dashboard-username' }">{{ user.FirstName }}</p>
+          <p v-test="{ id: 'dashboard-username' }">{{ user.UserName }}</p>
         </div>
         <p v-test="{ id: 'dashboard-date' }">
           {{ day }} {{ month }} {{ year }}
@@ -121,7 +121,6 @@ import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
 import { day, month, year } from "@/utils/calender.utils";
-import { authHeader } from "@/services/api/helpers/auth-header.helper";
 export default defineComponent({
   name: "Home",
   components: {
@@ -181,7 +180,6 @@ export default defineComponent({
       navHeaderId.value = id;
       LastActive = id;
     };
-    authHeader();
     
     const Documents = computed(() => store.getters.getDocuments);
     const Courses = computed(() => store.getters.getCourses);

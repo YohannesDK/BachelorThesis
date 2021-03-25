@@ -53,7 +53,7 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import router from "@/router";
-import axios from "axios";
+import axios from "../services/api";
 
 export default defineComponent({
   name: "Courses",
@@ -79,10 +79,12 @@ export default defineComponent({
 
   created() {
     axios
-      .get("/api/userinfo", {
+      .get("/userinfo", {
         headers: { token: localStorage.getItem("token") }
       })
       .then(response => {
+        console.log(response.data);
+        
         this.name = response.data.user.username;
         this.role = response.data.user.role;
         this.fullname = response.data.user.fullname;
@@ -98,6 +100,9 @@ export default defineComponent({
         if (this.role == "Student") {
           this.$router.push("/student");
         }
+      }).catch((error) => {
+        console.error(error);
+        return;
       });
   },
 
