@@ -17,14 +17,10 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
       // 401 from server, remove jwt and logout
       localStorage.removeItem('token');
       router.push({name: "Login"})
-      return;
-
     } else if (error.response.status === 404) {
       router.push({name: "PageNotFound"})
     }
-      else {
-      return Promise.reject(error.response);
-    }
+    return Promise.reject(error.response.status);
   }
 });
 
