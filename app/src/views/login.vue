@@ -74,7 +74,7 @@ export default defineComponent({
       if (username.value !== "" && password.value !== "") {
         Login(username.value, password.value);
       }
-    }
+    };
     return {
       username,
       password,

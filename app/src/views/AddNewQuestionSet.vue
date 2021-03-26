@@ -84,7 +84,14 @@
 
 <script lang="ts">
 // TODO - add animations later - https://codepen.io/Takumari85/pen/RaYwpJ
-import { computed, ComputedRef, defineComponent, onBeforeUpdate, onMounted, ref } from "vue";
+import {
+  computed,
+  ComputedRef,
+  defineComponent,
+  onBeforeUpdate,
+  onMounted,
+  ref
+} from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive.ts";
 import router from "@/router";
@@ -124,7 +131,9 @@ export default defineComponent({
       CourseId: []
     });
 
-    const User: ComputedRef<UserType> = computed(() => store.getters.getActiveUser)
+    const User: ComputedRef<UserType> = computed(
+      () => store.getters.getActiveUser
+    );
 
     // route save guard, if the quesitons are not saved
     const RouteSafeGuards = () => {

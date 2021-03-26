@@ -4,24 +4,26 @@ import router from "@/router";
 
 const axiosInstance = axios.create({
   baseURL: ApiConfig.API_URL,
-  headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
-})
-
+  headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+});
 
 // axios interceptors
-axiosInstance.interceptors.response.use((response: AxiosResponse) => {
-  return response
-}, (error: AxiosError) => {
-  if (error.response && error.response.status) {
-    if (error.response.status === 401) {
-      // 401 from server, remove jwt and logout
-      localStorage.removeItem('token');
-      router.push({name: "Login"})
-    } else if (error.response.status === 404) {
-      router.push({name: "PageNotFound"})
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error: AxiosError) => {
+    if (error.response && error.response.status) {
+      if (error.response.status === 401) {
+        // 401 from server, remove jwt and logout
+        localStorage.removeItem("token");
+        router.push({ name: "Login" });
+      } else if (error.response.status === 404) {
+        router.push({ name: "PageNotFound" });
+      }
+      return Promise.reject(error.response.status);
     }
-    return Promise.reject(error.response.status);
   }
-});
+);
 
 export default axiosInstance;

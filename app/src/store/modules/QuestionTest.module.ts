@@ -1,4 +1,6 @@
-import { TestQuestionAndAnswer, TestData } from "../interfaces/QuestionTest.types";
+import {
+  TestData
+} from "../interfaces/QuestionTest.types";
 
 export default {
   state: {
@@ -10,7 +12,7 @@ export default {
       state.TestID++;
     },
     AddTestData: (state: any, TestData: TestData) => {
-      state.TestData.push(TestData)
+      state.TestData.push(TestData);
     }
   },
   actions: {
@@ -18,18 +20,18 @@ export default {
       context.commit("IncrementTestID");
     },
     AddTestData: (context: any, TestData: TestData) => {
-      context.commit("AddTestData", TestData)
+      context.commit("AddTestData", TestData);
     }
   },
   getters: {
     getTestID: (state: any) => {
-      return state.TestID
+      return state.TestID;
     },
     getAllTestData: (state: any) => {
-      return state.TestData
+      return state.TestData;
     },
     getTestDataById: (state: any, testID: number) => {
-      const testData: TestData[] = []; 
+      const testData: TestData[] = [];
       (state.TestData as TestData[]).forEach((test: TestData) => {
         if (test.TestID === testID) {
           testData.push(test);
@@ -38,7 +40,7 @@ export default {
       return testData;
     },
     getTestDataByUserName: (state: any, userName: string) => {
-      const testData: TestData[] = []; 
+      const testData: TestData[] = [];
       (state.TestData as TestData[]).forEach((test: TestData) => {
         if (test.userName === userName) {
           testData.push(test);
@@ -47,4 +49,4 @@ export default {
       return testData;
     }
   }
-}
+};

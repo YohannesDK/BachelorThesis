@@ -99,12 +99,11 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "TakeTest" */ "../views/TakeTest.vue")
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: "/:pathMatch(.*)*",
     name: "PageNotFound",
     component: () =>
       import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")
   }
-
 ];
 
 const router = createRouter({
@@ -112,14 +111,13 @@ const router = createRouter({
   routes
 });
 
-
 router.beforeEach((to, from, next) => {
-  const publicRoutes = ['Login', 'Welcome'];
+  const publicRoutes = ["Login", "Welcome"];
   const authRequired = !publicRoutes.includes(to.name as string);
   const isauth = store.getters.getIsAuthenticated;
 
-  if (authRequired && isauth) next({name: 'Login'})
-  else next()
-})
+  if (authRequired && isauth) next({ name: "Login" });
+  else next();
+});
 
 export default router;

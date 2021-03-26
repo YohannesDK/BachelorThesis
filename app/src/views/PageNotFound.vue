@@ -1,14 +1,14 @@
 <template>
   <div class="pagenotfound">
-    <img src="../assets/AppLogo.svg" class="logo">
+    <img src="../assets/AppLogo.svg" class="logo" />
     <span>Page Not Found</span>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 export default defineComponent({
-  name: "PageNotFound",
-})
+  name: "PageNotFound"
+});
 </script>
 
 <style scoped>

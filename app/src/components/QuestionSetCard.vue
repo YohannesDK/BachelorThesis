@@ -170,7 +170,7 @@
         <div
           class="true-false-card card"
           :class="{
-            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1 
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1
           }"
           @click="TrueFalseHandler(AnswerOptions.Option1), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
@@ -180,7 +180,7 @@
         <div
           class="true-false-card card"
           :class="{
-            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2 
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2
           }"
           @click="TrueFalseHandler(AnswerOptions.Option2), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
@@ -230,27 +230,35 @@
             class="true-false-card card"
             :class="{
               'shadow bg-success':
-                MultipleChoiceAnswerID === AnswerOptions.Option1 
+                MultipleChoiceAnswerID === AnswerOptions.Option1
             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option1), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option1)">
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option1)"
+            >
               {{ MultipleChoiceAnswerOptions.Option1 }}
             </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option2 
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option2
             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option2), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option2)">
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option2)"
+            >
               {{ MultipleChoiceAnswerOptions.Option2 }}
             </p>
           </div>
@@ -258,27 +266,37 @@
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option3 
-             }"
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option3
+            }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option3), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option3)">
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option3)"
+            >
               {{ MultipleChoiceAnswerOptions.Option3 }}
             </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option4 
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option4
             }"
             @click.self="
               MultipleChoiceHandler(AnswerOptions.Option4), $emit('SaveStatus')
             "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p :contenteditable="QuestionCardType === 0 ? true : false" @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option4)">
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option4)"
+            >
               {{ MultipleChoiceAnswerOptions.Option4 }}
             </p>
           </div>
@@ -406,7 +424,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-
     // focus watcher, for UI
     const showSideBar: Ref<boolean> = ref(props.focus);
     watch(
@@ -414,10 +431,10 @@ export default defineComponent({
       newValue => {
         showSideBar.value = newValue;
       }
-    );    
+    );
 
     //#region - Edit / Create logic
-    
+
     const QuestionData = {} as Question;
     const QuestionType = ref<number>(0);
 
@@ -447,23 +464,24 @@ export default defineComponent({
       MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
     };
 
-    const UpdateMultpleChoiceAnswer = (e: any, multiplechoiceoption: number) => {
+    const UpdateMultpleChoiceAnswer = (
+      e: any,
+      multiplechoiceoption: number
+    ) => {
       if (multiplechoiceoption === 0) {
-        MultipleChoiceAnswerOptions.value.Option1 = e.target.innerText 
+        MultipleChoiceAnswerOptions.value.Option1 = e.target.innerText;
       } else if (multiplechoiceoption === 1) {
-        MultipleChoiceAnswerOptions.value.Option2 = e.target.innerText 
+        MultipleChoiceAnswerOptions.value.Option2 = e.target.innerText;
       } else if (multiplechoiceoption === 2) {
-        MultipleChoiceAnswerOptions.value.Option3 = e.target.innerText 
+        MultipleChoiceAnswerOptions.value.Option3 = e.target.innerText;
       } else if (multiplechoiceoption === 3) {
-        MultipleChoiceAnswerOptions.value.Option4 = e.target.innerText 
+        MultipleChoiceAnswerOptions.value.Option4 = e.target.innerText;
       }
-    }
+    };
 
     const ChangeQuestionType = (newQuestionType: number) => {
       QuestionType.value = newQuestionType;
     };
-
-
 
     const QuestionDataHandler = (): Question => {
       if (!props.QuestionProp) {
@@ -574,14 +592,14 @@ export default defineComponent({
 
     const InitilizeTestQuestion = () => {
       if (props.QuestionCardType === 1) {
-       MultipleChoiceAnswerID.value = -1; 
-       TrueFalseAnswer.value = -1;
-       // TODO - kanskje gjøre det samme for shorttext og longtext, sette v-model til "",
-       //        slipper dobbel input i template da...
+        MultipleChoiceAnswerID.value = -1;
+        TrueFalseAnswer.value = -1;
+        // TODO - kanskje gjøre det samme for shorttext og longtext, sette v-model til "",
+        //        slipper dobbel input i template da...
       }
-    }
+    };
 
-    const getTestData = () : TestQuestionAndAnswer => {
+    const getTestData = (): TestQuestionAndAnswer => {
       let TestQuestionAndAnswer!: TestQuestionAndAnswer;
 
       if (QuestionType.value === QuestionTypeEnum.ShortText) {
@@ -589,44 +607,40 @@ export default defineComponent({
           QuestionType: QuestionTypeEnum.ShortText,
           QuestionID: QuestionData.QuestionID,
           Answer: TestShortAnswer.value
-        }
+        };
       } else if (QuestionType.value === QuestionTypeEnum.LongText) {
         TestQuestionAndAnswer = {
           QuestionType: QuestionTypeEnum.LongText,
           QuestionID: QuestionData.QuestionID,
           Answer: TestLongTextAnswer.value
-        }
+        };
       } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
         TestQuestionAndAnswer = {
           QuestionType: QuestionTypeEnum.TrueFalse,
           QuestionID: QuestionData.QuestionID,
           Answer: TrueFalseAnswer.value
-        }
+        };
       } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
         TestQuestionAndAnswer = {
           QuestionType: QuestionTypeEnum.MultipleChoice,
           QuestionID: QuestionData.QuestionID,
           Answer: MultipleChoiceAnswerID.value
-        }
+        };
       }
       return TestQuestionAndAnswer;
     };
 
-
     const Answered = computed(() => {
       if (QuestionType.value === QuestionTypeEnum.ShortText) {
-        return TestShortAnswer.value === "" 
+        return TestShortAnswer.value === "";
+      } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        return TestLongTextAnswer.value === "";
+      } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        return TrueFalseAnswer.value === -1;
+      } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        return MultipleChoiceAnswerID.value === -1;
       }
-      else if (QuestionType.value === QuestionTypeEnum.LongText) {
-        return TestLongTextAnswer.value === "" 
-      }
-      else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
-        return TrueFalseAnswer.value === -1 
-      }
-      else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
-        return MultipleChoiceAnswerID.value === -1 
-      }
-    }) 
+    });
     //#endregion
 
     onBeforeMount(() => {
@@ -945,7 +959,6 @@ export default defineComponent({
   justify-content: space-evenly;
   width: 100%;
 }
-
 
 input:disabled {
   background: transparent;

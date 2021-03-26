@@ -24,7 +24,7 @@ export default defineComponent({
 
 <style scoped>
 .logo {
-  max-width:25%;
+  max-width: 25%;
 }
 .loading-screen {
   position: fixed;

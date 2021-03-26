@@ -1,4 +1,4 @@
-import { 
+import {
   TestQuestionAndAnswer,
   TestData,
   TestStat,
@@ -41,12 +41,14 @@ export default {
       return state.SingleTestStatID;
     },
     getAllTestStats: (state: any) => {
-      return state.TestStats
+      return state.TestStats;
     },
     getTestStatsByTestID: (state: any, TestID: number) => {
-      return (state.TestStats as TestStat[]).find(
-        (TestStat: TestStat) => TestStat.TestID === TestID) || -1
+      return (
+        (state.TestStats as TestStat[]).find(
+          (TestStat: TestStat) => TestStat.TestID === TestID
+        ) || -1
+      );
     }
-
   }
-}
+};

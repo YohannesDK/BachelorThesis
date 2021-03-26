@@ -100,9 +100,7 @@
                   >
                     <li @click="OpenQuestionSet(questionset.QSID)">Open</li>
                     <li>Rename</li>
-                    <li
-                    @click="OpenTest(questionset.QSID)"
-                    >Practise</li>
+                    <li @click="OpenTest(questionset.QSID)">Practise</li>
                     <li @click="attachToDocument(questionset.QSID)">
                       Attach Question Set
                     </li>
@@ -244,10 +242,9 @@ export default defineComponent({
       }
     };
 
-
     const OpenTest = (QSID: number) => {
-      router.push({name: "questiontest", query: {QSID: QSID}})
-    }
+      router.push({ name: "questiontest", query: { QSID: QSID } });
+    };
 
     return {
       displaytype,

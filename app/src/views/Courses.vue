@@ -84,7 +84,7 @@ export default defineComponent({
       })
       .then(response => {
         console.log(response.data);
-        
+
         this.name = response.data.user.username;
         this.role = response.data.user.role;
         this.fullname = response.data.user.fullname;
@@ -100,7 +100,8 @@ export default defineComponent({
         if (this.role == "Student") {
           this.$router.push("/student");
         }
-      }).catch((error) => {
+      })
+      .catch(error => {
         console.error(error);
         return;
       });

@@ -1,49 +1,49 @@
 <template>
   <div class="navbar navbar-light mb-3 test-navbar">
     <div class="container">
-      <span class="navbar-brand mb-0 h1 test-tittle">{{ QuestionSet.Tittle }}</span>
+      <span class="navbar-brand mb-0 h1 test-tittle">{{
+        QuestionSet.Tittle
+      }}</span>
     </div>
   </div>
 
   <div class="container test-container">
-    <question-set-card v-for="(question, index) in QuestionSet.QuestionSet"
-    :ref="
-          el => {
-            questionCards[index] = el;
-          }
-    "
-    :key="question"
-    :index="index"
-    :focus="focusIndex === index"
-    :QuestionProp="question"
-    :QuestionCardType="1"
-    @focusChange="OnfocusChange(index)"
-    class="question-set-card"
+    <question-set-card
+      v-for="(question, index) in QuestionSet.QuestionSet"
+      :ref="
+        el => {
+          questionCards[index] = el;
+        }
+      "
+      :key="question"
+      :index="index"
+      :focus="focusIndex === index"
+      :QuestionProp="question"
+      :QuestionCardType="1"
+      @focusChange="OnfocusChange(index)"
+      class="question-set-card"
     />
   </div>
 
   <div class="test-sidebar shadow">
     <ul class="list-unstyled">
       <li
-      v-for="(question, index) in QuestionSet.QuestionSet" :key="question"
-      @click="OnfocusChange(index)"
-      :class="{'active' : focusIndex === index}"
-      >{{index + 1}}</li>
+        v-for="(question, index) in QuestionSet.QuestionSet"
+        :key="question"
+        @click="OnfocusChange(index)"
+        :class="{ active: focusIndex === index }"
+      >
+        {{ index + 1 }}
+      </li>
     </ul>
   </div>
-  <div class="test-info shadow"
-  :class="{'hide' : hideInfoBar}"
-  >
-    <div v-if="hideInfoBar"
-    @click="hideInfoBar = false"
-    >
-    <fa icon="info"/>
+  <div class="test-info shadow" :class="{ hide: hideInfoBar }">
+    <div v-if="hideInfoBar" @click="hideInfoBar = false">
+      <fa icon="info" />
     </div>
     <div class="test-info-inner">
       <div class="test-info-nav">
-        <div class="close-info"
-        @click="hideInfoBar = true"
-        >
+        <div class="close-info" @click="hideInfoBar = true">
           <fa icon="minus-circle" class="close-minus" />
         </div>
       </div>
@@ -58,17 +58,13 @@
       </div>
     </div>
   </div>
-  <div class="test-handin shadow"
-  @click="Finished"
-  >
+  <div class="test-handin shadow" @click="Finished">
     <fa icon="check" />
     <div class="tooltip">
       <span class="tooltiptext">Finished</span>
     </div>
   </div>
-  <div class="test-quit shadow"
-  @click="Quit"
-  >
+  <div class="test-quit shadow" @click="Quit">
     <fa icon="flag" />
     <div class="tooltip">
       <span class="tooltiptext">Quit</span>
@@ -77,23 +73,26 @@
 </template>
 
 <script lang="ts">
-import QuestionSetCard from '@/components/QuestionSetCard.vue';
-import router from '@/router'
-import store from '@/store'
+import QuestionSetCard from "@/components/QuestionSetCard.vue";
+import router from "@/router";
+import store from "@/store";
 import { QuestionSet } from "@/store/interfaces/question.type";
-import { defineComponent, onMounted, ref, Ref } from 'vue';
-import { TestQuestionAndAnswer, TestData } from "@/store/interfaces/QuestionTest.types";
+import { defineComponent, onMounted, ref, Ref } from "vue";
+import {
+  TestQuestionAndAnswer,
+  TestData
+} from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
-import { UserType } from '@/store/interfaces/user.types';
+import { UserType } from "@/store/interfaces/user.types";
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
-  setup(){
+  setup() {
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
     const hideInfoBar = ref<boolean>(true);
 
-    const QuestionSet =  ref<QuestionSet>({
+    const QuestionSet = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
@@ -102,61 +101,62 @@ export default defineComponent({
       LastEdited: "",
       DocumentID: [],
       CourseId: []
-    })
-    
+    });
+
     const TestData: Ref<TestData> = ref<TestData>({
       TestID: -1,
       userName: "",
       date: date,
       QSID: -1,
       TestData: []
-    })
+    });
 
     const OnfocusChange = (index: number) => {
-      focusIndex.value = index
+      focusIndex.value = index;
       try {
         if (questionCards.value[index]) {
           if (QuestionSet.value.QuestionSet.length > 3) {
-            questionCards.value[index].$el.scrollIntoView({block: "center"})
+            questionCards.value[index].$el.scrollIntoView({ block: "center" });
           }
-        }        
+        }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
 
     const Finished = () => {
       questionCards.value.forEach((ele: any) => {
         if (ele) {
           try {
-            const testData = ele.getTestData.call()
-            TestData.value.TestData.push(testData)
+            const testData = ele.getTestData.call();
+            TestData.value.TestData.push(testData);
           } catch (e) {
-            console.error(e)
+            console.error(e);
           }
         }
-      })
-      store.dispatch("AddTestData", TestData.value)
-      store.dispatch("AddNewTestStat", TestData.value)
-      router.push({name: "QuestionSets"})    
-    }
+      });
+      store.dispatch("AddTestData", TestData.value);
+      store.dispatch("AddNewTestStat", TestData.value);
+      router.push({ name: "QuestionSets" });
+    };
 
     const Quit = () => {
-      const leave = window.confirm("Are you sure you want to quit?")
+      const leave = window.confirm("Are you sure you want to quit?");
       if (leave) {
-        router.push({name: "QuestionSets"})    
+        router.push({ name: "QuestionSets" });
       }
-    }
-
+    };
 
     const InitilizeTest = () => {
       const user: UserType = store.getters.getActiveUser;
       if (router.currentRoute.value.query.QSID) {
-        const qs: QuestionSet = store.getters.getQuestionSetById(Number(router.currentRoute.value.query.QSID))
-        QuestionSet.value.QSID = qs.QSID
-        QuestionSet.value.Tittle = qs.Tittle
-        QuestionSet.value.Description = qs.Description
-        QuestionSet.value.QuestionSet = qs.QuestionSet
+        const qs: QuestionSet = store.getters.getQuestionSetById(
+          Number(router.currentRoute.value.query.QSID)
+        );
+        QuestionSet.value.QSID = qs.QSID;
+        QuestionSet.value.Tittle = qs.Tittle;
+        QuestionSet.value.Description = qs.Description;
+        QuestionSet.value.QuestionSet = qs.QuestionSet;
       }
 
       // initilize test data
@@ -166,18 +166,17 @@ export default defineComponent({
         TestData.value.userName = user.UserName;
 
         store.dispatch("IncrementTestID");
-        }
-      };
+      }
+    };
 
     onMounted(() => {
-      store.dispatch("loading", true)
+      store.dispatch("loading", true);
       setTimeout(() => {
         // while fetching all data
-        store.dispatch("loading", false)
-        InitilizeTest()
-        
+        store.dispatch("loading", false);
+        InitilizeTest();
       }, 1000);
-    })
+    });
 
     return {
       QuestionSet,
@@ -187,14 +186,13 @@ export default defineComponent({
       hideInfoBar,
       Finished,
       Quit
-    }
+    };
   }
-})
+});
 </script>
 
-
 <style scoped>
-.test-navbar{
+.test-navbar {
   padding: 1% 5%;
   border-bottom: 1px solid lightgray;
   min-height: 10vh;
@@ -212,11 +210,14 @@ export default defineComponent({
   min-height: 70vh;
 }
 
-.question-set-card{
+.question-set-card {
   margin-bottom: 11%;
 }
 
-.test-sidebar, .test-info, .test-handin, .test-quit{
+.test-sidebar,
+.test-info,
+.test-handin,
+.test-quit {
   position: fixed;
   right: 15%;
   top: 30vh;
@@ -244,7 +245,8 @@ export default defineComponent({
   background: whitesmoke;
 }
 
-.test-handin, .test-quit {
+.test-handin,
+.test-quit {
   right: 12%;
   height: 2.6rem;
   width: 2.6rem;
@@ -253,7 +255,8 @@ export default defineComponent({
   overflow: visible;
 }
 
-.test-handin:hover, .test-quit:hover {
+.test-handin:hover,
+.test-quit:hover {
   background: whitesmoke;
   cursor: pointer;
 }
@@ -262,16 +265,17 @@ export default defineComponent({
   top: calc(70vh + 3.3rem);
 }
 
-.test-handin:hover .tooltip, .test-quit:hover .tooltip {
+.test-handin:hover .tooltip,
+.test-quit:hover .tooltip {
   visibility: visible;
   opacity: 1;
 }
 
-.test-handin:hover .tooltiptext, .test-quit:hover .tooltiptext {
+.test-handin:hover .tooltiptext,
+.test-quit:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
 }
-
 
 .test-info-inner {
   display: flex;
@@ -280,7 +284,6 @@ export default defineComponent({
   height: 100%;
   width: 100%;
 }
-
 
 .close-minus {
   float: right;
@@ -307,10 +310,9 @@ export default defineComponent({
   right: 12%;
 }
 
-.test-info.hide .test-info-inner{
+.test-info.hide .test-info-inner {
   display: none;
 }
-
 
 .test-sidebar ul {
   padding-top: 1px;
@@ -391,11 +393,9 @@ export default defineComponent({
   .test-info.hide {
     right: 8%;
   }
-  .test-handin, .test-quit {
+  .test-handin,
+  .test-quit {
     right: 8%;
   }
 }
-
 </style>
-
-

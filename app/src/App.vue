@@ -6,7 +6,7 @@
     <!-- page content -->
     <div
       ref="appContainer"
-      :class="{ appFullWidth: showSideBar}"
+      :class="{ appFullWidth: showSideBar }"
       class="container-fluid appContainer"
     >
       <router-view />
@@ -40,8 +40,8 @@ export default defineComponent({
     });
 
     const currentRouteName = computed(() => {
-      return router.currentRoute.value.name
-    })
+      return router.currentRoute.value.name;
+    });
 
     const OnMoveBody = (showSideBar: boolean, sideBarType?: number) => {
       if (appContainer.value) {
@@ -49,7 +49,7 @@ export default defineComponent({
           appContainer.value.style.marginLeft = "250px";
         } else {
           // TODO - fix this navbar shit
-          if (sideBarType === 0 ) {
+          if (sideBarType === 0) {
             appContainer.value.style.marginLeft = "0px";
           } else {
             appContainer.value.style.marginLeft = "3.3rem";
@@ -61,12 +61,12 @@ export default defineComponent({
     // TODO - fix this navbar shit
     computed(() => {
       if (appContainer.value) {
-        if ( currentRouteName.value === "TakeTest") {
-            console.log("taketest");
-            appContainer.value.style.marginLeft = "0px";
+        if (currentRouteName.value === "TakeTest") {
+          console.log("taketest");
+          appContainer.value.style.marginLeft = "0px";
         }
       }
-    })
+    });
     return {
       appContainer,
       showSideBar,

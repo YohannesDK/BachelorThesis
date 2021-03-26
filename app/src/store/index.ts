@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 import { courseType } from "./interfaces/course";
 import { UserType, RoleType } from "./interfaces/user.types";
 import QuestionSetModule from "./modules/QuestionSet.module";
-import QuestionTestModule from './modules/QuestionTest.module'
+import QuestionTestModule from "./modules/QuestionTest.module";
 import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
 import createPersistedState from "vuex-persistedstate";
@@ -48,7 +48,7 @@ const store = createStore({
       FirstName: "",
       LastName: ""
     } as UserType,
-    
+
     activeUser: {},
     loading: false
   },
@@ -60,10 +60,10 @@ const store = createStore({
       state.isAuthenticated = false;
     },
     setUser: (state, user: UserType) => {
-      state.user.UserName = user.UserName
-      state.user.Role = user.Role
-      state.user.FirstName = user.FirstName
-      state.user.LastName = user.LastName
+      state.user.UserName = user.UserName;
+      state.user.Role = user.Role;
+      state.user.FirstName = user.FirstName;
+      state.user.LastName = user.LastName;
     },
     loading: (state, loadingstatus) => {
       state.loading = loadingstatus;
@@ -96,7 +96,7 @@ const store = createStore({
       );
     },
     getIsAuthenticated: () => {
-      return !localStorage.getItem('token');
+      return !localStorage.getItem("token");
     },
     getActiveUser: state => {
       return state.user;

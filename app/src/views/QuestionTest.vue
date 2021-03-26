@@ -1,92 +1,98 @@
 <template>
-<div class="QuestionTest-container">
-  <div class="header-area container ">
-    <h1>Practise</h1>
-  </div>
-  <div class="container">
-    <div class="questionset-settings-container row">
-      <div class="questionset-inner col-8">
-        <div class="col-sm-8">
-          <fa icon="info" class="icon" />
-          <ul class="list-unstyled">
-            <li>
-              <div class="li-info">
-                <span>Tittle</span>
-                <p>{{QuestionSet.Tittle}}</p>
-              </div> 
-            </li>
-            <li>
-              <div class="li-info">
-                <span>Description</span>
-                <p>{{QuestionSet.Description || '...'}}</p>
-              </div> 
-            </li>
-            <li>
-              <div class="li-info">
-                <span>Number of Questions</span>
-                <p>{{QuestionSet.QuestionSet.length}}</p>
-              </div> 
-            </li>
-            
-          </ul>
-        </div>
-        <div class="col-sm-4">
-          <ul class="list-unstyled">
-            <li>
-              <div class="li-info">
-                <span>Previous Attempt</span>
-                <p> 1 / {{QuestionSet.QuestionSet.length}}</p>
-              </div> 
-            </li>
-            <li>
-              <div class="li-info">
-                <span>Previous Time Used</span>
-                <p>12:23 min</p>
-              </div> 
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="settings-inner col-3">
-        <div class="settings-nav">
-          <fa icon="cog" class="icon" />
-          <ul class="list-unstyled settings-list">
-            <li :class="{'active': settingsOption === 0}" @click="updateSettingsOption(0)">Time</li>
-            <li :class="{'active': settingsOption === 1}" @click="updateSettingsOption(1)">Answer Options</li>
-            <li :class="{'active': settingsOption === 2}" @click="updateSettingsOption(2)">Other</li>
-          </ul>
-        </div>
-        <div class="settings-container">
-          <div class="timesettings"
-          v-if="settingsOption === 0"
-          >
-            <!-- Time -->
-            Time settings
+  <div class="QuestionTest-container">
+    <div class="header-area container ">
+      <h1>Practise</h1>
+    </div>
+    <div class="container">
+      <div class="questionset-settings-container row">
+        <div class="questionset-inner col-8">
+          <div class="col-sm-8">
+            <fa icon="info" class="icon" />
+            <ul class="list-unstyled">
+              <li>
+                <div class="li-info">
+                  <span>Tittle</span>
+                  <p>{{ QuestionSet.Tittle }}</p>
+                </div>
+              </li>
+              <li>
+                <div class="li-info">
+                  <span>Description</span>
+                  <p>{{ QuestionSet.Description || "..." }}</p>
+                </div>
+              </li>
+              <li>
+                <div class="li-info">
+                  <span>Number of Questions</span>
+                  <p>{{ QuestionSet.QuestionSet.length }}</p>
+                </div>
+              </li>
+            </ul>
           </div>
+          <div class="col-sm-4">
+            <ul class="list-unstyled">
+              <li>
+                <div class="li-info">
+                  <span>Previous Attempt</span>
+                  <p>1 / {{ QuestionSet.QuestionSet.length }}</p>
+                </div>
+              </li>
+              <li>
+                <div class="li-info">
+                  <span>Previous Time Used</span>
+                  <p>12:23 min</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="settings-inner col-3">
+          <div class="settings-nav">
+            <fa icon="cog" class="icon" />
+            <ul class="list-unstyled settings-list">
+              <li
+                :class="{ active: settingsOption === 0 }"
+                @click="updateSettingsOption(0)"
+              >
+                Time
+              </li>
+              <li
+                :class="{ active: settingsOption === 1 }"
+                @click="updateSettingsOption(1)"
+              >
+                Answer Options
+              </li>
+              <li
+                :class="{ active: settingsOption === 2 }"
+                @click="updateSettingsOption(2)"
+              >
+                Other
+              </li>
+            </ul>
+          </div>
+          <div class="settings-container">
+            <div class="timesettings" v-if="settingsOption === 0">
+              <!-- Time -->
+              Time settings
+            </div>
 
-          <div class="answersettings"
-          v-if="settingsOption === 1"
-          >
-            Answer settings
-          </div>
-          <div class="othersettings"
-          v-if="settingsOption === 2"
-          >
-            Other settings
+            <div class="answersettings" v-if="settingsOption === 1">
+              Answer settings
+            </div>
+            <div class="othersettings" v-if="settingsOption === 2">
+              Other settings
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="questionset-settings-container row">
-      <div class="button-container">
-        <div class="btn shadow-sm bg-success"
-        @click="OpenTest()"
-        >Start</div>
-        <div class="btn shadow-sm">Reset</div>
+      <div class="questionset-settings-container row">
+        <div class="button-container">
+          <div class="btn shadow-sm bg-success" @click="OpenTest()">Start</div>
+          <div class="btn shadow-sm">Reset</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -99,10 +105,10 @@ export default defineComponent({
   setup() {
     const settingsOption = ref<number>(0);
     const updateSettingsOption = (newsetting: number) => {
-      settingsOption.value = newsetting
-    }
+      settingsOption.value = newsetting;
+    };
 
-    const QuestionSet =  ref<QuestionSet>({
+    const QuestionSet = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
@@ -111,14 +117,14 @@ export default defineComponent({
       LastEdited: "",
       DocumentID: [],
       CourseId: []
-    })
-    
+    });
 
     const OpenTest = () => {
-      router.push({name: "TakeTest", query: {QSID: QuestionSet.value.QSID}})
-    }
-
-
+      router.push({
+        name: "TakeTest",
+        query: { QSID: QuestionSet.value.QSID }
+      });
+    };
 
     const InitilizeDocumet = (QSID: number) => {
       const qs = store.getters.getQuestionSetById(QSID);
@@ -127,15 +133,15 @@ export default defineComponent({
       QuestionSet.value.Description = qs.Description;
       QuestionSet.value.QuestionSet = qs.QuestionSet;
       QuestionSet.value.LastEdited = qs.LastEdited;
-    }
-    
+    };
+
     onMounted(() => {
       if (router.currentRoute.value.query.QSID) {
-        InitilizeDocumet(Number(router.currentRoute.value.query.QSID))
-        console.log(store.getters.getAllTestStats)
+        InitilizeDocumet(Number(router.currentRoute.value.query.QSID));
+        console.log(store.getters.getAllTestStats);
         return;
       }
-      router.push({name: "PageNotFound"}) 
+      router.push({ name: "PageNotFound" });
     });
 
     return {
@@ -143,13 +149,13 @@ export default defineComponent({
       settingsOption,
       updateSettingsOption,
       OpenTest
-    }
+    };
   }
 });
 </script>
 
 <style scoped>
-.QuestionTest-container{
+.QuestionTest-container {
   width: 100%;
   padding-top: 5%;
 }
@@ -174,7 +180,7 @@ export default defineComponent({
   padding-top: 1%;
   position: relative;
 }
-.settings-inner{
+.settings-inner {
   border: none;
 }
 .li-info {
@@ -187,7 +193,7 @@ export default defineComponent({
 }
 
 .button-container-inner {
-  padding: 0 1%; 
+  padding: 0 1%;
 }
 
 .button-container {
@@ -225,7 +231,7 @@ export default defineComponent({
   left: -12%;
 }
 
-.settings-list{
+.settings-list {
   display: flex;
   width: 90%;
   overflow-x: scroll;
@@ -260,7 +266,7 @@ export default defineComponent({
   background: whitesmoke;
 }
 
-.settings-container{
+.settings-container {
   width: 100%;
   height: calc(100% - 5rem);
 }

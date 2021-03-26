@@ -180,7 +180,7 @@ export default defineComponent({
       navHeaderId.value = id;
       LastActive = id;
     };
-    
+
     const Documents = computed(() => store.getters.getDocuments);
     const Courses = computed(() => store.getters.getCourses);
     const user = computed(() => store.getters.getActiveUser);

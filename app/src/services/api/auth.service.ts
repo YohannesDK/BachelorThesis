@@ -25,11 +25,11 @@ export function Login(username: string, password: string) {
           UserName: response.data.username,
           Role: response.data.role.toUpperCase(),
           FirstName: "None Yet" //TODO - fix so we have firstname / lastname in user model
-        }
+        };
         store.dispatch("setUser", user);
         store.dispatch("login");
         localStorage.setItem("token", response.data.token);
-        router.push({name: "Home" });
+        router.push({ name: "Home" });
       }
     });
 }

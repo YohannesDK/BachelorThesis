@@ -177,7 +177,7 @@ export default defineComponent({
         Role: RoleType.Student,
         FirstName: "",
         LastName: ""
-      }
+      };
       store.dispatch("setUser", emptyUser);
       Logout();
     };

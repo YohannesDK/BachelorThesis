@@ -214,7 +214,7 @@ export default {
         lastEdited: "5 Feb 2021",
         QuestionSetID: []
       }
-    ] as documentType[],
+    ] as documentType[]
   },
   mutations: {
     AddNewDocument: (state: any) => {
@@ -227,7 +227,7 @@ export default {
         QuestionSetID: []
       });
     },
-    SetDocumentQSID: (state:any , Data: any) => {
+    SetDocumentQSID: (state: any, Data: any) => {
       const doc = state.documents.find(
         (doc: documentType) => doc.Documentid === Data.documentid
       );
@@ -240,7 +240,7 @@ export default {
         doc.QuestionSetID.push(Data.QSID);
       }
     },
-    DeleteQuestionSetFromDocument: (state:any, Data: any) => {
+    DeleteQuestionSetFromDocument: (state: any, Data: any) => {
       console.log(Data);
       const doc = state.documents.find(
         (doc: documentType) => doc.Documentid === Data.documentid
@@ -269,7 +269,7 @@ export default {
           }
         }
       });
-    },
+    }
   },
   actions: {
     AddNewDocument: (context: any) => {
@@ -292,7 +292,7 @@ export default {
     getDocmentbyId: (state: any, Documentid: number) => {
       return state.documents.find(
         (doc: documentType) => doc.Documentid === Documentid
-      )
+      );
     }
   }
-}
+};
