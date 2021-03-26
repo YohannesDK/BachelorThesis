@@ -37,8 +37,16 @@ export default {
     }
   },
   getters: {
-    GetSingleTestStatID: (state: any) => {
+    getSingleTestStatID: (state: any) => {
       return state.SingleTestStatID;
+    },
+    getAllTestStats: (state: any) => {
+      return state.TestStats
+    },
+    getTestStatsByTestID: (state: any, TestID: number) => {
+      return (state.TestStats as TestStat[]).find(
+        (TestStat: TestStat) => TestStat.TestID === TestID) || -1
     }
+
   }
 }

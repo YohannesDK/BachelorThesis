@@ -155,10 +155,10 @@ app.post("/api/user", function(request, response) {
         } 
 
         // If the above statements are not executed, the user information is correct. Proceed to create a token
-        let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey", {
-            expiresIn: "10s"
-        });
-        // let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey");
+        // let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey", {
+        //     expiresIn: "10s"
+        // });
+        let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey");
 
         // Return the user data and token to frontend
         return response.status(200).json({

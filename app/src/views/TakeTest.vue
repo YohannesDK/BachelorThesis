@@ -136,8 +136,8 @@ export default defineComponent({
           }
         }
       })
-      console.log(TestData.value);
       store.dispatch("AddTestData", TestData.value)
+      store.dispatch("AddNewTestStat", TestData.value)
       router.push({name: "QuestionSets"})    
     }
 

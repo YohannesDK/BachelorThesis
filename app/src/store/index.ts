@@ -4,6 +4,7 @@ import { UserType, RoleType } from "./interfaces/user.types";
 import QuestionSetModule from "./modules/QuestionSet.module";
 import QuestionTestModule from './modules/QuestionTest.module'
 import DocumentModule from "./modules/Documents.module";
+import TestStatsModule from "./modules/TestStats.module";
 import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
@@ -104,7 +105,8 @@ const store = createStore({
   modules: {
     QuestionSetModule,
     QuestionTestModule,
-    DocumentModule
+    DocumentModule,
+    TestStatsModule
   }
   // uncomment this on to persist state
   // plugins: [createPersistedState()]

@@ -87,7 +87,6 @@
     </div>
   </div>
 </div>
-  <!-- <question-set-card :index="1" :focus="true" :QuestionCardType="1" /> -->
 </template>
 
 <script lang="ts">
@@ -133,6 +132,7 @@ export default defineComponent({
     onMounted(() => {
       if (router.currentRoute.value.query.QSID) {
         InitilizeDocumet(Number(router.currentRoute.value.query.QSID))
+        console.log(store.getters.getAllTestStats)
         return;
       }
       router.push({name: "PageNotFound"}) 

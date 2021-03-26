@@ -3,7 +3,7 @@ import store from "@/store/index";
 import { UserType } from "@/store/interfaces/user.types";
 import { AxiosResponse } from "axios";
 import axios from "../api";
-import { authHeader } from "../helpers/auth-header.helper";
+// import { authHeader } from "../helpers/auth-header.helper";
 
 export function checkLogin(form: any) {
   const users = store.getters.getAllUsers;
