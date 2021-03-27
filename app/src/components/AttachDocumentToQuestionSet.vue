@@ -1,7 +1,5 @@
 <template>
-  <div class="attachdocument"
-    v-test="{ id: 'AttachDocumentToQS-container' }"
-  >
+  <div class="attachdocument" v-test="{ id: 'AttachDocumentToQS-container' }">
     <div class="searchbar-container">
       <input
         type="text"
@@ -11,10 +9,13 @@
         v-test="{ id: 'AttachDocumentToQS-searchbar' }"
       />
     </div>
-    <ul class="list-unstyled documentlist"
-    v-test="{ id: 'AttachDocumentToQS-list' }"
+    <ul
+      class="list-unstyled documentlist"
+      v-test="{ id: 'AttachDocumentToQS-list' }"
     >
-      <li v-for="doc in searcheddocuments" :key="doc"
+      <li
+        v-for="doc in searcheddocuments"
+        :key="doc"
         v-test="{ id: 'AttachDocumentToQS-list-item' }"
       >
         <toogle-switch-attach-document
@@ -65,7 +66,7 @@ export default defineComponent({
 
     const InitAttachments = () => {
       console.log("init atchee");
-      
+
       documents.value.forEach((doc: documentType) => {
         const index = doc.QuestionSetID.map((QSID: number) => QSID).indexOf(
           props.QSID
