@@ -1,15 +1,21 @@
 <template>
-  <label class="label-container">
+  <label class="label-container"
+    v-test="{ id: 'ToogleSwitch-container' }"
+  >
     <span
+      v-test="{ id: 'ToogleSwitch-btn' }"
       class="switch"
       :class="{ checked: checked }"
       @click="updateClick"
     ></span>
-    <span class="label">{{ documentName }}</span>
+    <span class="label"
+      v-test="{ id: 'ToogleSwitch-label' }"
+    >{{ documentName }}</span>
   </label>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import Test from "@/directives/test.directive";
 export default defineComponent({
   name: "ToogleSwitch",
   props: {
@@ -25,6 +31,9 @@ export default defineComponent({
       type: Boolean,
       default: false
     }
+  },
+  directives: {
+    Test
   },
   emits: ["update"],
   setup(props, { emit }) {

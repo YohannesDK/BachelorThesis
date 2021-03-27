@@ -1,20 +1,28 @@
 <template>
-  <div class="attachdocument">
+  <div class="attachdocument"
+    v-test="{ id: 'AttachDocumentToQS-container' }"
+  >
     <div class="searchbar-container">
       <input
         type="text"
         class="searchbar shadow"
         placeholder="Search..."
         v-model="searchvalue"
+        v-test="{ id: 'AttachDocumentToQS-searchbar' }"
       />
     </div>
-    <ul class="list-unstyled documentlist">
-      <li v-for="doc in searcheddocuments" :key="doc">
+    <ul class="list-unstyled documentlist"
+    v-test="{ id: 'AttachDocumentToQS-list' }"
+    >
+      <li v-for="doc in searcheddocuments" :key="doc"
+        v-test="{ id: 'AttachDocumentToQS-list-item' }"
+      >
         <toogle-switch-attach-document
           :documentId="doc.DocumentId"
           :documentName="doc.documentName"
           :attached="doc.status"
           @update="updateDocumentQuestionSet"
+          v-test="{ id: 'AttachDocumentToQS-list-tooglebtns' }"
         />
       </li>
       <p class="m-auto" v-if="searcheddocuments.length === 0">
@@ -32,6 +40,7 @@ import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import ToogleSwitchAttachDocument from "@/components/ToogleSwitchAttachDocument.vue";
+import Test from "@/directives/test.directive";
 export default defineComponent({
   components: { ToogleSwitchAttachDocument },
   name: "AttachDocument",
@@ -40,6 +49,9 @@ export default defineComponent({
       type: Number,
       default: -1
     }
+  },
+  directives: {
+    Test
   },
   setup(props) {
     const searchvalue = ref<string>("");
@@ -52,6 +64,8 @@ export default defineComponent({
     const attacheddocuments = ref<Array<any>>([]);
 
     const InitAttachments = () => {
+      console.log("init atchee");
+      
       documents.value.forEach((doc: documentType) => {
         const index = doc.QuestionSetID.map((QSID: number) => QSID).indexOf(
           props.QSID
@@ -131,7 +145,9 @@ export default defineComponent({
       searcheddocuments,
       save,
       saved,
-      searchvalue
+      searchvalue,
+      attacheddocuments,
+      InitAttachments
     };
   }
 });
