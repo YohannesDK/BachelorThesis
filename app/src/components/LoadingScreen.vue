@@ -37,6 +37,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 10000;
 }
 
 .loading-container {

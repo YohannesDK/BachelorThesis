@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar navbar-light mb-3 test-navbar">
+  <div class="navbar navbar-light shadow mb-3 test-navbar">
     <div class="container">
       <span class="navbar-brand mb-0 h1 test-tittle">{{
         QuestionSet.Tittle
@@ -78,10 +78,7 @@ import router from "@/router";
 import store from "@/store";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import {
-  TestQuestionAndAnswer,
-  TestData
-} from "@/store/interfaces/QuestionTest.types";
+import { TestData } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 export default defineComponent({
@@ -197,6 +194,12 @@ export default defineComponent({
   border-bottom: 1px solid lightgray;
   min-height: 10vh;
   max-height: 10vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  z-index: 10;
+  width: 100%;
 }
 
 .test-navbar .test-tittle {
@@ -208,6 +211,7 @@ export default defineComponent({
   align-items: center;
   flex-direction: column;
   min-height: 70vh;
+  margin-top: 12vh;
 }
 
 .question-set-card {
