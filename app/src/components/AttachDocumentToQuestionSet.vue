@@ -65,8 +65,6 @@ export default defineComponent({
     const attacheddocuments = ref<Array<any>>([]);
 
     const InitAttachments = () => {
-      console.log("init atchee");
-
       documents.value.forEach((doc: documentType) => {
         const index = doc.QuestionSetID.map((QSID: number) => QSID).indexOf(
           props.QSID

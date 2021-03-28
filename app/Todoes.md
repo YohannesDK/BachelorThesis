@@ -5,10 +5,14 @@
 
 - Editor / Document
   - topic scope !!!!
-  - monitoring
+    1. add identifiers inside a document
+  - monitoring - scroll monitoring
+    - take a look at editor root scroll element
   - add resources
 
 - Stats
+  - look at typeform stats
+  - chart js / chartKick
   - ...
 
 - navbar
@@ -17,7 +21,6 @@
 
 
 - Tests
-  - TakeTest
   - QuestionTest
   - ModalComponent
 

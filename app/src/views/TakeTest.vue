@@ -1,13 +1,19 @@
 <template>
-  <div class="navbar navbar-light shadow mb-3 test-navbar">
+  <div class="navbar navbar-light shadow mb-3 test-navbar"
+  v-test="{ id: 'TakeTest-test-navbar' }"
+  >
     <div class="container">
-      <span class="navbar-brand mb-0 h1 test-tittle">{{
+      <span class="navbar-brand mb-0 h1 test-tittle"
+      v-test="{ id: 'TakeTest-test-navbar-tittle' }"
+      >{{
         QuestionSet.Tittle
       }}</span>
     </div>
   </div>
 
-  <div class="container test-container">
+  <div class="container test-container"
+  v-test="{ id: 'TakeTest-test-container' }"
+  >
     <question-set-card
       v-for="(question, index) in QuestionSet.QuestionSet"
       :ref="
@@ -22,16 +28,20 @@
       :QuestionCardType="1"
       @focusChange="OnfocusChange(index)"
       class="question-set-card"
+      v-test="{ id: 'TakeTest-test-questions' }"
     />
   </div>
 
   <div class="test-sidebar shadow">
-    <ul class="list-unstyled">
+    <ul class="list-unstyled"
+    v-test="{ id: 'TakeTest-test-question-navigation-sidebar' }"
+    >
       <li
         v-for="(question, index) in QuestionSet.QuestionSet"
         :key="question"
         @click="OnfocusChange(index)"
         :class="{ active: focusIndex === index }"
+        v-test="{ id: 'TakeTest-test-question-navigation-sidebar-item' }"
       >
         {{ index + 1 }}
       </li>
@@ -58,13 +68,17 @@
       </div>
     </div>
   </div>
-  <div class="test-handin shadow" @click="Finished">
+  <div class="test-handin shadow" @click="Finished"
+    v-test="{ id: 'TakeTest-test-btn-submit' }"
+  >
     <fa icon="check" />
     <div class="tooltip">
       <span class="tooltiptext">Finished</span>
     </div>
   </div>
-  <div class="test-quit shadow" @click="Quit">
+  <div class="test-quit shadow" @click="Quit"
+    v-test="{ id: 'TakeTest-test-btn-quit' }"
+  >
     <fa icon="flag" />
     <div class="tooltip">
       <span class="tooltiptext">Quit</span>
@@ -81,9 +95,13 @@ import { defineComponent, onMounted, ref, Ref } from "vue";
 import { TestData } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
+import Test from "@/directives/test.directive";
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
+  directives: {
+    Test
+  },
   setup() {
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
@@ -117,7 +135,7 @@ export default defineComponent({
           }
         }
       } catch (error) {
-        console.error(error);
+        return;
       }
     };
 
