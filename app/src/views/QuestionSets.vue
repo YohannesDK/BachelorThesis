@@ -90,15 +90,24 @@
           v-test="{ id: 'myquestionset-table-rows' }"
         >
           <th scope="row">{{ index + 1 }}</th>
-          <td>{{ questionset.Tittle }}</td>
-          <td>{{ questionset.Description.substring(0, DescriptionSubstringLength ) + "..." }}</td>
-          <td>{{ questionset.QuestionSet.length }}</td>
-          <td>{{ questionset.LastEdited }}</td>
+          <td
+          v-test="{ id: 'myquestionset-table-rows-data' }"
+          >{{ questionset.Tittle }}</td>
+          <td
+          v-test="{ id: 'myquestionset-table-rows-data' }"
+          >{{ questionset.Description.substring(0, DescriptionSubstringLength ) + "..." }}</td>
+          <td
+          v-test="{ id: 'myquestionset-table-rows-data' }"
+          >{{ questionset.QuestionSet.length }}</td>
+          <td
+          v-test="{ id: 'myquestionset-table-rows-data' }"
+          >{{ questionset.LastEdited }}</td>
           <td class="d-flex justify-content-end">
             <div
               class="actions-button"
               @click="ShowDropDown(index)"
               @mouseleave="dropdownIndex = -1"
+              v-test="{ id: 'myquestionset-dropdown-button' }"
             >
               <fa icon="ellipsis-v" />
               <div
@@ -109,15 +118,26 @@
                 <div class="doc-item-more-dropdown shadow-sm">
                   <ul
                     class="list-unstyled mb-0"
-                    v-test="{ id: 'card-options-dropdown' }"
+                    v-test="{ id: 'myquestionset-options-dropdown' }"
                   >
-                    <li @click="OpenQuestionSet(questionset.QSID)">Open</li>
-                    <li>Rename</li>
-                    <li @click="OpenTest(questionset.QSID)">Practise</li>
-                    <li @click="attachToDocument(questionset.QSID)">
+                    <li @click="OpenQuestionSet(questionset.QSID)"
+                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    
+                    >Open</li>
+                    <li
+                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >Rename</li>
+                    <li @click="OpenTest(questionset.QSID)"
+                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >Practise</li>
+                    <li @click="attachToDocument(questionset.QSID)"
+                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >
                       Attach Question Set
                     </li>
-                    <li>Share</li>
+                    <li
+                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >Share</li>
                     <hr />
                     <li
                       @click="
@@ -126,6 +146,7 @@
                           questionset.QSID
                         )
                       "
+                      v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Delete
                     </li>
