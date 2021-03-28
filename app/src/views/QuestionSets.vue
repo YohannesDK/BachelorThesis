@@ -4,24 +4,31 @@
       <h1 style="display: inline-block;">
         Question Sets
       </h1>
-      <button @click="addQS()" style="display: inline-block; margin-left: 5em; border-radius: 50%; font-size: 20px;"> + </button>
+      <button
+        @click="addQS()"
+        style="display: inline-block; margin-left: 5em; border-radius: 50%; font-size: 20px;"
+      >
+        +
+      </button>
     </div>
     <table>
-  <tr>
-    <th>Id</th>
-    <th>Title</th>
-    <th>Description</th>
-    <th>Created At</th>
-  </tr>
-  <tr @click="openQuestionSet(questionset)" v-for="questionset in questionSetList" :key="questionset">
-    <td>{{questionset.questionset_id}}</td>
-    <td>{{questionset.title}}</td>
-    <td>{{questionset.description}}</td>
-    <td>{{questionset.createdAt}}</td>
-  </tr>
-
-</table>
-
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Created At</th>
+      </tr>
+      <tr
+        @click="openQuestionSet(questionset)"
+        v-for="questionset in questionSetList"
+        :key="questionset"
+      >
+        <td>{{ questionset.questionset_id }}</td>
+        <td>{{ questionset.title }}</td>
+        <td>{{ questionset.description }}</td>
+        <td>{{ questionset.createdAt }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -45,26 +52,23 @@ export default defineComponent({
     };
   },
 
-  
-
   beforeCreate() {
     if (localStorage.getItem("token") === null) {
-      this.$router.push("/login")
+      this.$router.push("/login");
     }
   },
 
-  
   created() {
     axios
-      .get("/api/getQuestionSets", {params: {did: router.currentRoute.value.query.did}})
+      .get("/api/getQuestionSets", {
+        params: { did: router.currentRoute.value.query.did }
+      })
       .then(response => {
-        console.log(response.data.questionSetList)
+        console.log(response.data.questionSetList);
         for (let i = 0; i < response.data.questionSetList.length; i++) {
           this.questionSetList.push(response.data.questionSetList[i]);
         }
       });
-
-
   },
 
   methods: {
@@ -72,16 +76,19 @@ export default defineComponent({
     //let it be any, why do you care, the code runs fine
     // @ts-ignore
     openQuestionSet(questionset) {
-      router.push({ path: 'AddQuestionSet', query: { QSID: questionset.questionset_id } })
+      router.push({
+        path: "AddQuestionSet",
+        query: { QSID: questionset.questionset_id }
+      });
     },
-    addQS(){
-      console.log(router.currentRoute.value.query.did)
-        axios
+    addQS() {
+      console.log(router.currentRoute.value.query.did);
+      axios
         .post("api/createQS", {
-          documentId: router.currentRoute.value.query.did,
+          documentId: router.currentRoute.value.query.did
         })
         .then(response => {
-          console.log("cute")
+          console.log("cute");
         });
     }
   },
@@ -98,7 +105,6 @@ export default defineComponent({
     const OpenCourse = (courseId: number) => {
       router.push({ name: "Course", params: { CourseId: courseId } });
     };
-    
 
     return {
       courses,
@@ -111,14 +117,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
 }
 
-td, th {
+td,
+th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;

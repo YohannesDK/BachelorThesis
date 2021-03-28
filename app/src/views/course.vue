@@ -38,8 +38,13 @@
                   <h6 class="title"><a href="#">Andorid / Development</a></h6>
                 </div>
               </div>
-              <button @click="showDoc()" id="addDocButton" style="height: 52%; width: 200px; margin-bottom: -100px;">Add Document </button>
-
+              <button
+                @click="showDoc()"
+                id="addDocButton"
+                style="height: 52%; width: 200px; margin-bottom: -100px;"
+              >
+                Add Document
+              </button>
             </div>
           </div>
         </div>
@@ -75,26 +80,27 @@
     </div>
   </div>
   <div class="container">
-          <div style="text-align: center">{{totalPages}}</div>
-          <p style="text-align: center;">Page {{state.counter}}</p>
-          <button @click="previousPage()">Previous</button>
-          <button style="float: right;" @click="nextPage()">Next</button>
+    <div style="text-align: center">{{ totalPages }}</div>
+    <p style="text-align: center;">Page {{ state.counter }}</p>
+    <button @click="previousPage()">Previous</button>
+    <button style="float: right;" @click="nextPage()">Next</button>
 
-        <!-- <div id="content"></div> -->
-        <div class="editing" ref="root" id="editor" spellcheck="false"></div>
+    <!-- <div id="content"></div> -->
+    <div class="editing" ref="root" id="editor" spellcheck="false"></div>
 
-      <h1 class="m-auto" v-if="filteredDocuments.length === 0">
-        No documents found...
-      </h1>
-      <div id ="docContainer" style="visibility: hidden; ">
-
-          <document-card @click="addDoc()" id="documentCard" style="display: inline-block;"
+    <h1 class="m-auto" v-if="filteredDocuments.length === 0">
+      No documents found...
+    </h1>
+    <div id="docContainer" style="visibility: hidden; ">
+      <document-card
+        @click="addDoc()"
+        id="documentCard"
+        style="display: inline-block;"
         v-for="(doc, index) in filteredDocuments"
         :document="doc"
         :key="index"
       />
-      </div>
-
+    </div>
   </div>
 </template>
 
@@ -102,7 +108,14 @@
 import router from "@/router";
 import { courseType } from "@/store/interfaces/course";
 import DocumentCard from "@/components/documentCard.vue";
-import { defineComponent, onBeforeMount, onMounted, ref, computed, reactive } from "vue";
+import {
+  defineComponent,
+  onBeforeMount,
+  onMounted,
+  ref,
+  computed,
+  reactive
+} from "vue";
 import { useStore } from "vuex";
 import katex from "katex";
 import hljs, { highlight } from "highlight.js";
@@ -119,10 +132,10 @@ hljs.highlightAll();
 
 export default defineComponent({
   name: "Course",
-    components: {
+  components: {
     DocumentCard
   },
-    props: {
+  props: {
     delta: {
       type: String,
       default: ""
@@ -138,19 +151,18 @@ export default defineComponent({
     const searchValue = ref<string>("");
     const course: courseType = store.getters.getCoursebyId(CourseId);
 
-
     const documents = ref<Array<documentType>>([]);
     let userId = 0;
 
-      //Get request to get all the documents
-      axios
+    //Get request to get all the documents
+    axios
       .get("/api/documentInfo", {
         headers: { token: localStorage.getItem("token") }
       })
       .then(response => {
-        userId = response.data.document[0].userId
-        documents.value = response.data.document
-        });
+        userId = response.data.document[0].userId;
+        documents.value = response.data.document;
+      });
 
     // shared document referense
     let Document: documentType;
@@ -190,72 +202,67 @@ export default defineComponent({
 
     const showDoc = () => {
       // @ts-ignore
-      document.getElementById('editor').style.display = "none"
+      document.getElementById("editor").style.display = "none";
       // @ts-ignore
-      document.getElementById("docContainer").style.visibility = ""
-    }
+      document.getElementById("docContainer").style.visibility = "";
+    };
 
     const addDoc = () => {
-      console.log("adding")
-    }
+      console.log("adding");
+    };
 
-    const courseDocuments = [] as any
+    const courseDocuments = [] as any;
 
     const state = reactive({
       counter: 1
-    })
-    
+    });
 
     const nextPage = () => {
-      if(courseDocuments.value[state.counter+1] != undefined) {
-        state.counter ++
+      if (courseDocuments.value[state.counter + 1] != undefined) {
+        state.counter++;
         SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
         // @ts-ignore
-        console.log(document.querySelector(".container").innerHTML)
+        console.log(document.querySelector(".container").innerHTML);
         // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
       }
-    }
+    };
 
     const previousPage = () => {
-      if(courseDocuments.value[state.counter-2] != undefined) {
-        state.counter --
+      if (courseDocuments.value[state.counter - 2] != undefined) {
+        state.counter--;
         SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
         // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
       }
+    };
 
-    }
-
-      axios.get("/api/fetchCourseDoc", {params: {cid: course.courseId}}).then(response => {
-            Document = JSON.parse(response.data.documentList[0])
-            courseDocuments.value = response.data.documentList
-
-        });
-
-
-  let usID = 0;
-  // @ts-ignore
-  const docID = router.currentRoute._rawValue.query.did;
-
-
-  onBeforeMount(() => {
-    //Get request to get the user id
-    //Probably not the best way to do this, need to find a way to do it better
-      axios
-      .get("/api/studentCourse", {
-        headers: { token: localStorage.getItem("token") }
-      })
+    axios
+      .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
       .then(response => {
-        usID = response.data.id
-        });
-  });
+        Document = JSON.parse(response.data.documentList[0]);
+        courseDocuments.value = response.data.documentList;
+      });
 
+    let usID = 0;
+    // @ts-ignore
+    const docID = router.currentRoute._rawValue.query.did;
+
+    onBeforeMount(() => {
+      //Get request to get the user id
+      //Probably not the best way to do this, need to find a way to do it better
+      axios
+        .get("/api/studentCourse", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          usID = response.data.id;
+        });
+    });
 
     const showToolBar = () => {
       Editor.theme.tooltip.edit();
       Editor.theme.tooltip.show();
       // Editor.theme.tooltip.show()
     };
-
 
     const InitilizeDocment = () => {
       // initialize editor instance
@@ -270,36 +277,30 @@ export default defineComponent({
         }
       });
 
-      let Document = "" as any
-      const testList = [{"thisone: ": ""}]
+      let Document = "" as any;
+      const testList = [{ "thisone: ": "" }];
 
       //Send Get request to fetch the document that has been clicked on
-      axios.get("/api/fetchCourseDoc", {params: {cid: course.courseId}}).then(response => {
-            Document = JSON.parse(response.data.documentList[0])
-            testList.push(response.data.documentList[0])
-            courseDocuments.value = response.data.documentList
-            
-            if (props.docmentId !== -1) {
-              if (Document) {
-                SetEditorContent(Document.ops);
-              }
+      axios
+        .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
+        .then(response => {
+          Document = JSON.parse(response.data.documentList[0]);
+          testList.push(response.data.documentList[0]);
+          courseDocuments.value = response.data.documentList;
+
+          if (props.docmentId !== -1) {
+            if (Document) {
+              SetEditorContent(Document.ops);
             }
+          }
 
-            return {courseDocuments}
+          return { courseDocuments };
         });
-
-      
-      
-    
 
       Editor.on("text-change", () => {
         // console.log(JSON.stringify(Editor.getContents()));
       });
-
-
-
     };
-
 
     onMounted(() => {
       // Add katex for enabling formulas
@@ -334,9 +335,7 @@ export default defineComponent({
     ];
     console.log(course);
 
-
     const filteredDocuments = computed(() => {
-
       let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
@@ -362,7 +361,6 @@ export default defineComponent({
       return tempDocuments;
     });
 
-
     return {
       course,
       events,
@@ -374,7 +372,7 @@ export default defineComponent({
       nextPage,
       previousPage,
       state
-      };
+    };
   }
 });
 </script>
@@ -490,8 +488,6 @@ export default defineComponent({
   margin: auto;
 }
 
-
-
 @import "~quill/dist/quill.bubble.css";
 /* @import "~quill/dist/quill.snow.css"; */
 @import "~katex/dist/katex.min.css";
@@ -512,10 +508,8 @@ export default defineComponent({
   font-size: 0.97rem;
 }
 
-
 .ql-editor {
   overflow-x: hidden;
   background-color: black im !important;
 }
-
 </style>

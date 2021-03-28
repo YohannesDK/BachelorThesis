@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('CourseDocumentRelations', {
+    await queryInterface.createTable("CourseDocumentRelations", {
       document_id: {
         type: Sequelize.INTEGER
       },
@@ -16,9 +16,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    })
+    });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('CourseDocumentRelations');
+    await queryInterface.dropTable("CourseDocumentRelations");
   }
 };

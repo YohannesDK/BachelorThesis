@@ -1,7 +1,6 @@
-
 export default {
   state: {
-    counter : 0
+    counter: 0
   },
   mutations: {
     CounterInc: (state: any) => {
@@ -10,12 +9,12 @@ export default {
   },
   actions: {
     CounterInc: (context: any) => {
-      context.commit("CounterInc")
+      context.commit("CounterInc");
     }
   },
   getters: {
     getCount: (state: any) => {
-      return state.counter
+      return state.counter;
     }
   }
-}
+};

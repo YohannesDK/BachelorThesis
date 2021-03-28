@@ -3,7 +3,7 @@ import { QuestionSet } from "../interfaces/question.type";
 export default {
   state: {
     QuestionId: 0,
-    QuestionSets : [] as QuestionSet[]
+    QuestionSets: [] as QuestionSet[]
   },
   mutations: {
     AddNewQuestionSet: (state: any, QuestionSet: QuestionSet) => {
@@ -11,13 +11,13 @@ export default {
       state.QuestionSets.forEach((QS: QuestionSet) => {
         if (QS.QSID === QuestionSet.QSID) {
           found = true;
-          QS.Description = QuestionSet.Description
-          QS.Tittle = QuestionSet.Tittle
-          QS.QuestionSet = QuestionSet.QuestionSet
+          QS.Description = QuestionSet.Description;
+          QS.Tittle = QuestionSet.Tittle;
+          QS.QuestionSet = QuestionSet.QuestionSet;
         }
       });
       if (!found) {
-        state.QuestionSets.push(QuestionSet) 
+        state.QuestionSets.push(QuestionSet);
       }
     },
     IncrementQuestionId: (state: any) => {
@@ -26,26 +26,26 @@ export default {
   },
   actions: {
     AddNewQuestionSet: (context: any, QuestionSet: QuestionSet) => {
-      context.commit("AddNewQuestionSet", QuestionSet)
+      context.commit("AddNewQuestionSet", QuestionSet);
     },
     IncrementQuestionId: (context: any) => {
-      context.commit("IncrementQuestionId")
+      context.commit("IncrementQuestionId");
     }
   },
   getters: {
     getAllQuestionSets: (state: any) => {
-      return state.QuestionSets
+      return state.QuestionSets;
     },
-    getQuestionSetById: (state:any) => (QSID: number) => {
+    getQuestionSetById: (state: any) => (QSID: number) => {
       return state.QuestionSets.find(
         (questionSet: QuestionSet) => questionSet.QSID === QSID
       );
     },
-    getQuestionSetLength: ( state:any ) => {
-      return state.QuestionSets.length
+    getQuestionSetLength: (state: any) => {
+      return state.QuestionSets.length;
     },
-    getQuestionId: ( state:any ) => {
-      return state.QuestionId
+    getQuestionId: (state: any) => {
+      return state.QuestionId;
     }
   }
-}
+};

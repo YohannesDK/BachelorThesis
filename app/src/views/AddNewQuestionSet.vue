@@ -8,9 +8,9 @@
               <span>Create a new Question Set</span>
             </div>
             <div class="QuestionSetHeader-Status">
-              <span 
-              :class="{'text-success' : saved, 'text-danger' : !saved}"
-              >{{ saved ? "Saved" : "Unsaved" }}</span>
+              <span :class="{ 'text-success': saved, 'text-danger': !saved }">{{
+                saved ? "Saved" : "Unsaved"
+              }}</span>
             </div>
           </div>
           <button @click="createTFQ()">True False Question</button>
@@ -91,7 +91,11 @@ import Test from "@/directives/test.directive.ts";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { Question, QuestionSet, QuestionTypeEnum } from "@/store/interfaces/question.type";
+import {
+  Question,
+  QuestionSet,
+  QuestionTypeEnum
+} from "@/store/interfaces/question.type";
 import { onBeforeRouteLeave } from "vue-router";
 export default defineComponent({
   name: "AddNewQuestionSet",
@@ -121,11 +125,9 @@ export default defineComponent({
       QuestionSet: [] as Question[]
     });
 
-
     //This function creates a true/false question type
     const createTFQ = () => {
-
-        axios
+      axios
         .post("api/createTFQ", {
           questionsetId: router.currentRoute.value.query.QSID,
           question: "",
@@ -137,8 +139,8 @@ export default defineComponent({
           CorrectAnswer: 2
         })
         .then(response => {
-          console.log(response)
-          
+          console.log(response);
+
           Data.value.QuestionSet.push({
             QuestionID: response.data.question.question_id,
             QuestionType: response.data.question.question_type,
@@ -152,30 +154,29 @@ export default defineComponent({
             }
           });
 
-          console.log(response.data.question.question_type)
+          console.log(response.data.question.question_type);
         });
-    }
+    };
 
     // route save guard, if the quesitons are not saved
     const RouteSafeGuards = () => {
       if (window !== null) {
-        window.addEventListener('beforeunload', (e) => {
+        window.addEventListener("beforeunload", e => {
           if (saved.value === false) {
-            e.preventDefault()
-            e.returnValue = 'you have unsaved work'
+            e.preventDefault();
+            e.returnValue = "you have unsaved work";
           }
-        })      
+        });
       }
-    }
-    
+    };
+
     onBeforeRouteLeave((to, from, next) => {
       if (saved.value) {
-        next()
-      }else {
-        alert("You have unsaved work")
+        next();
+      } else {
+        alert("You have unsaved work");
       }
-    })
-
+    });
 
     onBeforeUpdate(() => {
       questionCards.value = [];
@@ -192,7 +193,6 @@ export default defineComponent({
           questionType: 0
         })
         .then(response => {
-          
           Data.value.QuestionSet.push({
             QuestionID: response.data.question.question_id,
             QuestionType: response.data.question.question_type,
@@ -202,31 +202,31 @@ export default defineComponent({
             }
           });
 
-          console.log(response.data.question.question_type)
+          console.log(response.data.question.question_type);
         });
-      store.dispatch("IncrementQuestionId")
+      store.dispatch("IncrementQuestionId");
     };
-
 
     // Initilize Question Set if it exists
     const InitilizeQuestionSet = (QSID: number) => {
-
       //Get data from backend
-        axios.get("/api/fetchQS", {params: {QSID: router.currentRoute.value.query.QSID}}).then(response => {
-          
-          questionSetInfo.title = response.data.questionset.title
-          questionSetInfo.description = response.data.questionset.description
+      axios
+        .get("/api/fetchQS", {
+          params: { QSID: router.currentRoute.value.query.QSID }
+        })
+        .then(response => {
+          questionSetInfo.title = response.data.questionset.title;
+          questionSetInfo.description = response.data.questionset.description;
 
           //if this questionset has pre-existing questions, fetch them
           if (response.data.questions.length !== 0) {
+            const QuestionSet: QuestionSet = store.getters.getQuestionSetById(
+              QSID
+            );
 
-
-            const QuestionSet : QuestionSet = store.getters.getQuestionSetById(QSID);
-
-            for(let i = 0; i < response.data.questions.length; i++) {
-
-              if(response.data.questions[i].question_type == 2) {
-                  Data.value.QuestionSet.push({
+            for (let i = 0; i < response.data.questions.length; i++) {
+              if (response.data.questions[i].question_type == 2) {
+                Data.value.QuestionSet.push({
                   QuestionID: response.data.questions[i].question_id,
                   QuestionType: response.data.questions[i].question_type,
                   Question: {
@@ -239,9 +239,9 @@ export default defineComponent({
                   }
                 });
               } else {
-                console.log("was popin")
-                console.log(response.data)
-                  Data.value.QuestionSet.push({
+                console.log("was popin");
+                console.log(response.data);
+                Data.value.QuestionSet.push({
                   QuestionID: response.data.questions[i].question_id,
                   QuestionType: response.data.questions[i].question_type,
                   Question: {
@@ -250,42 +250,39 @@ export default defineComponent({
                   }
                 });
               }
-
             }
 
-            for(let i = 0; i < response.data.questions.length; i++) {
-              for(let j = 0; j < response.data.answer.length; j++) {
-                  if(response.data.questions[i].question_id == response.data.answer[j].answerset_id && response.data.questions[i].question_type == 0){
-                      console.log(response.data.answer[j].answer_option)
-                      Data.value.QuestionSet[i].Question.Answer = response.data.answer[j].answer_option
-                  }
+            //Here we set the answer for shortanswer questions (Can also be used to set for longanswer)
+            //But it does not work for multiple choice / true false, therefore we have to check for it
+            for (let i = 0; i < response.data.questions.length; i++) {
+              for (let j = 0; j < response.data.answer.length; j++) {
+                if (
+                  response.data.questions[i].question_id ==
+                    response.data.answer[j].answerset_id &&
+                  response.data.questions[i].question_type == 0
+                ) {
+                  console.log(response.data.answer[j].answer_option);
+                  Data.value.QuestionSet[i].Question.Answer =
+                    response.data.answer[j].answer_option;
+                }
               }
-                //Here we set the answer for shortanswer questions (Can also be used to set for longanswer)
-                //But it does not work for multiple choice / true false, therefore we have to check for it
-
-              }
+            }
 
             return;
-
-        } else {
-                //if the questionset is empty, initialize it with an empty question
-                OnAddNew();
-        }
-
+          } else {
+            //if the questionset is empty, initialize it with an empty question
+            console.log("hmm");
+            OnAddNew();
+          }
         });
-
-    }
-
+    };
 
     // Change between question cards
     const OnfocusChange = (index: number) => {
       focusIndex.value = index;
     };
 
-
-
-    const OnDelete = (index: number) => {      
-      
+    const OnDelete = (index: number) => {
       saved.value = false;
       if (index !== 0) {
         // TODO - fix visual effect - shaking effect
@@ -294,32 +291,29 @@ export default defineComponent({
           ...questionCards.value.slice(0, index),
           ...questionCards.value.slice(index + 1)
         ];
-        
+
         Data.value.QuestionSet = [
           ...Data.value.QuestionSet.slice(0, index),
           ...Data.value.QuestionSet.slice(index + 1)
         ];
-        focusIndex.value = index-1
-
+        focusIndex.value = index - 1;
       } else {
         OnfocusChange(0);
       }
-      
     };
 
     const Save = () => {
       // Update document QuestionSetId, when saving
       if (router.currentRoute.value.query.did) {
-
-        console.log("saved to " + router.currentRoute.value.query.did)
+        console.log("saved to " + router.currentRoute.value.query.did);
         store.dispatch("SetDocumentQSID", {
-          documentid : Number(router.currentRoute.value.query.did),
+          documentid: Number(router.currentRoute.value.query.did),
           QSID: Data.value.QSID
-        })
+        });
       }
 
       // To avoid duplactes, when updating question set
-      Data.value.QuestionSet.length = 0
+      Data.value.QuestionSet.length = 0;
 
       questionCards.value.forEach((ele: any) => {
         if (ele) {
@@ -336,9 +330,10 @@ export default defineComponent({
                 questionId: questionData.QuestionID,
                 questionType: questionData.QuestionType,
                 answerOption: questionData.Question.Answer,
-                QSID: router.currentRoute.value.query.QSID})
+                QSID: router.currentRoute.value.query.QSID
+              })
               .then(response => {
-                console.log("updated")
+                console.log("updated");
               });
 
             Data.value.QuestionSet.push(questionData);
@@ -347,22 +342,20 @@ export default defineComponent({
             //       it errors out, so i catch for now to avoid nasty output
             console.error("Error: ", e);
           }
-          
         }
-      }); 
+      });
       store.dispatch("AddNewQuestionSet", Data.value);
       saved.value = true;
     };
 
     onMounted(() => {
-
       // add window events
       RouteSafeGuards();
       if (router.currentRoute.value.query.QSID) {
-        QSID.value = Number(router.currentRoute.value.query.QSID)
+        QSID.value = Number(router.currentRoute.value.query.QSID);
       }
-      InitilizeQuestionSet(QSID.value)
-    })
+      InitilizeQuestionSet(QSID.value);
+    });
 
     return {
       OnAddNew,

@@ -1,7 +1,12 @@
 <template>
   <div class="container" @contextmenu.prevent="showToolBar()">
     <!-- <button @click.prevent="updateDoc">SAVE</button> -->
-    <div style="overflow-x: hidden;" ref="root" id="editor" spellcheck="false"></div>
+    <div
+      style="overflow-x: hidden;"
+      ref="root"
+      id="editor"
+      spellcheck="false"
+    ></div>
   </div>
 </template>
 
@@ -67,8 +72,7 @@ export default defineComponent({
       ["clean"] // remove formatting button
     ];
 
-
-    console.log()
+    console.log();
     // Sets Editor Content
     const SetEditorContent = (ops: DeltaOperation[]) => {
       if (ops.length) {
@@ -77,54 +81,48 @@ export default defineComponent({
       }
     };
 
+    let usID = 0;
+    // @ts-ignore
+    const docID = router.currentRoute._rawValue.query.did;
 
-  let usID = 0;
-  // @ts-ignore
-  const docID = router.currentRoute._rawValue.query.did;
-
-
-  onBeforeRouteLeave((to, from) =>{
+    onBeforeRouteLeave((to, from) => {
       axios
         .post("api/alterDocument", {
           userId: usID,
           docID: docID,
           body: JSON.stringify(Editor.getContents()),
-          title: document.getElementsByClassName('documentTitle')[0].innerHTML
+          title: document.getElementsByClassName("documentTitle")[0].innerHTML
         })
         .then(response => {
-          console.log("updated")
+          console.log("updated");
         });
-  })
-  
+    });
 
-  onBeforeMount(() => {
-
-    //Get request to get the user id
-    //Probably not the best way to do this, need to find a way to do it better
+    onBeforeMount(() => {
+      //Get request to get the user id
+      //Probably not the best way to do this, need to find a way to do it better
       axios
-      .get("/api/studentCourse", {
-        headers: { token: localStorage.getItem("token") }
-      })
-      .then(response => {
-        usID = response.data.id
+        .get("/api/studentCourse", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          usID = response.data.id;
         });
-  });
+    });
 
     const updateDoc = () => {
-
       //Post request to save the document info
       axios
         .post("api/alterDocument", {
           userId: usID,
           docID: docID,
           body: JSON.stringify(Editor.getContents()),
-          title: document.getElementsByClassName('documentTitle')[0].innerHTML
+          title: document.getElementsByClassName("documentTitle")[0].innerHTML
         })
         .then(response => {
-          console.log("updated")
+          console.log("updated");
         });
     };
-    
 
     const showToolBar = () => {
       Editor.theme.tooltip.edit();
@@ -145,31 +143,26 @@ export default defineComponent({
         }
       });
 
-    
       //Send Get request to fetch the document that has been clicked on
-      axios.get("/api/fetchDoc", {params: {docId: docID}}).then(response => {
+      axios
+        .get("/api/fetchDoc", { params: { docId: docID } })
+        .then(response => {
+          const Document = JSON.parse(response.data.document.body);
+          if (response.data.document.title != null) {
+            document.getElementsByClassName("documentTitle")[0].innerHTML =
+              response.data.document.title;
+          }
 
-        const Document = JSON.parse(response.data.document.body)
-        if (response.data.document.title != null) {
-          document.getElementsByClassName('documentTitle')[0].innerHTML = response.data.document.title
-
-        }
-        
-
-      if (props.docmentId !== -1) {
-        if (Document) {
-          SetEditorContent(Document.ops);
-        }
-      }
-
+          if (props.docmentId !== -1) {
+            if (Document) {
+              SetEditorContent(Document.ops);
+            }
+          }
         });
 
       Editor.on("text-change", () => {
         // console.log(JSON.stringify(Editor.getContents()));
       });
-
-
-
     };
 
     onMounted(() => {
@@ -214,7 +207,6 @@ export default defineComponent({
 
 .container .ql-container .ql-editor {
   font-size: 18px;
-  overflow-x: hidden; 
+  overflow-x: hidden;
 }
-
 </style>

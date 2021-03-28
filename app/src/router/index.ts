@@ -74,9 +74,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/questionsets",
     name: "QuestionSets",
     component: () =>
-      import(
-        /* webpackChunkName: "QuestionSets" */ "../views/QuestionSets.vue"
-      )
+      import(/* webpackChunkName: "QuestionSets" */ "../views/QuestionSets.vue")
   },
   {
     path: "/AddQuestionSet",

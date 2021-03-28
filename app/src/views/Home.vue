@@ -1,8 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
-    <h1>Home Page 1
-    </h1>
+    <h1>Home Page 1</h1>
   </div>
 </template>
 
@@ -10,7 +9,6 @@
 import { computed, defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "Home",
+  name: "Home"
 });
 </script>
-

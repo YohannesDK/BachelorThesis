@@ -37,9 +37,9 @@ export default defineComponent({
           appContainer.value.style.marginLeft = "250px";
         } else {
           if (sideBarType === 0) {
-            appContainer.value.style.marginLeft = "0px"; 
-          }else {
-            appContainer.value.style.marginLeft = "3.3rem"; 
+            appContainer.value.style.marginLeft = "0px";
+          } else {
+            appContainer.value.style.marginLeft = "3.3rem";
           }
         }
       }

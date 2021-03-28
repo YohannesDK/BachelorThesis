@@ -3,7 +3,7 @@ import { documentType } from "@/store/interfaces/document";
 export const dummyDocument: documentType = {
   Documentid: 0,
   name: "Dummy",
-  delta: [
+  body: [
     { insert: "Hei Tittle" },
     { attributes: { header: 2 }, insert: "\n" },
     {

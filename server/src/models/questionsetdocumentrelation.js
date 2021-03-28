@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class QuestionsetDocumentRelation extends Model {
     /**
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   QuestionsetDocumentRelation.init({
     questionset_id: { 
       type: DataTypes.INTEGER,
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'QuestionsetDocumentRelation',
+    modelName: "QuestionsetDocumentRelation",
   });
   return QuestionsetDocumentRelation;
 };

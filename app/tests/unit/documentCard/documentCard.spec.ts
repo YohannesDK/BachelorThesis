@@ -35,7 +35,7 @@ describe("document card - thumbnail", () => {
 
   it(`thumbnail should contain the first ${wrapper.vm.documentTextLength} chars of a document (if there are enough char)`, () => {
     expect(thumbnail.text()).to.equal(
-      DeltaToPlainText(dummyDocument.delta)
+      DeltaToPlainText(dummyDocument.body)
         .substring(0, wrapper.vm.documentTextLength)
         .concat("...")
     );

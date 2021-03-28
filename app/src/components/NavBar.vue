@@ -103,7 +103,10 @@
         </router-link>
       </li>
       <li class="sidebar-list">
-        <router-link to="/questionsets" v-test="{ id: 'navbar-routes-courses' }">
+        <router-link
+          to="/questionsets"
+          v-test="{ id: 'navbar-routes-courses' }"
+        >
           <fa icon="clone" class="sidebar-menu-faicons"></fa>
           <span>Question Sets</span>
         </router-link>
@@ -176,7 +179,6 @@ export default defineComponent({
     // Editor
     const OpenEditor = () => {
       router.push({ name: "EditorView", query: { did: -1 } });
-
     };
 
     const smallsidebar = () => {
@@ -186,11 +188,11 @@ export default defineComponent({
           : sidebar.value.classList.remove("small-sidebar");
         showSideBar.value = !showSideBar.value;
       }
-    }
+    };
 
     //QuestionSet
     const AddNewQuestionSet = () => {
-      router.push({ name: "AddQuestionSet", query: { QSID: -1} });
+      router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
     };
 
     return {
@@ -478,7 +480,6 @@ a:focus {
   border-bottom-left-radius: 0.8rem;
 }
 
-
 /* When minimizing sidebar */
 
 #sidebar.small-sidebar {
@@ -493,14 +494,16 @@ a:focus {
   display: none;
 }
 
-#sidebar.small-sidebar .addProject, #sidebar.small-sidebar .searchbar {
+#sidebar.small-sidebar .addProject,
+#sidebar.small-sidebar .searchbar {
   width: fit-content;
   height: fit-content;
   padding: 0;
   border-radius: 50%;
 }
 
-#sidebar.small-sidebar .add_project, #sidebar.small-sidebar .search_input {
+#sidebar.small-sidebar .add_project,
+#sidebar.small-sidebar .search_input {
   display: none;
 }
 
@@ -526,7 +529,4 @@ a:focus {
   width: 13em;
   right: -482%;
 }
-
-
-
 </style>

@@ -49,7 +49,7 @@
 
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
@@ -67,26 +67,28 @@ export default defineComponent({
     const searchValue = ref<string>("");
     const documents = ref<Array<doucmentType>>([]);
     let userId = 0;
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     // const jwt = require("jsonwebtoken");
 
-      jwt.verify(token, "secretkey", (err, decoded )=> {
-        userId = decoded.id
-      })
+    jwt.verify(token, "secretkey", (err, decoded) => {
+      userId = decoded.id;
+    });
 
-      //Get request to get all the documents
-      axios
+    //Get request to get all the documents
+    onBeforeMount(() => {
+         axios
       .get("/api/documentInfo", {
         headers: { token: localStorage.getItem("token") }
       })
       .then(response => {
-        documents.value = response.data.document
-        });
+        documents.value = response.data.document;
+      });
+    });
+
+   
 
     // Create New Document
     const NewDocument = () => {
-
-      
       //Post request to create an empty document
       axios
         .post("api/createDocument", {
@@ -95,17 +97,15 @@ export default defineComponent({
           title: "test title"
         })
         .then(response => {
-          console.log("cute")
+          console.log("cute");
         });
 
-        // store.dispatch("AddNewDocument");
+      // store.dispatch("AddNewDocument");
       // router.push({ name: "EditorView", query: { did: -1 } });
     };
 
     //for searching through document - name, tag, etc.
     const filteredDocuments = computed(() => {
-
-
       let tempDocuments = documents.value;
 
       if (searchValue.value !== "") {
@@ -134,7 +134,7 @@ export default defineComponent({
     return {
       searchValue,
       filteredDocuments,
-      NewDocument,
+      NewDocument
     };
   }
 });

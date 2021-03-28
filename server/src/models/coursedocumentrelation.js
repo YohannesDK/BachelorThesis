@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class CourseDocumentRelation extends Model {
     /**
@@ -12,14 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   CourseDocumentRelation.init({
     document_id: DataTypes.INTEGER,
     course_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'CourseDocumentRelation',
+    modelName: "CourseDocumentRelation",
   });
-  CourseDocumentRelation.removeAttribute('id');
+  CourseDocumentRelation.removeAttribute("id");
   return CourseDocumentRelation;
 };

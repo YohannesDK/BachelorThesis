@@ -37,7 +37,7 @@
 <script lang="ts">
 // https://codepen.io/umeshagouda/pen/QggMve
 import { defineComponent, ref } from "vue";
-import { onBeforeRouteLeave} from "vue-router";
+import { onBeforeRouteLeave } from "vue-router";
 import { useStore } from "vuex";
 import router from "@/router";
 import axios from "axios";
@@ -56,11 +56,9 @@ export default defineComponent({
     };
   },
 
-
-
   beforeCreate() {
     if (localStorage.getItem("token") === null) {
-      this.$router.push("/login")
+      this.$router.push("/login");
     }
   },
 
@@ -73,7 +71,7 @@ export default defineComponent({
         this.name = response.data.username;
         this.role = response.data.role;
         this.fullname = response.data.fullname;
-        this.id = response.data.id
+        this.id = response.data.id;
         console.log(response.data.username);
         for (let i = 0; i < response.data.courseList.length; i++) {
           console.log(response.data.courseList[i].body);
@@ -85,7 +83,9 @@ export default defineComponent({
   methods: {
     joinCourse() {
       axios
-        .get("/api/courseInfo", { params: { coursePass: this.coursePass, userId: this.id} })
+        .get("/api/courseInfo", {
+          params: { coursePass: this.coursePass, userId: this.id }
+        })
         .then(response => {
           this.courseBody.push(response.data.course);
           console.log(this.courseBody);
@@ -100,7 +100,6 @@ export default defineComponent({
     const ToogleModal = () => {
       showModal.value = !showModal.value;
     };
-
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {

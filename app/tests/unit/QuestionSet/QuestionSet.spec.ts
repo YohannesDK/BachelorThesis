@@ -12,13 +12,12 @@ import router from "@/router/index";
 //    save status then change from false to true
 
 (async () => {
-  await router.isReady()
-})()
-
+  await router.isReady();
+})();
 
 const wrapper = shallowMount(AddNewQuestionSet, {
   global: {
-    plugins:[router]
+    plugins: [router]
   }
 });
 
