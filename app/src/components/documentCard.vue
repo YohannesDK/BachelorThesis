@@ -41,9 +41,7 @@
                 <li>Open</li>
                 <li @click="addDoc()">Add to course</li>
                 <li>Rename</li>
-                <li
-                @click="OpenQuestionSet()"
-                >Open Question Sets</li>
+                <li @click="OpenQuestionSet()">Open Question Sets</li>
                 <!-- <li
                 v-if="document.QuestionSetID !== -1"
                 @click="OpenQuestionSet(document.QuestionSetID)"
@@ -74,13 +72,16 @@ export default defineComponent({
   props: {
     document: {
       type: Object as () => any,
-      default: () => ({}) as any
+      default: () => ({} as any)
     }
   },
   setup(props) {
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
+    
+    // let documentParsed = true
+
 
     // @ts-ignore
     const courseID = router.currentRoute._rawValue.query.cid;
@@ -94,16 +95,16 @@ export default defineComponent({
     };
 
     const addDoc = () => {
-      console.log("added this one" + props.document.id)
+      console.log("added this one" + props.document.id);
       axios
         .post("api/linkDocument", {
           documentId: props.document.id,
           courseId: courseID
         })
         .then(response => {
-          console.log(response)
+          console.log(response);
         });
-    }
+    };
 
     //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
@@ -111,7 +112,6 @@ export default defineComponent({
     };
 
     const OpenQuestionSet = () => {
-
       // axios
       //   .post("api/createQS", {
       //     documentId: props.document.id,
@@ -120,19 +120,29 @@ export default defineComponent({
       //     console.log("cute")
       //   });
 
-      router.push({ name: "QuestionSets", query: { did: props.document.id} });
-    }
+      router.push({ name: "QuestionSets", query: { did: props.document.id } });
+    };
+
 
     onMounted(() => {
-
       //This is the preview text inside document cards
-      if (props.document.body != "") {
-        documentText.value = DeltaToPlainText(JSON.parse(props.document.body).ops)
+        if (props.document.body != "" && props.document.body != undefined) {
+        let parseBody;
+        if(typeof props.document.body === "string") {
+          parseBody = JSON.parse(props.document.body).ops
+        } else {
+          parseBody = props.document.body
+        }
+        
+        documentText.value = DeltaToPlainText(
+          parseBody
+              )
           .substring(0, documentTextLength)
           .concat("...");
       } else {
-        documentText.value = "Empty Document"
+        documentText.value = "Empty Document";
       }
+
     });
     return {
       documentText,
