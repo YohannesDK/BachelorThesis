@@ -1,5 +1,7 @@
 //This file contains endpoints related to courses
 const models = require("../models/index.js");
+var cors = require("cors");
+app.use(cors)
 
 module.exports = (app) => {
 

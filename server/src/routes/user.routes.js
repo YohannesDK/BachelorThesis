@@ -3,6 +3,8 @@ const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
+var cors = require("cors");
+app.use(cors)
 
 
 
