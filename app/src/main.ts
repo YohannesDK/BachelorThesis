@@ -3,10 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import axios from "axios";
+// import axios from "axios";
 import { FontAwesomeIcon } from "@/plugins/font-awesome";
 
-axios.defaults.baseURL = "http://localhost:3000";
+// axios.defaults.baseURL = "http://localhost:3000";
 
 createApp(App)
   .use(store)

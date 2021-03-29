@@ -58,6 +58,11 @@ export type Question = {
     | MultipleChoiceQuestionType;
 };
 
+export enum QuestionSetFlag {
+  CREATE = 0,
+  UPDATE
+}
+
 export type QuestionSet = {
   QSID: number;
   Tittle: string;
