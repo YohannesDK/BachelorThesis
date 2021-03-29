@@ -1,7 +1,5 @@
 //This file contains api calls that are related to questions
 const models = require("../models/index.js");
-var cors = require("cors");
-app.use(cors)
 
 
 module.exports = (app) => {
@@ -24,8 +22,8 @@ app.post("/api/createQuestion", (request, response) => {
                 //The answerset_id is by default 0 when a question is first created
                 //When we create a new answer, we update the answerset_id and set it to the id of the answer
                 answerset_id: answer.answer_id
-            }, {where: {question_id: question.question_id }});
-        });
+            }, {where: {question_id: question.question_id }})
+        })
         
         return response.json({
             title: "Created Question",
@@ -60,8 +58,8 @@ app.post("/api/createTFQ", (request, response) => {
                 }).then(function(answer){
                     models.Question.update({
                         answerset_id: answer.answer_id
-                    }, {where: {question_id: question.question_id }});
-                });
+                    }, {where: {question_id: question.question_id }})
+                })
             }
             //if i is 1, we create an answer and give it the value False
             //Same process as explained above
@@ -72,8 +70,8 @@ app.post("/api/createTFQ", (request, response) => {
                 }).then(function(answer){
                     models.Question.update({
                         answerset_id: answer.answer_id
-                    }, {where: {question_id: question.question_id }});
-                });
+                    }, {where: {question_id: question.question_id }})
+                })
             }
     }
 
@@ -93,7 +91,7 @@ app.post("/api/saveQuestion", (request, response) => {
     models.QuestionSet.update({
         title: request.body.title,
         description: request.body.description
-    }, {where: {questionset_id: request.body.QSID}});
+    }, {where: {questionset_id: request.body.QSID}})
 
     //Here we update the question
     models.Question.update({
@@ -101,16 +99,16 @@ app.post("/api/saveQuestion", (request, response) => {
         question_type: request.body.questionType}, 
         {where: 
             {questionset_id: request.body.QSID, 
-            question_id: request.body.questionId}});
+            question_id: request.body.questionId}})
 
     //Here we check if the answer is not empty, and update it if it isnt
-    console.log(request.body.questionType);
+    console.log(request.body.questionType)
     if(request.body.answerOption != "" && request.body.questionType == 0) {
         models.Answers.update({
             answer_option: request.body.answerOption
         }, 
         {where: 
-            {answerset_id: request.body.questionId}});
+            {answerset_id: request.body.questionId}})
     }
 
     if(request.body.answerOption != "" && request.body.questionType == 2) {
@@ -119,10 +117,10 @@ app.post("/api/saveQuestion", (request, response) => {
             answer_option: request.body.answerOption[i]
         }, 
         {where: 
-            {answerset_id: request.body.questionId}});
+            {answerset_id: request.body.questionId}})
     }
 
 
 });
 
-};
+}

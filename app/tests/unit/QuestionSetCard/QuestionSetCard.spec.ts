@@ -98,7 +98,6 @@ describe("Question Card - display, depending on the QuestionType", () => {
   it("Question type should be True / False, when QuestionType = 2", async () => {
     // change Question Type to True / False
     await (() => {
-      console.log("koff printan her faen")
       wrapper.vm.QuestionType = 2;
     })();
     const QuestionCardTrueFalse = wrapper.find(
