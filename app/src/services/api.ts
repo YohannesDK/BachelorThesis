@@ -2,6 +2,8 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiConfig } from "@/config/api.config";
 import router from "@/router";
 
+
+// Singleton pattern
 const axiosInstance = axios.create({
   baseURL: ApiConfig.API_URL,
   headers: { Authorization: "Bearer " + localStorage.getItem("token") }

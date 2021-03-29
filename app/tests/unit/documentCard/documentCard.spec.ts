@@ -35,7 +35,7 @@ describe("document card - thumbnail", () => {
 
   it(`thumbnail should contain the first ${wrapper.vm.documentTextLength} chars of a document (if there are enough char)`, () => {
     expect(thumbnail.text()).to.equal(
-      DeltaToPlainText(dummyDocument.delta)
+      DeltaToPlainText(dummyDocument.body)
         .substring(0, wrapper.vm.documentTextLength)
         .concat("...")
     );
@@ -90,6 +90,8 @@ describe("document card - more option", () => {
   it("More handler should be called when user clicks on it, and showDropDown equals true", async () => {
     await docMoreButton.trigger("click").then(() => {
       expect(wrapper.vm.showDropDown).to.equal(true);
-    });
+    }).catch((e: Error) => {
+      console.log(e);
+    })
   });
 });

@@ -5,7 +5,7 @@ export default {
       {
         Documentid: 0,
         name: "Python Tutorial",
-        delta: [
+        body: [
           { attributes: { font: "serif" }, insert: "Python Indentation" },
           { attributes: { header: 2 }, insert: "\n" },
           {
@@ -151,7 +151,7 @@ export default {
       {
         Documentid: 1,
         name: "Heaven",
-        delta: [
+        body: [
           { insert: "Hei tittle" },
           { attributes: { header: 2 }, insert: "\n" },
           {
@@ -184,7 +184,7 @@ export default {
       {
         Documentid: 2,
         name: "Lorem",
-        delta: [
+        body: [
           { insert: "Hei Tittle" },
           { attributes: { header: 2 }, insert: "\n" },
           {
@@ -221,7 +221,7 @@ export default {
       state.documents.push({
         Documentid: state.documents[state.documents.length - 1].Documentid + 1,
         name: "Edit Tittle...",
-        delta: [],
+        body: [],
         tags: [],
         lastEdited: "11 Feb 2021",
         QuestionSetID: []

@@ -38,6 +38,13 @@
                   <h6 class="title"><a href="#">Andorid / Development</a></h6>
                 </div>
               </div>
+              <button
+                @click="showDoc()"
+                id="addDocButton"
+                style="height: 52%; width: 200px; margin-bottom: -100px;"
+              >
+                Add Document
+              </button>
             </div>
           </div>
         </div>
@@ -72,20 +79,238 @@
       </div>
     </div>
   </div>
-  <div class="container"></div>
+  <div class="container">
+    <div style="text-align: center">{{ totalPages }}</div>
+    <p style="text-align: center;">Page {{ state.counter }}</p>
+    <button @click="previousPage()">Previous</button>
+    <button style="float: right;" @click="nextPage()">Next</button>
+
+    <!-- <div id="content"></div> -->
+    <div class="editing" ref="root" id="editor" spellcheck="false"></div>
+
+    <h1 class="m-auto" v-if="filteredDocuments.length === 0">
+      No documents found...
+    </h1>
+    <div id="docContainer" style="visibility: hidden; ">
+      <document-card
+        @click="addDoc()"
+        id="documentCard"
+        style="display: inline-block;"
+        v-for="(doc, index) in filteredDocuments"
+        :document="doc"
+        :key="index"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import router from "@/router";
 import { courseType } from "@/store/interfaces/course";
-import { defineComponent } from "vue";
+import DocumentCard from "@/components/documentCard.vue";
+import {
+  defineComponent,
+  onBeforeMount,
+  onMounted,
+  ref,
+  computed,
+  reactive
+} from "vue";
 import { useStore } from "vuex";
+import katex from "katex";
+import hljs, { highlight } from "highlight.js";
+import Quill, { DeltaOperation } from "quill";
+import Delta from "quill-delta";
+import MyQuill from "@/libs/myQuill/myquill";
+import axios from "axios";
+import { documentType } from "@/store/interfaces/document";
+
+hljs.configure({
+  languages: ["python"]
+});
+hljs.highlightAll();
+
 export default defineComponent({
   name: "Course",
-  setup() {
+  components: {
+    DocumentCard
+  },
+  props: {
+    delta: {
+      type: String,
+      default: ""
+    },
+    docmentId: {
+      type: Number,
+      required: true
+    }
+  },
+  setup(props) {
     const store = useStore();
     const CourseId = Number(router.currentRoute.value.query.cid);
+    const searchValue = ref<string>("");
     const course: courseType = store.getters.getCoursebyId(CourseId);
+
+    const documents = ref<Array<documentType>>([]);
+    let userId = 0;
+
+    //Get request to get all the documents
+    axios
+      .get("/api/documentInfo", {
+        headers: { token: localStorage.getItem("token") }
+      })
+      .then(response => {
+        userId = response.data.document[0].userId;
+        documents.value = response.data.document;
+      });
+
+    // shared document referense
+    let Document: documentType;
+
+    // Editor container element
+    const root = ref<HTMLElement | string>("");
+    let Editor: Quill | any;
+
+    //Editor Toolbar
+    const toolbarOptions = [
+      ["bold", "italic", "underline", "strike"], // toggled buttons
+      ["blockquote", "code-block", "link"],
+
+      ["image"], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["formula", { script: "sub" }, { script: "super" }], // superscript/subscript
+      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+      [{ direction: "rtl" }], // text direction
+
+      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ font: [] }],
+      [{ align: [] }],
+
+      ["clean"] // remove formatting button
+    ];
+
+    // Sets Editor Content
+    const SetEditorContent = (ops: DeltaOperation[]) => {
+      if (ops.length) {
+        const delta = new Delta(ops);
+        Editor.setContents(delta);
+      }
+    };
+
+    const showDoc = () => {
+      // @ts-ignore
+      document.getElementById("editor").style.display = "none";
+      // @ts-ignore
+      document.getElementById("docContainer").style.visibility = "";
+    };
+
+    const addDoc = () => {
+      console.log("adding");
+    };
+
+    const courseDocuments = [] as any;
+
+    const state = reactive({
+      counter: 1
+    });
+
+    const nextPage = () => {
+      if (courseDocuments.value[state.counter + 1] != undefined) {
+        state.counter++;
+        SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
+        // @ts-ignore
+        console.log(document.querySelector(".container").innerHTML);
+        // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
+      }
+    };
+
+    const previousPage = () => {
+      if (courseDocuments.value[state.counter - 2] != undefined) {
+        state.counter--;
+        SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
+        // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
+      }
+    };
+
+    axios
+      .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
+      .then(response => {
+        Document = JSON.parse(response.data.documentList[0]);
+        courseDocuments.value = response.data.documentList;
+      });
+
+    let usID = 0;
+    // @ts-ignore
+    const docID = router.currentRoute._rawValue.query.did;
+
+    onBeforeMount(() => {
+      //Get request to get the user id
+      //Probably not the best way to do this, need to find a way to do it better
+      axios
+        .get("/api/studentCourse", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          usID = response.data.id;
+        });
+    });
+
+    const showToolBar = () => {
+      Editor.theme.tooltip.edit();
+      Editor.theme.tooltip.show();
+      // Editor.theme.tooltip.show()
+    };
+
+    const InitilizeDocment = () => {
+      // initialize editor instance
+      Editor = new MyQuill(root.value, {
+        placeholder: "Write something cool...",
+        theme: "bubble",
+        modules: {
+          toolbar: toolbarOptions,
+          syntax: {
+            highlight: (text: string) => hljs.highlightAuto(text).value
+          }
+        }
+      });
+
+      let Document = "" as any;
+      const testList = [{ "thisone: ": "" }];
+
+      //Send Get request to fetch the document that has been clicked on
+      axios
+        .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
+        .then(response => {
+          Document = JSON.parse(response.data.documentList[0]);
+          testList.push(response.data.documentList[0]);
+          courseDocuments.value = response.data.documentList;
+
+          if (props.docmentId !== -1) {
+            if (Document) {
+              SetEditorContent(Document.ops);
+            }
+          }
+
+          return { courseDocuments };
+        });
+
+      Editor.on("text-change", () => {
+        // console.log(JSON.stringify(Editor.getContents()));
+      });
+    };
+
+    onMounted(() => {
+      // Add katex for enabling formulas
+      (window as any).katex = katex;
+
+      // add highlight js for syntax highlighting in code
+      (window as any).hljs = highlight;
+      InitilizeDocment();
+    });
+
     const events = [
       {
         event: "Test",
@@ -110,9 +335,43 @@ export default defineComponent({
     ];
     console.log(course);
 
+    const filteredDocuments = computed(() => {
+      let tempDocuments = documents.value;
+
+      if (searchValue.value !== "") {
+        tempDocuments = tempDocuments.filter((doc: documentType) => {
+          return (
+            doc.name
+              .replace(/ /g, "")
+              .toUpperCase()
+              .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
+            // Search text inside document
+            // doc.delta
+            //   .replace(/ /g, "")
+            //   .toUpperCase()
+            //   .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
+            doc.tags
+              .map((tag: string) => {
+                return tag.toUpperCase();
+              })
+              .includes(searchValue.value.toUpperCase())
+          );
+        });
+      }
+      return tempDocuments;
+    });
+
     return {
       course,
-      events
+      events,
+      root,
+      showToolBar,
+      showDoc,
+      filteredDocuments,
+      addDoc,
+      nextPage,
+      previousPage,
+      state
     };
   }
 });
@@ -192,6 +451,10 @@ export default defineComponent({
   margin-right: 4%;
 }
 
+.ql-editor {
+  overflow-x: hidden;
+}
+
 .event-card-container {
   position: absolute;
   right: 0;
@@ -223,5 +486,30 @@ export default defineComponent({
 .my-card-icon > .icon {
   padding: 12%;
   margin: auto;
+}
+
+@import "~quill/dist/quill.bubble.css";
+/* @import "~quill/dist/quill.snow.css"; */
+@import "~katex/dist/katex.min.css";
+@import "~highlight.js/styles/hybrid.css";
+@import "../assets/css/editor.css";
+
+.container {
+  /* width: 70%; */
+  margin: 0 auto;
+}
+
+/* Editor configurations */
+#editor {
+  min-height: 40vh;
+  border: none;
+}
+.ql-container {
+  font-size: 0.97rem;
+}
+
+.ql-editor {
+  overflow-x: hidden;
+  background-color: black im !important;
 }
 </style>

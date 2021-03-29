@@ -483,6 +483,13 @@ export default defineComponent({
       QuestionType.value = newQuestionType;
     };
 
+    watch(
+      () => props.focus,
+      newValue => {
+        showSideBar.value = newValue;
+      }
+    );
+
     const QuestionDataHandler = (): Question => {
       if (!props.QuestionProp) {
         QuestionData.QuestionID = store.getters.getQuestionId;

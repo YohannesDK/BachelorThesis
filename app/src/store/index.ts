@@ -5,7 +5,7 @@ import QuestionSetModule from "./modules/QuestionSet.module";
 import QuestionTestModule from "./modules/QuestionTest.module";
 import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
-import createPersistedState from "vuex-persistedstate";
+// import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {

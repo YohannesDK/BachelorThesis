@@ -43,6 +43,7 @@
                 <li @click="OpenQuestionSet(-1)">
                   Add New Question Set
                 </li>
+                <li @click="addDoc()">Add to course</li>
                 <li>Share</li>
                 <hr />
                 <li>Delete</li>
@@ -59,6 +60,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
+import axios from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import router from "@/router";
 export default defineComponent({
@@ -78,6 +80,12 @@ export default defineComponent({
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
+    
+    // let documentParsed = true
+
+
+    // @ts-ignore
+    const courseID = router.currentRoute._rawValue.query.cid;
 
     const More = () => {
       showDropDown.value = true;
@@ -87,9 +95,34 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
+    const addDoc = () => {
+      console.log("added this one" + props.document.Documentid);
+      axios
+        .post("api/linkDocument", {
+          documentId: props.document.Documentid,
+          courseId: courseID
+        })
+        .then(response => {
+          console.log(response);
+        });
+    };
+
+    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
+
+    // const OpenQuestionSet = () => {
+    //   // axios
+    //   //   .post("api/createQS", {
+    //   //     documentId: props.document.id,
+    //   //   })
+    //   //   .then(response => {
+    //   //     console.log("cute")
+    //   //   });
+
+    //   router.push({ name: "QuestionSets", query: { did: props.document.id } });
+    // };
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
@@ -99,11 +132,24 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      if (props.document.delta) {
-        documentText.value = DeltaToPlainText(props.document.delta)
+      //This is the preview text inside document cards
+        if (props.document.body != undefined) {
+        let parseBody;
+        if(typeof props.document.body === "string") {
+          parseBody = JSON.parse(props.document.body).ops
+        } else {
+          parseBody = props.document.body
+        }
+        
+        documentText.value = DeltaToPlainText(
+          parseBody
+              )
           .substring(0, documentTextLength)
           .concat("...");
+      } else {
+        documentText.value = "Empty Document";
       }
+
     });
     return {
       documentText,
@@ -112,7 +158,8 @@ export default defineComponent({
       More,
       RemoveMore,
       OpenEditor,
-      OpenQuestionSet
+      OpenQuestionSet,
+      addDoc
     };
   }
 });

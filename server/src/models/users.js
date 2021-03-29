@@ -9,7 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate({courses}) {
+      console.log({courses});
+      users.belongsToMany(courses, {through: "userCourses", as: "userToCourse", foreignKey: "userId"});
       // users.hasMany(models.Post, {
       //   onDelete: "cascade"
       // });

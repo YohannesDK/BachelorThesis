@@ -100,7 +100,7 @@ export default defineComponent({
   methods: {
     createCourse() {
       axios
-        .post("api/createCourse", {
+        .post("/api/createCourse", {
           userId: this.id,
           course: this.course,
           shorthand: this.shorthand,
