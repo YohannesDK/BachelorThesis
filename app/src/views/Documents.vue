@@ -53,7 +53,6 @@ import { useStore } from "vuex";
 import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
 import axios from "axios";
-// import {jwt} from "jsonwebtoken";
 import router from "@/router";
 
 export default defineComponent({
@@ -64,8 +63,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const searchValue = ref<string>("");
-    const documents: Ref<Array<documentType>> = ref<Array<documentType>>(store.getters.getDocuments);
-    
+    const documents: Ref<Array<documentType>> = ref<Array<documentType>>(
+      store.getters.getDocuments
+    );
+
     const userId = 0;
     // const token = localStorage.getItem("token");
     // // const jwt = require("jsonwebtoken");
@@ -76,16 +77,14 @@ export default defineComponent({
 
     //Get request to get all the documents
     onBeforeMount(() => {
-         axios
-      .get("/api/documentInfo", {
-        headers: { token: localStorage.getItem("token") }
-      })
-      .then(response => {
-        documents.value = response.data.document;
-      });
+      axios
+        .get("/api/documentInfo", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          documents.value.push(response.data.document);
+        });
     });
-
-   
 
     // Create New Document
     const NewDocument = () => {

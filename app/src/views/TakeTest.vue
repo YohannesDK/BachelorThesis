@@ -1,18 +1,20 @@
 <template>
-  <div class="navbar navbar-light shadow mb-3 test-navbar"
-  v-test="{ id: 'TakeTest-test-navbar' }"
+  <div
+    class="navbar navbar-light shadow mb-3 test-navbar"
+    v-test="{ id: 'TakeTest-test-navbar' }"
   >
     <div class="container">
-      <span class="navbar-brand mb-0 h1 test-tittle"
-      v-test="{ id: 'TakeTest-test-navbar-tittle' }"
-      >{{
-        QuestionSet.Tittle
-      }}</span>
+      <span
+        class="navbar-brand mb-0 h1 test-tittle"
+        v-test="{ id: 'TakeTest-test-navbar-tittle' }"
+        >{{ QuestionSet.Tittle }}</span
+      >
     </div>
   </div>
 
-  <div class="container test-container"
-  v-test="{ id: 'TakeTest-test-container' }"
+  <div
+    class="container test-container"
+    v-test="{ id: 'TakeTest-test-container' }"
   >
     <question-set-card
       v-for="(question, index) in QuestionSet.QuestionSet"
@@ -33,8 +35,9 @@
   </div>
 
   <div class="test-sidebar shadow">
-    <ul class="list-unstyled"
-    v-test="{ id: 'TakeTest-test-question-navigation-sidebar' }"
+    <ul
+      class="list-unstyled"
+      v-test="{ id: 'TakeTest-test-question-navigation-sidebar' }"
     >
       <li
         v-for="(question, index) in QuestionSet.QuestionSet"
@@ -68,7 +71,9 @@
       </div>
     </div>
   </div>
-  <div class="test-handin shadow" @click="Finished"
+  <div
+    class="test-handin shadow"
+    @click="Finished"
     v-test="{ id: 'TakeTest-test-btn-submit' }"
   >
     <fa icon="check" />
@@ -76,7 +81,9 @@
       <span class="tooltiptext">Finished</span>
     </div>
   </div>
-  <div class="test-quit shadow" @click="Quit"
+  <div
+    class="test-quit shadow"
+    @click="Quit"
     v-test="{ id: 'TakeTest-test-btn-quit' }"
   >
     <fa icon="flag" />

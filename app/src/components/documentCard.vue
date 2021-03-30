@@ -80,9 +80,8 @@ export default defineComponent({
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
-    
-    // let documentParsed = true
 
+    // let documentParsed = true
 
     // @ts-ignore
     const courseID = router.currentRoute._rawValue.query.cid;
@@ -133,23 +132,29 @@ export default defineComponent({
 
     onMounted(() => {
       //This is the preview text inside document cards
-        if (props.document.body != undefined) {
+      if (props.document.body !== undefined) {
         let parseBody;
-        if(typeof props.document.body === "string") {
-          parseBody = JSON.parse(props.document.body).ops
+        if (
+          typeof props.document.body === "string" &&
+          props.document.body !== ""
+        ) {
+          parseBody = JSON.parse(props.document.body).ops;
+        } else if (
+          typeof props.document.body === "string" &&
+          props.document.body === ""
+        ) {
+          documentText.value = "Empty Document";
+          return;
         } else {
-          parseBody = props.document.body
+          parseBody = props.document.body;
         }
-        
-        documentText.value = DeltaToPlainText(
-          parseBody
-              )
+
+        documentText.value = DeltaToPlainText(parseBody)
           .substring(0, documentTextLength)
           .concat("...");
       } else {
         documentText.value = "Empty Document";
       }
-
     });
     return {
       documentText,

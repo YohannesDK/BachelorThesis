@@ -29,15 +29,14 @@
         <fa icon="plus" />
       </div>
     </div>
-    <table class="table questionsettable"
-    v-test="{ id: 'myquestionset-table' }"
+    <table
+      class="table questionsettable"
+      v-test="{ id: 'myquestionset-table' }"
     >
       <thead>
-        <tr >
+        <tr>
           <th scope="col">#</th>
-          <th scope="col"
-          v-test="{ id: 'myquestionset-table-headers' }"
-          >
+          <th scope="col" v-test="{ id: 'myquestionset-table-headers' }">
             <div class="th-container" @click="updateSortOption(0)">
               <span>Tittle</span>
               <div class="th-icon-container">
@@ -46,9 +45,7 @@
               </div>
             </div>
           </th>
-          <th scope="col"
-            v-test="{ id: 'myquestionset-table-headers' }"
-          >
+          <th scope="col" v-test="{ id: 'myquestionset-table-headers' }">
             <div class="th-container" @click="updateSortOption(0)">
               <span>Description</span>
               <div class="th-icon-container">
@@ -57,9 +54,7 @@
               </div>
             </div>
           </th>
-          <th scope="col"
-          v-test="{ id: 'myquestionset-table-headers' }"
-          >
+          <th scope="col" v-test="{ id: 'myquestionset-table-headers' }">
             <div class="th-container" @click="updateSortOption(1)">
               <span>Questions</span>
               <div class="th-icon-container">
@@ -68,9 +63,7 @@
               </div>
             </div>
           </th>
-          <th scope="col"
-          v-test="{ id: 'myquestionset-table-headers' }"
-          >
+          <th scope="col" v-test="{ id: 'myquestionset-table-headers' }">
             <div class="th-container" @click="updateSortOption(2)">
               <span>Last Edited</span>
               <div class="th-icon-container">
@@ -90,18 +83,21 @@
           v-test="{ id: 'myquestionset-table-rows' }"
         >
           <th scope="row">{{ index + 1 }}</th>
-          <td
-          v-test="{ id: 'myquestionset-table-rows-data' }"
-          >{{ questionset.Tittle }}</td>
-          <td
-          v-test="{ id: 'myquestionset-table-rows-data' }"
-          >{{ questionset.Description.substring(0, DescriptionSubstringLength ) + "..." }}</td>
-          <td
-          v-test="{ id: 'myquestionset-table-rows-data' }"
-          >{{ questionset.QuestionSet.length }}</td>
-          <td
-          v-test="{ id: 'myquestionset-table-rows-data' }"
-          >{{ questionset.LastEdited }}</td>
+          <td v-test="{ id: 'myquestionset-table-rows-data' }">
+            {{ questionset.Tittle }}
+          </td>
+          <td v-test="{ id: 'myquestionset-table-rows-data' }">
+            {{
+              questionset.Description.substring(0, DescriptionSubstringLength) +
+                "..."
+            }}
+          </td>
+          <td v-test="{ id: 'myquestionset-table-rows-data' }">
+            {{ questionset.QuestionSet.length }}
+          </td>
+          <td v-test="{ id: 'myquestionset-table-rows-data' }">
+            {{ questionset.LastEdited }}
+          </td>
           <td class="d-flex justify-content-end">
             <div
               class="actions-button"
@@ -120,24 +116,30 @@
                     class="list-unstyled mb-0"
                     v-test="{ id: 'myquestionset-options-dropdown' }"
                   >
-                    <li @click="OpenQuestionSet(questionset.QSID)"
-                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
-                    
-                    >Open</li>
                     <li
-                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
-                    >Rename</li>
-                    <li @click="OpenTest(questionset.QSID)"
-                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
-                    >Practise</li>
-                    <li @click="attachToDocument(questionset.QSID)"
-                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                      @click="OpenQuestionSet(questionset.QSID)"
+                      v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >
+                      Open
+                    </li>
+                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }">
+                      Rename
+                    </li>
+                    <li
+                      @click="OpenTest(questionset.QSID)"
+                      v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    >
+                      Practise
+                    </li>
+                    <li
+                      @click="attachToDocument(questionset.QSID)"
+                      v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Attach Question Set
                     </li>
-                    <li
-                    v-test="{ id: 'myquestionset-options-dropdown-items' }"
-                    >Share</li>
+                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }">
+                      Share
+                    </li>
                     <hr />
                     <li
                       @click="
@@ -158,8 +160,10 @@
         </tr>
         <tr v-if="QuestionSets.length === 0">
           <td colspan="5" style="text-align: center; border-bottom: 0;">
-            <div class="plusicon" @click="AddNewQuestionSet"
-            v-test="{ id: 'myquestionset-addNewBtn' }"
+            <div
+              class="plusicon"
+              @click="AddNewQuestionSet"
+              v-test="{ id: 'myquestionset-addNewBtn' }"
             >
               <fa icon="plus" />
             </div>
@@ -195,7 +199,9 @@ export default defineComponent({
     const AttachQSID = ref<number>(-1);
     const Modal = ref<any>();
     const DescriptionSubstringLength = 25;
-    const allQuestionSets = ref<Array<QuestionSet>>(store.getters.getAllQuestionSets)
+    const allQuestionSets = ref<Array<QuestionSet>>(
+      store.getters.getAllQuestionSets
+    );
 
     // drop down logic
     const dropdownIndex = ref<number>(-1);
@@ -210,32 +216,28 @@ export default defineComponent({
       if (sortOptions.value === -1) {
         return allQuestionSets.value;
       } else if (sortOptions.value === 0) {
-        return allQuestionSets.value.sort(
-          (a: QuestionSet, b: QuestionSet) =>
-            a.Tittle > b.Tittle ? 1 : b.Tittle > a.Tittle ? -1 : 0
+        return allQuestionSets.value.sort((a: QuestionSet, b: QuestionSet) =>
+          a.Tittle > b.Tittle ? 1 : b.Tittle > a.Tittle ? -1 : 0
         );
       } else if (sortOptions.value === 1) {
-        return allQuestionSets.value.sort(
-          (a: QuestionSet, b: QuestionSet) =>
-            a.QuestionSet.length > b.QuestionSet.length
-              ? 1
-              : b.QuestionSet.length > a.QuestionSet.length
-              ? -1
-              : 0
+        return allQuestionSets.value.sort((a: QuestionSet, b: QuestionSet) =>
+          a.QuestionSet.length > b.QuestionSet.length
+            ? 1
+            : b.QuestionSet.length > a.QuestionSet.length
+            ? -1
+            : 0
         );
       } else if (sortOptions.value === 2) {
-        return allQuestionSets.value.sort(
-          (a: QuestionSet, b: QuestionSet) => {
-            if (a.LastEdited && b.LastEdited) {
-              return a.LastEdited > b.LastEdited
-                ? 1
-                : b.LastEdited > a.LastEdited
-                ? -1
-                : 0;
-            }
-            return 0;
+        return allQuestionSets.value.sort((a: QuestionSet, b: QuestionSet) => {
+          if (a.LastEdited && b.LastEdited) {
+            return a.LastEdited > b.LastEdited
+              ? 1
+              : b.LastEdited > a.LastEdited
+              ? -1
+              : 0;
           }
-        );
+          return 0;
+        });
       }
     });
     const updateSortOption = (newoption: number) => {
@@ -284,7 +286,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log(QuestionSets.value);
-    })
+    });
 
     const OpenTest = (QSID: number) => {
       router.push({ name: "questiontest", query: { QSID: QSID } });

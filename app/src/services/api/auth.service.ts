@@ -3,6 +3,7 @@ import store from "@/store/index";
 import { UserType } from "@/store/interfaces/user.types";
 import { AxiosResponse } from "axios";
 import axios from "../api";
+import jwtDecode, { JwtPayload, JwtDecodeOptions } from "jwt-decode";
 // import { authHeader } from "../helpers/auth-header.helper";
 
 export function checkLogin(form: any) {
@@ -37,4 +38,17 @@ export function Login(username: string, password: string) {
 export function Logout() {
   localStorage.removeItem("token");
   router.push("/");
+}
+
+export function IsAuthenticated(): boolean {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const decoded: any = jwtDecode(token);
+    const { exp } = decoded;
+    if (exp <= (new Date().getTime() + 1) / 1000) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 }

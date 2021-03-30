@@ -108,7 +108,11 @@ import {
 import { onBeforeRouteLeave } from "vue-router";
 import { day, month, year } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
-import { createQuestionSet, FetchQS, SaveQS } from "@/services/api/questionset.service";
+import {
+  createQuestionSet,
+  FetchQS,
+  SaveQS
+} from "@/services/api/questionset.service";
 export default defineComponent({
   name: "AddNewQuestionSet",
   components: {
@@ -227,7 +231,7 @@ export default defineComponent({
         if (QuestionSet === undefined) {
           // hvis questionSet ikke er i store, fetch fra DB
           // QuestionSet = FetchQS(QSID);
-          console.log("Fetch From Backend")
+          console.log("Fetch From Backend");
           // while loading question set show loading screeen
         }
         Data.value.QSID = QuestionSet.QSID;
@@ -302,7 +306,7 @@ export default defineComponent({
       if (Data.value.CreateBy === "") {
         Data.value.CreateBy = User.value.UserName;
       }
-      SaveQS(Data.value, questionSetFlag.value)
+      SaveQS(Data.value, questionSetFlag.value);
       store.dispatch("AddNewQuestionSet", Data.value);
       saved.value = true;
     };

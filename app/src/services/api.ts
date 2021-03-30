@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { ApiConfig } from "@/config/api.config";
 import router from "@/router";
-
+// import { IsAuthenticated } from "@/services/api/auth.service";
 
 // Singleton pattern
 const axiosInstance = axios.create({
@@ -9,7 +9,16 @@ const axiosInstance = axios.create({
   headers: { Authorization: "Bearer " + localStorage.getItem("token") }
 });
 
-// axios interceptors
+// axiosInstance.interceptors.request.use(
+//   (request: any ) => {
+//     const auth = IsAuthenticated();
+//     if (auth) {
+//       return request
+//     }
+//   }
+// )
+
+// axios response interceptors
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;

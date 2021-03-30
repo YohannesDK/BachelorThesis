@@ -1,6 +1,4 @@
-import {
-  TestData
-} from "../interfaces/QuestionTest.types";
+import { TestData } from "../interfaces/QuestionTest.types";
 
 export default {
   state: {

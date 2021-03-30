@@ -31,6 +31,10 @@ app.post("/api/user", function(request, response) {
             });
         } 
 
+        // let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey", {
+        //     expiresIn: "10s" // set token expiation time, so we can check if token is valid by just decoding it
+        // });
+
         // If the above statements are not executed, the user information is correct. Proceed to create a token
         let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey");
 

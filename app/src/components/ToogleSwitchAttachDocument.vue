@@ -1,16 +1,14 @@
 <template>
-  <label class="label-container"
-    v-test="{ id: 'ToogleSwitch-container' }"
-  >
+  <label class="label-container" v-test="{ id: 'ToogleSwitch-container' }">
     <span
       v-test="{ id: 'ToogleSwitch-btn' }"
       class="switch"
       :class="{ checked: checked }"
       @click="updateClick"
     ></span>
-    <span class="label"
-      v-test="{ id: 'ToogleSwitch-label' }"
-    >{{ documentName }}</span>
+    <span class="label" v-test="{ id: 'ToogleSwitch-label' }">{{
+      documentName
+    }}</span>
   </label>
 </template>
 <script lang="ts">

@@ -2,6 +2,7 @@ import store from "@/store";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Welcome from "../views/welcome.vue";
+import { IsAuthenticated } from "@/services/api/auth.service";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -114,10 +115,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const publicRoutes = ["Login", "Welcome"];
   const authRequired = !publicRoutes.includes(to.name as string);
-  const isauth = store.getters.getIsAuthenticated;
 
-  if (authRequired && isauth) next({ name: "Login" });
-  else next();
+  if (authRequired && !IsAuthenticated()) {
+    localStorage.removeItem("token");
+    next({ name: "Login" });
+  } else next();
 });
 
 export default router;

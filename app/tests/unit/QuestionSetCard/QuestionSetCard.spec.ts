@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@/plugins/font-awesome";
 //      - question type is changed to 3 - long text, and the card should display multiple choice interface
 
 config.global.components = {
-  "fa": FontAwesomeIcon
+  fa: FontAwesomeIcon
 };
 
 const wrapper = shallowMount(QuestionSetCard, {

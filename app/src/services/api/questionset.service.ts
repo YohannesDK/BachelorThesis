@@ -2,7 +2,7 @@ import { QuestionSet, QuestionSetFlag } from "@/store/interfaces/question.type";
 import axios from "../api";
 
 export function createQuestionSet(newquestionSet: QuestionSet) {
-//Create question in backend
+  //Create question in backend
   // axios
   // .post("/api/createQuestion", {
   //   questionsetId: router.currentRoute.value.query.QSID,
@@ -21,9 +21,8 @@ export function createQuestionSet(newquestionSet: QuestionSet) {
 
   //   console.log(response.data.question.question_type);
   // });
-  console.log("CreateQuestionSet")
+  console.log("CreateQuestionSet");
 }
-
 
 export function FetchQS(QSID: number) {
   //  axios
@@ -33,13 +32,11 @@ export function FetchQS(QSID: number) {
   //     .then(response => {
   //       // questionSetInfo.title = response.data.questionset.title;
   //       // questionSetInfo.description = response.data.questionset.description;
-
   //       //if this questionset has pre-existing questions, fetch them
   //       if (response.data.questions.length !== 0) {
   //         const QuestionSet: QuestionSet = store.getters.getQuestionSetById(
   //           QSID
   //         );
-
   //         for (let i = 0; i < response.data.questions.length; i++) {
   //           if (response.data.questions[i].question_type == 2) {
   //             Data.value.QuestionSet.push({
@@ -67,7 +64,6 @@ export function FetchQS(QSID: number) {
   //             });
   //           }
   //         }
-
   //         //Here we set the answer for shortanswer questions (Can also be used to set for longanswer)
   //         //But it does not work for multiple choice / true false, therefore we have to check for it
   //         for (let i = 0; i < response.data.questions.length; i++) {
@@ -83,7 +79,6 @@ export function FetchQS(QSID: number) {
   //             }
   //           }
   //         }
-
   //         return;
   //       } else {
   //         //if the questionset is empty, initialize it with an empty question
@@ -92,9 +87,8 @@ export function FetchQS(QSID: number) {
   //         Data.value.CreateBy = User.value.UserName;
   //         OnAddNew();
   //       }
-  //     }); 
+  //     });
 }
-
 
 export function SaveQS(QuestionSet: QuestionSet, questionSetFlag: number) {
   console.log(QuestionSet);

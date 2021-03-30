@@ -1,6 +1,6 @@
 // since our tests run in node and not the browser, window objects such as localStorage doesn't exist
 // so we mock our own localStorage object
-const config = require('@vue/test-utils').config;
+const config = require("@vue/test-utils").config;
 
 config.showDeprecationWarnings = false;
 

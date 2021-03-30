@@ -88,10 +88,13 @@ describe("document card - more option", () => {
   });
 
   it("More handler should be called when user clicks on it, and showDropDown equals true", async () => {
-    await docMoreButton.trigger("click").then(() => {
-      expect(wrapper.vm.showDropDown).to.equal(true);
-    }).catch((e: Error) => {
-      console.log(e);
-    })
+    await docMoreButton
+      .trigger("click")
+      .then(() => {
+        expect(wrapper.vm.showDropDown).to.equal(true);
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
   });
 });
