@@ -3,15 +3,24 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Welcome from "../views/welcome.vue";
 import { IsAuthenticated } from "@/services/api/auth.service";
+import { LoadStore } from "@/store/helpers/load.store";
 
 const routes: Array<RouteRecordRaw> = [
   {
+    beforeEnter(to, from, next) {
+      if (IsAuthenticated()) {
+        LoadStore();
+        next({name: "Home"})
+      } else {
+        next()
+      }
+    },
     path: "/",
     name: "Welcome",
     meta: { showSideBar: false },
     component: Welcome
   },
-  {
+  { 
     path: "/home",
     name: "Home",
     component: Home
@@ -113,7 +122,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const publicRoutes = ["Login", "Welcome"];
+  const publicRoutes = ["Login", "Welcome", "Register"];
   const authRequired = !publicRoutes.includes(to.name as string);
 
   if (authRequired && !IsAuthenticated()) {

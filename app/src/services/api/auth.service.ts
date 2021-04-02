@@ -2,8 +2,9 @@ import router from "@/router";
 import store from "@/store/index";
 import { UserType } from "@/store/interfaces/user.types";
 import { AxiosResponse } from "axios";
-import axios from "../api";
+import axios from "@/services/api";
 import jwtDecode, { JwtPayload, JwtDecodeOptions } from "jwt-decode";
+import { LoadStore } from "@/store/helpers/load.store";
 // import { authHeader } from "../helpers/auth-header.helper";
 
 export function checkLogin(form: any) {
@@ -16,6 +17,7 @@ export function checkLogin(form: any) {
 
 export function Login(username: string, password: string) {
   axios
+    // .post("/user/login", {
     .post("/user", {
       username: username,
       password: password
@@ -23,6 +25,7 @@ export function Login(username: string, password: string) {
     .then((response: AxiosResponse) => {
       if (response.status === 200) {
         const user: UserType = {
+          UserID: response.data.id,
           UserName: response.data.username,
           Role: response.data.role.toUpperCase(),
           FirstName: "None Yet" //TODO - fix so we have firstname / lastname in user model
@@ -30,6 +33,11 @@ export function Login(username: string, password: string) {
         store.dispatch("setUser", user);
         store.dispatch("login");
         localStorage.setItem("token", response.data.token);
+
+        // load user data
+        LoadStore();
+
+        // navigate user to home page
         router.push({ name: "Home" });
       }
     });

@@ -62,7 +62,6 @@ export default defineComponent({
     computed(() => {
       if (appContainer.value) {
         if (currentRouteName.value === "TakeTest") {
-          console.log("taketest");
           appContainer.value.style.marginLeft = "0px";
         }
       }

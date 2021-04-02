@@ -284,9 +284,9 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
-      console.log(QuestionSets.value);
-    });
+    // onMounted(() => {
+    //   console.log(QuestionSets.value);
+    // });
 
     const OpenTest = (QSID: number) => {
       router.push({ name: "questiontest", query: { QSID: QSID } });

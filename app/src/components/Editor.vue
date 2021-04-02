@@ -11,18 +11,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted, ref } from "vue";
+import { defineComponent, onBeforeMount, onMounted, Ref, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 import katex from "katex";
 import hljs, { highlight } from "highlight.js";
 import Quill, { DeltaOperation } from "quill";
 import Delta from "quill-delta";
 import MyQuill from "@/libs/myQuill/myquill";
-import router from "@/router";
-import axios from "axios";
-import { useStore } from "vuex";
-// import { doucmentType } from "@/store/interfaces/document";
-import AppVue from "../App.vue";
+import store from "@/store";
+import { documentType } from "@/store/interfaces/document";
+import { UserType } from "@/store/interfaces/user.types";
 
 hljs.configure({
   languages: ["python"]
@@ -40,12 +38,12 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  emits: ["updateDoc"],
+  setup(props, { emit }) {
     //Store
-    const store = useStore();
-
-    // shared document referense
-    // let Document: documentType;
+    const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
+    const InitialLoad = ref<boolean>(false);
+    const Saved = ref<boolean>(true);
 
     // Editor container element
     const root = ref<HTMLElement | string>("");
@@ -72,7 +70,6 @@ export default defineComponent({
       ["clean"] // remove formatting button
     ];
 
-    console.log();
     // Sets Editor Content
     const SetEditorContent = (ops: DeltaOperation[]) => {
       if (ops.length) {
@@ -81,48 +78,16 @@ export default defineComponent({
       }
     };
 
-    let usID = 0;
-    // @ts-ignore
-    const docID = router.currentRoute._rawValue.query.did;
-
     onBeforeRouteLeave((to, from) => {
-      axios
-        .post("api/alterDocument", {
-          userId: usID,
-          docID: docID,
-          body: JSON.stringify(Editor.getContents()),
-          title: document.getElementsByClassName("documentTitle")[0].innerHTML
-        })
-        .then(response => {
-          console.log("updated");
-        });
+      if (Saved.value === false) {
+        const updatedData = {
+          docID: props.docmentId,
+          body: Editor.getContents(),
+          userId: user.value.UserID
+        };
+        emit("updateDoc", updatedData);
+      }
     });
-
-    onBeforeMount(() => {
-      //Get request to get the user id
-      //Probably not the best way to do this, need to find a way to do it better
-      axios
-        .get("/api/studentCourse", {
-          headers: { token: localStorage.getItem("token") }
-        })
-        .then(response => {
-          usID = response.data.id;
-        });
-    });
-
-    const updateDoc = () => {
-      //Post request to save the document info
-      axios
-        .post("api/alterDocument", {
-          userId: usID,
-          docID: docID,
-          body: JSON.stringify(Editor.getContents()),
-          title: document.getElementsByClassName("documentTitle")[0].innerHTML
-        })
-        .then(response => {
-          console.log("updated");
-        });
-    };
 
     const showToolBar = () => {
       Editor.theme.tooltip.edit();
@@ -144,24 +109,18 @@ export default defineComponent({
       });
 
       //Send Get request to fetch the document that has been clicked on
-      axios
-        .get("/api/fetchDoc", { params: { docId: docID } })
-        .then(response => {
-          const Document = JSON.parse(response.data.document.body);
-          if (response.data.document.title != null) {
-            document.getElementsByClassName("documentTitle")[0].innerHTML =
-              response.data.document.title;
-          }
-
-          if (props.docmentId !== -1) {
-            if (Document) {
-              SetEditorContent(Document.ops);
-            }
-          }
-        });
+      if (props.docmentId !== -1) {
+        const Document: documentType = store.getters.getDocmentbyId(props.docmentId);
+        if (Document) {
+          SetEditorContent(Document.body as DeltaOperation[]);
+        }
+        InitialLoad.value = true;
+      }
 
       Editor.on("text-change", () => {
-        // console.log(JSON.stringify(Editor.getContents()));
+        if (InitialLoad.value === true) {
+         Saved.value = false; 
+        }
       });
     };
 
@@ -176,8 +135,7 @@ export default defineComponent({
 
     return {
       root,
-      showToolBar,
-      updateDoc
+      showToolBar
     };
   }
 });

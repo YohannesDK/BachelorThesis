@@ -1,4 +1,5 @@
 import { documentType } from "@/store/interfaces/document";
+import { date } from "@/utils/calender.utils";
 
 export const dummyDocument: documentType = {
   Documentid: 0,
@@ -30,6 +31,6 @@ export const dummyDocument: documentType = {
     }
   ],
   tags: ["Test 1"],
-  lastEdited: "5 Feb 2021",
+  lastEdited: date.toString(),
   QuestionSetID: []
 };

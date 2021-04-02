@@ -201,6 +201,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+/* TODO - fix max width on document conatiner, when there are many documents things fuck up */
 .jumbotron-cover {
   background-position: center center;
   background-repeat: no-repeat;
@@ -311,6 +312,10 @@ export default defineComponent({
   background: goldenrod;
   min-height: 10rem;
   width: 100%;
+}
+
+.dashboard-container {
+  max-width: 100%;
 }
 
 .dashboard-card-info::-webkit-scrollbar {

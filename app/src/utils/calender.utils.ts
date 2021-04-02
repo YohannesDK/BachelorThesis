@@ -18,4 +18,12 @@ const day = date.getDate();
 const month = monthNames[date.getMonth()];
 const year = date.getFullYear();
 
-export { date, day, month, year };
+const datify = (date: string) => {
+  const datee = new Date(date);
+  return `${datee.getDate()} ${monthNames[datee.getMonth()].substring(
+    0,
+    3
+  )} ${datee.getFullYear()}`;
+};
+
+export { date, day, month, year, datify };

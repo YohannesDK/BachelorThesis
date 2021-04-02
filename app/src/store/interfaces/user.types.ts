@@ -4,6 +4,7 @@ export enum RoleType {
 }
 
 export type UserType = {
+  UserID: number;
   UserName: string;
   Role: RoleType.Student | RoleType.Teacher;
   FirstName?: string;

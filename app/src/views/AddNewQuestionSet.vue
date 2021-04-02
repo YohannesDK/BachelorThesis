@@ -33,8 +33,9 @@
                   <input
                     class="question-input"
                     placeholder="Enter title"
-                    v-model="questionSetInfo.title"
+                    v-model="Data.Tittle"
                     v-test="{ id: 'qs-Tittle' }"
+                    @input="saved = false"
                   />
                 </div>
               </div>
@@ -48,8 +49,9 @@
                   <input
                     class="question-input"
                     placeholder="Enter description"
-                    v-model="questionSetInfo.description"
+                    v-model="Data.Description"
                     v-test="{ id: 'qs-Desc' }"
+                    @input="saved = false"
                   />
                 </div>
               </div>
@@ -126,7 +128,7 @@ export default defineComponent({
     const questionSetFlag = ref<number>(QuestionSetFlag.CREATE);
     const focusIndex = ref<number>(0);
     const QSID = ref<number>(-1);
-    const Tittle = ref<string>("") as any;
+    const Tittle = ref<string>("");
     const Desc = ref<string>("");
     const saved = ref<boolean>(true);
 
@@ -292,7 +294,6 @@ export default defineComponent({
         if (ele) {
           try {
             const questionData = ele.QuestionDataHandler.call();
-
             Data.value.QuestionSet.push(questionData);
           } catch (e) {
             // TODO: Error with testing, everything works but when running this in node
@@ -306,7 +307,7 @@ export default defineComponent({
       if (Data.value.CreateBy === "") {
         Data.value.CreateBy = User.value.UserName;
       }
-      SaveQS(Data.value, questionSetFlag.value);
+      // SaveQS(Data.value, questionSetFlag.value);
       store.dispatch("AddNewQuestionSet", Data.value);
       saved.value = true;
     };

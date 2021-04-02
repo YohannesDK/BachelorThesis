@@ -7,30 +7,29 @@ module.exports = (app) => {
 //This api call creates a question 
 app.post("/api/createQuestion", (request, response) => {
 
+  //Create a question
+  models.Question.create({
+    questionset_id: parseInt(request.body.questionsetId),
+    question: request.body.question,
+    question_type: request.body.questionType
+  }).then(function(question){
+    //Create an empty answer for that question
+    models.Answers.create({
+      answerset_id: question.question_id
+    }).then(function(answer){
+      models.Question.update({
+        //The answerset_id is by default 0 when a question is first created
+        //When we create a new answer, we update the answerset_id and set it to the id of the answer
+        answerset_id: answer.answer_id
+      }, {where: {question_id: question.question_id }})
+    })
+    
+    return response.json({
+      title: "Created Question",
+      question: question,
 
-    //Create a question
-    models.Question.create({
-        questionset_id: parseInt(request.body.questionsetId),
-        question: request.body.question,
-        question_type: request.body.questionType
-    }).then(function(question){
-        //Create an empty answer for that question
-        models.Answers.create({
-            answerset_id: question.question_id
-        }).then(function(answer){
-            models.Question.update({
-                //The answerset_id is by default 0 when a question is first created
-                //When we create a new answer, we update the answerset_id and set it to the id of the answer
-                answerset_id: answer.answer_id
-            }, {where: {question_id: question.question_id }})
-        })
-        
-        return response.json({
-            title: "Created Question",
-            question: question,
-
-        });
     });
+  });
 
 
 });

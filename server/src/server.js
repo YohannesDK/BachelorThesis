@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const axios = require("axios");
+// const MainRouter = require("./routes/router.js");
 
 dotenv.config({
     path: ".env"
@@ -30,6 +31,11 @@ app.use(session({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
+
+
+// main router will delegate request to correct route handlers
+// having problems with sequelize. 
+// app.use("/api", MainRouter);
 
 // //This api call registers users
 // app.get("/api/register", (request, response) => {
@@ -382,25 +388,35 @@ app.post("/api/linkDocument", (request, response) => {
 
 
 //This api call creates a document
-app.post("/api/createDocument", (request, response) => {
+app.post("/api/createDocument", async (request, response) => {
 
-    console.log(request.body);
+    const newDocument = await models.document.create({
+        body: request.body.body,
+        userId: request.body.userId,
+        title: request.body.title
+    });
 
-        models.document.create({
-            body: request.body.body,
-            userId: request.body.userId,
-            title: request.body.title
-        });
-
+    let document_right_format = {
+        "Documentid": newDocument.id,
+        "body": newDocument.body,
+        "tags": [],
+        "name": newDocument.title,
+        "lastEdited": `${newDocument.createdAt}`,
+        "QuestionSetID": []
+    }
+    
+    return response.status(200).json({document: document_right_format});
 });
 
 
 //This api call saves / updates document content
-app.post("/api/alterDocument", (request, response) => {
+app.post("/api/alterDocument", async (request, response) => {
+    let updated = await models.document.update({body: request.body.body, title: request.body.title}, {where: {id: request.body.docID}});
 
-    models.document.update({body: request.body.body, title: request.body.title}, {where: {id: request.body.docID}});
-
-
+    if (updated[0] === 1) {
+        return response.send(200);
+    }
+    return response.send(400);
 });
 
 
@@ -408,39 +424,60 @@ app.post("/api/alterDocument", (request, response) => {
 app.get("/api/documentInfo", (request, response) => {
 
     let token = request.headers.token;
-    jwt.verify(token, "secretkey", (err, decoded )=> {
-        
-
+    jwt.verify(token, "secretkey", async (err, decoded )=> {
         if(err) return response.status(401).json({
             title: "unauthorized",
             error: err
         });
-
-        models.document.findAll({where: {userId: decoded.id}}).then(function(document){
-            return response.json({
+        const documents = await models.document.findAll({where: {userId: decoded.id}});
+        let document_right_format = documents.map(doc => {
+             return {
+                "Documentid": doc.id,
+                "body": doc.body,
+                "tags": [],
+                "name": doc.title,
+                "lastEdited": `${doc.updatedAt}`,
+                "QuestionSetID": []
+             }
+         });
+    
+        if (documents) {
+            return response.status(200).json({
                 title: "fetch course",
-                document: document,
+                documents: document_right_format,
                 userId: decoded.id
             });
+        }
+        return response.json({
+            tittle: "no documents"
         });
     });
+
 
 });
 
 //This api call retrieves one document based on query ID.
 //TODO: authorize this api call
-app.get("/api/fetchDoc", (request, response) => {
+app.get("/api/fetchDoc", async (request, response) => {
 
-        models.document.findOne({where: {id: request.query.docId}}).then(function(document){
-            return response.json({
+        let document = await models.document.findOne({where: {id: request.query.docId}})
+
+        if (document) {
+            return response.status(200).json({
                 title: "fetch course",
                 document: document,
-
-            });
-        });
-
+            });            
+        }
+        return response.send(404);
 });
 
+app.post("/api/deleteDocument", async (request, response) => {
+    const DeletedDocument = await models.document.destroy({
+        where: {id: request.body.docID}
+    }) 
+    console.log(DeletedDocument)
+    return response.send(200);
+})
 
 
 //This api call is called when a user joins a course.

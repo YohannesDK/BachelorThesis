@@ -52,8 +52,8 @@ import { defineComponent, ref, computed, onBeforeMount, Ref } from "vue";
 import { useStore } from "vuex";
 import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
-import axios from "axios";
-import router from "@/router";
+import { UserType } from "@/store/interfaces/user.types";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "Documents",
@@ -67,40 +67,14 @@ export default defineComponent({
       store.getters.getDocuments
     );
 
-    const userId = 0;
-    // const token = localStorage.getItem("token");
-    // // const jwt = require("jsonwebtoken");
-
-    // jwt.verify(token, "secretkey", (err, decoded) => {
-    //   userId = decoded.id;
-    // });
-
-    //Get request to get all the documents
-    onBeforeMount(() => {
-      axios
-        .get("/api/documentInfo", {
-          headers: { token: localStorage.getItem("token") }
-        })
-        .then(response => {
-          documents.value.push(response.data.document);
-        });
-    });
+    const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
 
     // Create New Document
     const NewDocument = () => {
-      //Post request to create an empty document
-      axios
-        .post("/api/createDocument", {
-          userId: userId,
-          body: "",
-          title: "test title"
-        })
-        .then(response => {
-          console.log("cute");
-        });
-
-      // store.dispatch("AddNewDocument");
-      // router.push({ name: "EditorView", query: { did: -1 } });
+      if (user.value.UserID === -1) {
+        return;
+      }
+      CreateDocument(user.value.UserID);
     };
 
     //for searching through document - name, tag, etc.

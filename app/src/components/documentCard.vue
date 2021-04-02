@@ -46,7 +46,9 @@
                 <li @click="addDoc()">Add to course</li>
                 <li>Share</li>
                 <hr />
-                <li>Delete</li>
+                <li
+                @click="deleteDocument(document.Documentid)"
+                >Delete</li>
               </ul>
             </div>
           </div>
@@ -62,6 +64,7 @@ import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
 import axios from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
+import { DeleteDocument } from "@/services/api/document.service";
 import router from "@/router";
 export default defineComponent({
   name: "documentCard",
@@ -80,6 +83,7 @@ export default defineComponent({
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
+    const documentLastEdited = ref(props.document.lastEdited);
 
     // let documentParsed = true
 
@@ -111,17 +115,6 @@ export default defineComponent({
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
 
-    // const OpenQuestionSet = () => {
-    //   // axios
-    //   //   .post("api/createQS", {
-    //   //     documentId: props.document.id,
-    //   //   })
-    //   //   .then(response => {
-    //   //     console.log("cute")
-    //   //   });
-
-    //   router.push({ name: "QuestionSets", query: { did: props.document.id } });
-    // };
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
@@ -129,6 +122,11 @@ export default defineComponent({
         query: { QSID: QSID, did: props.document.Documentid }
       });
     };
+
+    const deleteDocument = (docID: number) => {
+      showDropDown.value = false;
+      DeleteDocument(docID);
+    }
 
     onMounted(() => {
       //This is the preview text inside document cards
@@ -155,6 +153,7 @@ export default defineComponent({
       } else {
         documentText.value = "Empty Document";
       }
+
     });
     return {
       documentText,
@@ -164,7 +163,9 @@ export default defineComponent({
       RemoveMore,
       OpenEditor,
       OpenQuestionSet,
-      addDoc
+      addDoc,
+      documentLastEdited,
+      deleteDocument
     };
   }
 });

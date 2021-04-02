@@ -34,7 +34,6 @@ export default {
       }
     },
     AttachDocumentToQuestionSet: (state: any, data: any) => {
-      console.log(data);
       const index = state.QuestionSets.map(
         (item: QuestionSet) => item.QSID
       ).indexOf(data.QSID);
@@ -45,7 +44,6 @@ export default {
         ).indexOf(data.documentid);
 
         if (existsAtIndex === -1) {
-          console.log("her");
           state.QuestionSets[index].DocumentID.push(data.documentid);
         }
       }

@@ -559,8 +559,6 @@ export default defineComponent({
         }
       };
       const d = QuestionDataHandler();
-      console.log("Handler:", d);
-
       return data;
     };
 

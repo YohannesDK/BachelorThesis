@@ -5,26 +5,40 @@ import router from "@/router";
 
 // Singleton pattern
 const axiosInstance = axios.create({
-  baseURL: ApiConfig.API_URL,
-  headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+  baseURL: ApiConfig.API_URL
 });
 
-// axiosInstance.interceptors.request.use(
-//   (request: any ) => {
-//     const auth = IsAuthenticated();
-//     if (auth) {
-//       return request
-//     }
-//   }
-// )
+// adds token to any request if it exists
+// safe guard against actions that the vue-router doesn't catch, with beforeEach hook
+axiosInstance.interceptors.request.use(
+  (request: AxiosRequestConfig) => {
+    if (
+      !(router.currentRoute.value.name === "Login") &&
+      !(router.currentRoute.value.name === "Welcome") &&
+      !(router.currentRoute.value.name === "Register")
+    ) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        request.headers.token = token;
+        return Promise.resolve(request);
+      }
+      return Promise.reject(request);
+    }
+    return Promise.resolve(request);
+  },
+  (error: AxiosError) => {
+    return Promise.reject(error);
+  }
+);
 
 // axios response interceptors
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response;
+    return Promise.resolve(response);
   },
   (error: AxiosError) => {
     if (error.response && error.response.status) {
+      console.log(error.response.status);
       if (error.response.status === 401) {
         // 401 from server, remove jwt and logout
         localStorage.removeItem("token");

@@ -29,9 +29,7 @@ export default defineComponent({
         iconName: props.icon
       })
     );
-    console.log(definition, "halla");
     const width = computed(() => definition.value.icon.values);
-    console.log(width);
 
     const height = computed(() => {
       return definition.value.icon[1] | 0;

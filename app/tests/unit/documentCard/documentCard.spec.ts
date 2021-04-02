@@ -3,6 +3,8 @@ import { shallowMount } from "@vue/test-utils";
 import documentCard from "@/components/documentCard.vue";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import { dummyDocument } from "./documentCard.utils";
+import { datify } from "@/utils/calender.utils";
+import { DeltaOperation } from "quill";
 
 // documentCard spec
 // 1. document card should have a thumbnail,
@@ -35,7 +37,7 @@ describe("document card - thumbnail", () => {
 
   it(`thumbnail should contain the first ${wrapper.vm.documentTextLength} chars of a document (if there are enough char)`, () => {
     expect(thumbnail.text()).to.equal(
-      DeltaToPlainText(dummyDocument.body)
+      DeltaToPlainText(dummyDocument.body as DeltaOperation[])
         .substring(0, wrapper.vm.documentTextLength)
         .concat("...")
     );
@@ -65,8 +67,10 @@ describe("document card - tittle and last edited", () => {
     expect(doclastEdited.text()).to.not.equal("");
   });
 
-  it(`Document last edited should be: ${dummyDocument.lastEdited}`, () => {
-    expect(doclastEdited.text()).to.include(dummyDocument.lastEdited);
+  it(`Document last edited should be: ${datify(
+    dummyDocument.lastEdited
+  )}`, () => {
+    expect(datify(doclastEdited.text())).to.include(datify(dummyDocument.lastEdited));
   });
 });
 

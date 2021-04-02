@@ -43,6 +43,7 @@ const store = createStore({
     ] as courseType[],
     isAuthenticated: false,
     user: {
+      UserID: -1,
       UserName: "",
       Role: RoleType.Student,
       FirstName: "",
@@ -60,6 +61,7 @@ const store = createStore({
       state.isAuthenticated = false;
     },
     setUser: (state, user: UserType) => {
+      state.user.UserID = user.UserID;
       state.user.UserName = user.UserName;
       state.user.Role = user.Role;
       state.user.FirstName = user.FirstName;
