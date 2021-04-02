@@ -70,7 +70,9 @@ describe("document card - tittle and last edited", () => {
   it(`Document last edited should be: ${datify(
     dummyDocument.lastEdited
   )}`, () => {
-    expect(datify(doclastEdited.text())).to.include(datify(dummyDocument.lastEdited));
+    expect(datify(doclastEdited.text())).to.include(
+      datify(dummyDocument.lastEdited)
+    );
   });
 });
 

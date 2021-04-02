@@ -36,9 +36,9 @@ export default {
       ).name = Data.DocumentTittle;
     },
     DeleteDocument: (state: any, docID: number) => {
-      const index = state.documents.map(
-        (doc: documentType) => doc.Documentid
-      ).indexOf(docID);
+      const index = state.documents
+        .map((doc: documentType) => doc.Documentid)
+        .indexOf(docID);
       if (index > -1) {
         state.documents.splice(index, 1);
       }

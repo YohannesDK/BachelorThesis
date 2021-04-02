@@ -66,19 +66,11 @@
             </div>
             <div class="courses-container " v-if="navHeaderId == 1">
               <div class="card-container d-flex">
-                <div
-                  class="card shadow-sm rounded"
+                <course-card
                   v-for="(course, index) in Courses"
                   :key="index"
-                  @click="OpenCourse(course.id)"
-                >
-                  <img src="" alt="" class="card-img-top course-image" />
-                  <div class="card-body">
-                    <h6>{{ course.courseName }}</h6>
-                    <p>{{ course.courseShorthand }}</p>
-                    <br />
-                  </div>
-                </div>
+                  :course="course"
+                />
               </div>
             </div>
           </div>
@@ -121,10 +113,12 @@ import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
 import { day, month, year } from "@/utils/calender.utils";
+import CourseCard from "@/components/courseCard.vue";
 export default defineComponent({
   name: "Home",
   components: {
-    documentCard
+    documentCard,
+    CourseCard
   },
   directives: { Test },
   setup() {
@@ -268,6 +262,7 @@ export default defineComponent({
 
 .recents-nav ul li .nav-link {
   cursor: pointer;
+  border-bottom: 1px transparent;
 }
 
 .recents-nav ul li .nav-link:hover {

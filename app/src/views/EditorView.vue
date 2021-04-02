@@ -58,7 +58,7 @@ export default defineComponent({
               if (DocumentTittle.value) {
                 store.dispatch("SetDocumentTittle", {
                   Documentid: docID,
-                  DocumentTittle: DocumentTittle.value.innerText 
+                  DocumentTittle: DocumentTittle.value.innerText
                 });
                 DocumentTittle.value.blur();
               }
@@ -70,10 +70,10 @@ export default defineComponent({
 
     const onUpdateDoc = (updatedData: any) => {
       if (DocumentTittle.value) {
-        updatedData["DocumentTittle"] = DocumentTittle.value.innerText
+        updatedData["DocumentTittle"] = DocumentTittle.value.innerText;
       }
       store.dispatch("UpdateDocumentBody", updatedData);
-      console.log(store.getters.getDocmentbyId(updatedData.docID))
+      console.log(store.getters.getDocmentbyId(updatedData.docID));
     };
 
     onMounted(() => {

@@ -97,7 +97,7 @@ import {
   reactive
 } from "vue";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
-import Test from "@/directives/test.directive.ts";
+import Test from "@/directives/test.directive";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";

@@ -12,7 +12,7 @@
           <div class="details_banner_content">
             <h4 class="title mb-4">{{ course.courseName }}</h4>
             <div class="details_media_wrapper d-flex flex-wrap">
-              <div class="details_media d-flex align-items-center mt-30">
+              <div class="details_media d-flex align-items-center mt-30 media-teacher">
                 <div class="media_image">
                   <img
                     class="author"
@@ -20,11 +20,21 @@
                     alt="author"
                   />
                 </div>
+
                 <div class="media_content media-body">
                   <p>Teacher</p>
                   <h6 class="title">Kiara alva ruba</h6>
                 </div>
+                <div
+                  @click="showDoc()"
+                  class="contact-teacher"
+                >
+                  <a href="mailto:kassaye85@gmail.com">
+                    <fa icon="paper-plane" />
+                  </a>
+                </div>
               </div>
+              
               <div class="details_media d-flex align-items-center mt-30">
                 <div class="media_image">
                   <img
@@ -38,13 +48,6 @@
                   <h6 class="title"><a href="#">Andorid / Development</a></h6>
                 </div>
               </div>
-              <button
-                @click="showDoc()"
-                id="addDocButton"
-                style="height: 52%; width: 200px; margin-bottom: -100px;"
-              >
-                Add Document
-              </button>
             </div>
           </div>
         </div>
@@ -79,27 +82,62 @@
       </div>
     </div>
   </div>
-  <div class="container">
-    <div style="text-align: center">{{ totalPages }}</div>
-    <p style="text-align: center;">Page {{ state.counter }}</p>
-    <button @click="previousPage()">Previous</button>
-    <button style="float: right;" @click="nextPage()">Next</button>
 
-    <!-- <div id="content"></div> -->
-    <div class="editing" ref="root" id="editor" spellcheck="false"></div>
-
-    <h1 class="m-auto" v-if="filteredDocuments.length === 0">
-      No documents found...
-    </h1>
-    <div id="docContainer" style="visibility: hidden; ">
-      <document-card
-        @click="addDoc()"
-        id="documentCard"
-        style="display: inline-block;"
-        v-for="(doc, index) in filteredDocuments"
-        :document="doc"
+  <div class="course-page-container">
+    <div class="sidebar rounded">
+      <ul class="list-unstyled">
+        <li v-for="(menu, index) in menuChoices"
         :key="index"
-      />
+        :class="{'active': menuIndex === index}"
+        @click="MenuUpdate(index)"
+        >{{menu}}</li>
+      </ul>
+    </div>
+
+    <div class="container">
+      <div class="course-page-view-container">
+
+        <div class="course-page-view-inner-container"
+        v-if="menuIndex === 0"
+        >
+          <h1>Home</h1>
+        </div>
+
+        <div class="course-page-view-inner-container"
+        v-if="menuIndex === 1"
+        >
+          <h1>Documents</h1>
+        </div>
+
+        <div class="course-page-view-inner-container"
+          v-if="menuIndex === 2"
+        >
+          <h1>Assignments</h1>
+        </div>
+
+        <div class="course-page-view-inner-container"
+          v-if="menuIndex === 3"
+        >
+          <h1>Tests</h1>
+        </div>
+
+        <div class="course-page-view-inner-container"
+          v-if="menuIndex === 4"
+        >
+          <h1>Grades</h1>
+        </div>
+
+        <div class="course-page-view-inner-container"
+          v-if="menuIndex === 5"
+        >
+          <h1>Events</h1>
+        </div>
+
+
+
+
+
+      </div>
     </div>
   </div>
 </template>
@@ -116,200 +154,18 @@ import {
   computed,
   reactive
 } from "vue";
-import { useStore } from "vuex";
-import katex from "katex";
-import hljs, { highlight } from "highlight.js";
-import Quill, { DeltaOperation } from "quill";
-import Delta from "quill-delta";
-import MyQuill from "@/libs/myQuill/myquill";
-import axios from "axios";
-import { documentType } from "@/store/interfaces/document";
-
-hljs.configure({
-  languages: ["python"]
-});
-hljs.highlightAll();
+import axios from "@/services/api";
+import store from "@/store";
 
 export default defineComponent({
   name: "Course",
-  components: {
-    DocumentCard
-  },
-  props: {
-    delta: {
-      type: String,
-      default: ""
-    },
-    docmentId: {
-      type: Number,
-      required: true
-    }
-  },
-  setup(props) {
-    const store = useStore();
+  setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
-    const searchValue = ref<string>("");
     const course: courseType = store.getters.getCoursebyId(CourseId);
 
-    const documents = ref<Array<documentType>>([]);
-    let userId = 0;
+    const menuIndex = ref<number>(0);
 
-    //Get request to get all the documents
-    axios
-      .get("/api/documentInfo", {
-        headers: { token: localStorage.getItem("token") }
-      })
-      .then(response => {
-        userId = response.data.document[0].userId;
-        documents.value = response.data.document;
-      });
-
-    // shared document referense
-    let Document: documentType;
-
-    // Editor container element
-    const root = ref<HTMLElement | string>("");
-    let Editor: Quill | any;
-
-    //Editor Toolbar
-    const toolbarOptions = [
-      ["bold", "italic", "underline", "strike"], // toggled buttons
-      ["blockquote", "code-block", "link"],
-
-      ["image"], // custom button values
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["formula", { script: "sub" }, { script: "super" }], // superscript/subscript
-      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-      [{ direction: "rtl" }], // text direction
-
-      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-
-      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      [{ font: [] }],
-      [{ align: [] }],
-
-      ["clean"] // remove formatting button
-    ];
-
-    // Sets Editor Content
-    const SetEditorContent = (ops: DeltaOperation[]) => {
-      if (ops.length) {
-        const delta = new Delta(ops);
-        Editor.setContents(delta);
-      }
-    };
-
-    const showDoc = () => {
-      // @ts-ignore
-      document.getElementById("editor").style.display = "none";
-      // @ts-ignore
-      document.getElementById("docContainer").style.visibility = "";
-    };
-
-    const addDoc = () => {
-      console.log("adding");
-    };
-
-    const courseDocuments = [] as any;
-
-    const state = reactive({
-      counter: 1
-    });
-
-    const nextPage = () => {
-      if (courseDocuments.value[state.counter + 1] != undefined) {
-        state.counter++;
-        SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
-        // @ts-ignore
-        console.log(document.querySelector(".container").innerHTML);
-        // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
-      }
-    };
-
-    const previousPage = () => {
-      if (courseDocuments.value[state.counter - 2] != undefined) {
-        state.counter--;
-        SetEditorContent(JSON.parse(courseDocuments.value[state.counter]).ops);
-        // document.getElementById('content').innerHTML = document.querySelector(".ql-editor").innerHTML
-      }
-    };
-
-    axios
-      .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
-      .then(response => {
-        Document = JSON.parse(response.data.documentList[0]);
-        courseDocuments.value = response.data.documentList;
-      });
-
-    let usID = 0;
-    // @ts-ignore
-    const docID = router.currentRoute._rawValue.query.did;
-
-    onBeforeMount(() => {
-      //Get request to get the user id
-      //Probably not the best way to do this, need to find a way to do it better
-      axios
-        .get("/api/studentCourse", {
-          headers: { token: localStorage.getItem("token") }
-        })
-        .then(response => {
-          usID = response.data.id;
-        });
-    });
-
-    const showToolBar = () => {
-      Editor.theme.tooltip.edit();
-      Editor.theme.tooltip.show();
-      // Editor.theme.tooltip.show()
-    };
-
-    const InitilizeDocment = () => {
-      // initialize editor instance
-      Editor = new MyQuill(root.value, {
-        placeholder: "Write something cool...",
-        theme: "bubble",
-        modules: {
-          toolbar: toolbarOptions,
-          syntax: {
-            highlight: (text: string) => hljs.highlightAuto(text).value
-          }
-        }
-      });
-
-      let Document = "" as any;
-      const testList = [{ "thisone: ": "" }];
-
-      //Send Get request to fetch the document that has been clicked on
-      axios
-        .get("/api/fetchCourseDoc", { params: { cid: course.courseId } })
-        .then(response => {
-          Document = JSON.parse(response.data.documentList[0]);
-          testList.push(response.data.documentList[0]);
-          courseDocuments.value = response.data.documentList;
-
-          if (props.docmentId !== -1) {
-            if (Document) {
-              SetEditorContent(Document.ops);
-            }
-          }
-
-          return { courseDocuments };
-        });
-
-      Editor.on("text-change", () => {
-        // console.log(JSON.stringify(Editor.getContents()));
-      });
-    };
-
-    onMounted(() => {
-      // Add katex for enabling formulas
-      (window as any).katex = katex;
-
-      // add highlight js for syntax highlighting in code
-      (window as any).hljs = highlight;
-      InitilizeDocment();
-    });
+    const menuChoices = ["Home", "Documents", "Assignments", "Tests", "Grades", "Events"]
 
     const events = [
       {
@@ -333,45 +189,18 @@ export default defineComponent({
         date: "23 Feb. 2021"
       }
     ];
-    console.log(course);
 
-    const filteredDocuments = computed(() => {
-      let tempDocuments = documents.value;
 
-      if (searchValue.value !== "") {
-        tempDocuments = tempDocuments.filter((doc: documentType) => {
-          return (
-            doc.name
-              .replace(/ /g, "")
-              .toUpperCase()
-              .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
-            // Search text inside document
-            // doc.delta
-            //   .replace(/ /g, "")
-            //   .toUpperCase()
-            //   .includes(searchValue.value.replace(/ /g, "").toUpperCase()) ||
-            doc.tags
-              .map((tag: string) => {
-                return tag.toUpperCase();
-              })
-              .includes(searchValue.value.toUpperCase())
-          );
-        });
-      }
-      return tempDocuments;
-    });
+    const MenuUpdate = (UpdatedMenuIndex: number) => {
+      menuIndex.value = UpdatedMenuIndex;
+    }
 
     return {
       course,
       events,
-      root,
-      showToolBar,
-      showDoc,
-      filteredDocuments,
-      addDoc,
-      nextPage,
-      previousPage,
-      state
+      menuChoices,
+      menuIndex,
+      MenuUpdate
     };
   }
 });
@@ -380,10 +209,11 @@ export default defineComponent({
 <style scoped>
 .course-banner {
   position: relative;
-  padding-top: 194px;
-  padding-bottom: 95px;
+  padding-top: 10vh;
+  padding-bottom: 115px;
   z-index: 5;
   background-position: top center;
+  height: 35vh;
 }
 .course-banner::before {
   position: absolute;
@@ -488,28 +318,75 @@ export default defineComponent({
   margin: auto;
 }
 
-@import "~quill/dist/quill.bubble.css";
-/* @import "~quill/dist/quill.snow.css"; */
-@import "~katex/dist/katex.min.css";
-@import "~highlight.js/styles/hybrid.css";
-@import "../assets/css/editor.css";
-
-.container {
-  /* width: 70%; */
-  margin: 0 auto;
+.media-teacher {
+  position: relative;
 }
 
-/* Editor configurations */
-#editor {
-  min-height: 40vh;
+.contact-teacher {
+  position: absolute;
+  padding: 2%;
+  top: -20%;
   border: none;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  left: 35%;
 }
-.ql-container {
-  font-size: 0.97rem;
+.contact-teacher:hover {
+  cursor: pointer;
 }
 
-.ql-editor {
-  overflow-x: hidden;
-  background-color: black im !important;
+.contact-teacher a {
+  color: #cfea4e;
+}
+
+.course-page-container {
+  position: relative;
+}
+
+.course-page-container .sidebar {
+  width: 10%;
+  height: fit-content;
+  min-height: 65vh;
+  position: absolute;
+  left: 0;
+}
+
+.sidebar ul {
+  padding-left: 5%;
+  padding-top: 5%;
+}
+
+.sidebar ul li {
+  height: 2.5em;
+  /* background-color: rgb(248, 248, 248); */
+  margin-bottom: 1%;
+  border-left: 5px solid transparent;
+  padding-left: 1%;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.411);
+  opacity: 0.7;
+  padding-left: 5%;
+  transition: all 0.3s;
+}
+
+.sidebar ul li:hover {
+  border-left: 5px solid rgba(179, 179, 179, 0.308);
+  cursor: pointer;
+}
+
+.sidebar ul li.active {
+  border-left: 5px solid rgb(179, 179, 179);
+  background-color: white;
+  opacity: 1;
+  font-weight: 600;
+}
+
+.course-page-view-container {
+  min-height: 85vh;
 }
 </style>

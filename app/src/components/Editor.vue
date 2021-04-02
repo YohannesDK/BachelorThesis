@@ -110,7 +110,9 @@ export default defineComponent({
 
       //Send Get request to fetch the document that has been clicked on
       if (props.docmentId !== -1) {
-        const Document: documentType = store.getters.getDocmentbyId(props.docmentId);
+        const Document: documentType = store.getters.getDocmentbyId(
+          props.docmentId
+        );
         if (Document) {
           SetEditorContent(Document.body as DeltaOperation[]);
         }
@@ -119,7 +121,7 @@ export default defineComponent({
 
       Editor.on("text-change", () => {
         if (InitialLoad.value === true) {
-         Saved.value = false; 
+          Saved.value = false;
         }
       });
     };

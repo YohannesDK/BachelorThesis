@@ -5,10 +5,9 @@ import { AxiosError, AxiosResponse } from "axios";
 import { datify } from "@/utils/calender.utils";
 import { DeltaOperation } from "quill";
 
-
 // creates new document
 export function CreateDocument(userId: number) {
-//Post request to create an empty document
+  //Post request to create an empty document
   axios
     .post("/createDocument", {
       userId: userId,
@@ -28,14 +27,16 @@ export function CreateDocument(userId: number) {
 }
 
 export function DeleteDocument(docID: number) {
-  axios.post("/deleteDocument", {docID: docID})
+  axios
+    .post("/deleteDocument", { docID: docID })
     .then((response: AxiosResponse) => {
       if (response.status === 200) {
         store.dispatch("DeleteDocument", docID);
       }
-    }).catch((err: AxiosError) => {
-      console.error(err);
     })
+    .catch((err: AxiosError) => {
+      console.error(err);
+    });
 }
 
 // gets all documents from backend
@@ -56,7 +57,7 @@ export function GetAllDocuments() {
           if (doc.body !== "") {
             doc.body = JSON.parse(doc.body as string).ops;
           } else {
-            doc.body = []
+            doc.body = [];
           }
           doc.lastEdited = datify(doc.lastEdited);
           store.dispatch("UpdateDocuments", doc);

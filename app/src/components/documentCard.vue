@@ -46,9 +46,7 @@
                 <li @click="addDoc()">Add to course</li>
                 <li>Share</li>
                 <hr />
-                <li
-                @click="deleteDocument(document.Documentid)"
-                >Delete</li>
+                <li @click="deleteDocument(document.Documentid)">Delete</li>
               </ul>
             </div>
           </div>
@@ -115,7 +113,6 @@ export default defineComponent({
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
 
-
     const OpenQuestionSet = (QSID: number) => {
       router.push({
         name: "AddQuestionSet",
@@ -126,7 +123,7 @@ export default defineComponent({
     const deleteDocument = (docID: number) => {
       showDropDown.value = false;
       DeleteDocument(docID);
-    }
+    };
 
     onMounted(() => {
       //This is the preview text inside document cards
@@ -153,7 +150,6 @@ export default defineComponent({
       } else {
         documentText.value = "Empty Document";
       }
-
     });
     return {
       documentText,

@@ -10,9 +10,9 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter(to, from, next) {
       if (IsAuthenticated()) {
         LoadStore();
-        next({name: "Home"})
+        next({ name: "Home" });
       } else {
-        next()
+        next();
       }
     },
     path: "/",
@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: { showSideBar: false },
     component: Welcome
   },
-  { 
+  {
     path: "/home",
     name: "Home",
     component: Home

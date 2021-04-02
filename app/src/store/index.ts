@@ -1,46 +1,14 @@
 import { createStore } from "vuex";
-import { courseType } from "./interfaces/course";
 import { UserType, RoleType } from "./interfaces/user.types";
 import QuestionSetModule from "./modules/QuestionSet.module";
 import QuestionTestModule from "./modules/QuestionTest.module";
 import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
+import CourseModule from "./modules/courses.module";
 // import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {
-    courses: [
-      {
-        courseId: 0,
-        courseName: "Web Programming",
-        courseShorthand: "DAT310",
-        documents: [0]
-      },
-      {
-        courseId: 1,
-        courseName: "Operating Systems",
-        courseShorthand: "DAT320",
-        documents: [1]
-      },
-      {
-        courseId: 2,
-        courseName: "Fysikk",
-        courseShorthand: "RED102",
-        documents: [1]
-      },
-      {
-        courseId: 3,
-        courseName: "Kjemi",
-        courseShorthand: "RED101",
-        documents: [1]
-      },
-      {
-        courseId: 4,
-        courseName: "Grunnleggende Programmering",
-        courseShorthand: "DAT110",
-        documents: [1]
-      }
-    ] as courseType[],
     isAuthenticated: false,
     user: {
       UserID: -1,
@@ -89,14 +57,7 @@ const store = createStore({
     getIsLoading: state => {
       return state.loading;
     },
-    getCourses: state => {
-      return state.courses;
-    },
-    getCoursebyId: state => (CourseId: number) => {
-      return state.courses.find(
-        (course: courseType) => course.courseId === CourseId
-      );
-    },
+    
     getIsAuthenticated: () => {
       return !localStorage.getItem("token");
     },
@@ -108,7 +69,8 @@ const store = createStore({
     QuestionSetModule,
     QuestionTestModule,
     DocumentModule,
-    TestStatsModule
+    TestStatsModule,
+    CourseModule
   }
   // uncomment this on to persist state
   // plugins: [createPersistedState()]
