@@ -101,6 +101,7 @@
         v-if="menuIndex === 0"
         >
           <h1>Home</h1>
+          <course-module />
         </div>
 
         <div class="course-page-view-inner-container"
@@ -133,10 +134,6 @@
           <h1>Events</h1>
         </div>
 
-
-
-
-
       </div>
     </div>
   </div>
@@ -156,8 +153,10 @@ import {
 } from "vue";
 import axios from "@/services/api";
 import store from "@/store";
+import courseModule from "@/components/courseModule.vue";
 
 export default defineComponent({
+  components: { courseModule },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
@@ -388,5 +387,9 @@ export default defineComponent({
 
 .course-page-view-container {
   min-height: 85vh;
+}
+
+.course-page-view-inner-container{
+  transition: all 0.3s;
 }
 </style>

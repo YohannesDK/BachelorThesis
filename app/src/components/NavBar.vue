@@ -252,6 +252,7 @@ export default defineComponent({
   color: #fff;
   transition: all 0.3s;
   position: fixed;
+  z-index: 1;
 }
 
 #sidebar.active {

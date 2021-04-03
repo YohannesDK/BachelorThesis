@@ -89,6 +89,7 @@ export default defineComponent({
 
 .appContainer {
   transition: all 0.3s;
+  z-index: 0;
 }
 
 .appFullWidth {

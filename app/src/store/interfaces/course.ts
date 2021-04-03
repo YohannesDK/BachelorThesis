@@ -13,17 +13,21 @@ export enum CourseModuleItemEnum {
 }
 
 export type CourseModuleSectionItems = {
+  ItemID: number;
   Item: string; // this will either be document name, test name or a link other resources
   ItemType: CourseModuleItemEnum.DOCUMENT | CourseModuleItemEnum.TEST | CourseModuleItemEnum.Link;
 }
 
 export type CourseModuleSection = {
+  SectionID: number;
   SectionName: string;
   SectionItems: CourseModuleSectionItems[];
 }
 
 export type CourseModule = {
+  courseModuleID: number;
   courseId: number;
+  moduleOrderIndex: number;
   moduleName: string;
   moduleSections: CourseModuleSection[];
 }
