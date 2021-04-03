@@ -79,7 +79,7 @@
           class="dashboard-card d-flex card col col-md-2 shadow"
           v-test="{ id: 'dashboard-notification-card' }"
         >
-          <div class="dashboard-card-nav">
+          <div class="dashboard-card-notivication-nav">
             <div class="tittle p-1">
               Notifications
             </div>
@@ -89,7 +89,7 @@
                   v-for="notification in Notifications"
                   :key="notification.id"
                 >
-                  <div class="card notification-card d-flex shadow-sm">
+                  <div class="notification-card d-flex flex-column">
                     <h1 class="notification">
                       {{ notification.Notification }}
                     </h1>
@@ -140,6 +140,16 @@ export default defineComponent({
       },
       {
         id: 4,
+        Notification: "School Trip - LA",
+        date: "3 Mai 2020"
+      },
+      {
+        id: 5,
+        Notification: "School Trip - LA",
+        date: "3 Mai 2020"
+      },
+      {
+        id: 6,
         Notification: "School Trip - LA",
         date: "3 Mai 2020"
       }
@@ -244,10 +254,20 @@ export default defineComponent({
 .dashboard-card-nav {
   justify-content: space-between;
 }
+.dashboard-card-notivication-nav {
+  height: 100%;
+  overflow: scroll;
+}
 
-.dashboard-card-nav .tittle {
+.dashboard-card-notivication-nav .tittle {
   font-weight: 600;
   font-size: 1.3rem;
+}
+
+.dashboard-card-notivication-nav ul {
+  overflow: scroll;
+  max-height: 30vh;
+  min-height: 30vh;
 }
 
 .recents-nav {
@@ -327,6 +347,7 @@ export default defineComponent({
 .notification-card {
   margin-bottom: 3%;
   padding: 3%;
+  padding-left: 0;
   border-radius: 8px;
 }
 
@@ -336,5 +357,10 @@ export default defineComponent({
 
 .notification-card .notification-date {
   font-size: 0.7rem;
+}
+
+
+.documents-container {
+  max-width: 100%;
 }
 </style>

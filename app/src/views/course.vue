@@ -50,34 +50,6 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-md-9 col-sm-11">
-          <div class="details_banner_content">
-            <h4 class="title comming-events-title mb-4">Comming Events</h4>
-            <div
-              class="events_media_wrapper d-flex flex-wrap justify-content-end"
-            >
-              <div
-                class="event-card-container details_media d-flex align-items-center mt-30"
-              >
-                <div
-                  class="event-cards card"
-                  v-for="(event, index) in events"
-                  :key="index"
-                >
-                  <div class="card shadow my-card-icon">
-                    <fa icon="calendar-alt" class="icon" />
-                  </div>
-                  <div class="text-center">
-                    {{ event.event }}
-                  </div>
-                  <div class="text-center">
-                    {{ event.date }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="row sidebar-container">
         <div class="sidebar rounded">
@@ -101,22 +73,45 @@
       <div class="course-page-view-container">
         <div class="course-page-view-inner-container" v-if="menuIndex === 0">
           <div class="course-page-view-inner-header">
-            <h1>Home</h1> 
+            <h1>Home</h1>
+            <div class="icon-container">
+              <div class="icon">
+                <fa icon="plus" />
+              </div>
+            </div>
           </div>
           <div class="course-page-view-inner-body">
-            <course-module v-for="(courseModule, index) in CourseModules" :key="index" :courseModule="courseModule" />
+            <course-module
+              v-for="(courseModule, index) in CourseModules"
+              :key="index"
+              :index="index"
+              :courseModule="courseModule"
+            />
           </div>
         </div>
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 1">
-          <div class="course-page-view-inner-header">
-            <h1>Documents</h1>
+          <div class="course-page-view-inner-header p-0">
+            <h1 class="p-0">Documents</h1>
+          </div>
+          <div class="course-page-view-inner-body">
+            <div class="documents-container">
+              <document-card
+                v-for="(doc, index) in documents"
+                :key="index"
+                :document="doc"
+                :minimal="true"
+              />
+            </div>
           </div>
         </div>
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 2">
           <div class="course-page-view-inner-header">
             <h1>Assignments</h1>
+          </div>
+          <div class="course-page-view-inner-body">
+            <assignments v-for="(assignment, index) in Assignments" :key="index" :Assignment="assignment" />
           </div>
         </div>
 
@@ -163,13 +158,18 @@ import {
   CourseModuleSectionItems,
   CourseModuleItemEnum
 } from "@/store/interfaces/course";
+import { documentType } from "@/store/interfaces/document";
+import Assignments from "@/components/Assignments.vue";
+import { Assignment, AssignmentReading, AssignmentTest } from "@/store/interfaces/assignments.types";
 
 export default defineComponent({
-  components: { courseModule },
+  components: { courseModule, DocumentCard, Assignments },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
     const course: courseType = store.getters.getCoursebyId(CourseId);
+
+    const documents: documentType = store.getters.getDocuments;
 
     const menuIndex = ref<number>(0);
 
@@ -227,10 +227,40 @@ export default defineComponent({
       courseId: 0,
       moduleOrderIndex: 0,
       moduleName: "Module Test",
-      moduleSections: [CourseModuleSection, CourseModuleSection, CourseModuleSection]
+      moduleSections: [
+        CourseModuleSection,
+        CourseModuleSection,
+        CourseModuleSection
+      ]
     };
 
-    const CourseModules: CourseModule[] = [courseModule, courseModule, courseModule, courseModule];
+    const CourseModules: CourseModule[] = [
+      courseModule,
+      courseModule,
+      courseModule,
+      courseModule
+    ];
+
+    const Test: AssignmentTest = {
+      TestID: 0,
+      QSID: 0,
+    }
+
+    const Reading: AssignmentReading = {
+      ReadingID: 0,
+      ReadingDesc: "Read Chapter 1 of Narnia",
+      documentID: 2
+    }
+    const Assignment: Assignment = {
+      AssignmentID: 0,
+      courseID: 0,
+      AssignmentName: "HomeWork ",
+      Date: "11 May 2021",
+      ReadingList: [Reading, Reading, Reading],
+      TestList: [Test, Test]
+    }
+
+    const Assignments: Assignment[] = [Assignment, Assignment, Assignment]
 
     return {
       course,
@@ -238,7 +268,9 @@ export default defineComponent({
       menuChoices,
       menuIndex,
       MenuUpdate,
-      CourseModules
+      CourseModules,
+      documents,
+      Assignments
     };
   }
 });
@@ -348,20 +380,6 @@ export default defineComponent({
   position: relative;
 }
 
-.my-card-icon {
-  position: absolute;
-  left: 40%;
-  top: -14px;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-}
-
-.my-card-icon > .icon {
-  padding: 12%;
-  margin: auto;
-}
-
 .media-teacher {
   position: relative;
 }
@@ -447,10 +465,38 @@ export default defineComponent({
   height: 5rem;
   padding: 1% 1%;
   border-bottom: 1px solid grey;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.course-page-view-inner-header h1 {
+  color: #777777;
+}
+
+.course-page-view-inner-header .icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #3a7892;
+  color: white;
+}
+
+.course-page-view-inner-header .icon-container:hover {
+  cursor: pointer;
 }
 
 .course-page-view-inner-body {
   padding-top: 1%;
   width: 100%;
+}
+
+.documents-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* padding: 0 1%; */
 }
 </style>

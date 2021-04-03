@@ -88,11 +88,12 @@ export default defineComponent({
 }
 
 .appContainer {
-  transition: all 0.3s;
   z-index: 0;
+  /* max-width: calc(100% - 250px); */
 }
 
 .appFullWidth {
   margin-left: 250px;
+  max-width: calc(100% - 3.3rem);
 }
 </style>
