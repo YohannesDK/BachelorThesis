@@ -14,7 +14,8 @@ export enum CourseModuleItemEnum {
 
 export type CourseModuleSectionItems = {
   ItemID: number;
-  Item: string; // this will either be document name, test name or a link other resources
+  Item: string; // this will either be document name, test name or a link to other resources
+  ItemResourceID: number;
   ItemType: CourseModuleItemEnum.DOCUMENT | CourseModuleItemEnum.TEST | CourseModuleItemEnum.Link;
 }
 

@@ -12,7 +12,9 @@
           <div class="details_banner_content">
             <h4 class="title mb-4">{{ course.courseName }}</h4>
             <div class="details_media_wrapper d-flex flex-wrap">
-              <div class="details_media d-flex align-items-center mt-30 media-teacher">
+              <div
+                class="details_media d-flex align-items-center mt-30 media-teacher"
+              >
                 <div class="media_image">
                   <img
                     class="author"
@@ -25,16 +27,13 @@
                   <p>Teacher</p>
                   <h6 class="title">Kiara alva ruba</h6>
                 </div>
-                <div
-                  @click="showDoc()"
-                  class="contact-teacher"
-                >
+                <div @click="showDoc()" class="contact-teacher">
                   <a href="mailto:kassaye85@gmail.com">
                     <fa icon="paper-plane" />
                   </a>
                 </div>
               </div>
-              
+
               <div class="details_media d-flex align-items-center mt-30">
                 <div class="media_image">
                   <img
@@ -80,60 +79,64 @@
           </div>
         </div>
       </div>
+      <div class="row sidebar-container">
+        <div class="sidebar rounded">
+          <ul class="list-unstyled">
+            <li
+              v-for="(menu, index) in menuChoices"
+              :key="index"
+              :class="{ active: menuIndex === index }"
+              @click="MenuUpdate(index)"
+            >
+              {{ menu }}
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="course-page-container">
-    <div class="sidebar rounded">
-      <ul class="list-unstyled">
-        <li v-for="(menu, index) in menuChoices"
-        :key="index"
-        :class="{'active': menuIndex === index}"
-        @click="MenuUpdate(index)"
-        >{{menu}}</li>
-      </ul>
-    </div>
-
     <div class="container">
       <div class="course-page-view-container">
-
-        <div class="course-page-view-inner-container"
-        v-if="menuIndex === 0"
-        >
-          <h1>Home</h1>
-          <course-module />
+        <div class="course-page-view-inner-container" v-if="menuIndex === 0">
+          <div class="course-page-view-inner-header">
+            <h1>Home</h1> 
+          </div>
+          <div class="course-page-view-inner-body">
+            <course-module v-for="(courseModule, index) in CourseModules" :key="index" :courseModule="courseModule" />
+          </div>
         </div>
 
-        <div class="course-page-view-inner-container"
-        v-if="menuIndex === 1"
-        >
-          <h1>Documents</h1>
+        <div class="course-page-view-inner-container" v-if="menuIndex === 1">
+          <div class="course-page-view-inner-header">
+            <h1>Documents</h1>
+          </div>
         </div>
 
-        <div class="course-page-view-inner-container"
-          v-if="menuIndex === 2"
-        >
-          <h1>Assignments</h1>
+        <div class="course-page-view-inner-container" v-if="menuIndex === 2">
+          <div class="course-page-view-inner-header">
+            <h1>Assignments</h1>
+          </div>
         </div>
 
-        <div class="course-page-view-inner-container"
-          v-if="menuIndex === 3"
-        >
-          <h1>Tests</h1>
+        <div class="course-page-view-inner-container" v-if="menuIndex === 3">
+          <div class="course-page-view-inner-header">
+            <h1>Tests</h1>
+          </div>
         </div>
 
-        <div class="course-page-view-inner-container"
-          v-if="menuIndex === 4"
-        >
-          <h1>Grades</h1>
+        <div class="course-page-view-inner-container" v-if="menuIndex === 4">
+          <div class="course-page-view-inner-header">
+            <h1>Grades</h1>
+          </div>
         </div>
 
-        <div class="course-page-view-inner-container"
-          v-if="menuIndex === 5"
-        >
-          <h1>Events</h1>
+        <div class="course-page-view-inner-container" v-if="menuIndex === 5">
+          <div class="course-page-view-inner-header">
+            <h1>Events</h1>
+          </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -141,7 +144,6 @@
 
 <script lang="ts">
 import router from "@/router";
-import { courseType } from "@/store/interfaces/course";
 import DocumentCard from "@/components/documentCard.vue";
 import {
   defineComponent,
@@ -154,6 +156,13 @@ import {
 import axios from "@/services/api";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
+import {
+  courseType,
+  CourseModule,
+  CourseModuleSection,
+  CourseModuleSectionItems,
+  CourseModuleItemEnum
+} from "@/store/interfaces/course";
 
 export default defineComponent({
   components: { courseModule },
@@ -164,7 +173,14 @@ export default defineComponent({
 
     const menuIndex = ref<number>(0);
 
-    const menuChoices = ["Home", "Documents", "Assignments", "Tests", "Grades", "Events"]
+    const menuChoices = [
+      "Home",
+      "Documents",
+      "Assignments",
+      "Tests",
+      "Grades",
+      "Events"
+    ];
 
     const events = [
       {
@@ -189,17 +205,40 @@ export default defineComponent({
       }
     ];
 
-
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
-    }
+    };
+
+    const SectionItem: CourseModuleSectionItems = {
+      ItemID: 0,
+      Item: "Section Item Test",
+      ItemResourceID: 0,
+      ItemType: CourseModuleItemEnum.Link
+    };
+
+    const CourseModuleSection: CourseModuleSection = {
+      SectionID: 0,
+      SectionName: "Section Test",
+      SectionItems: [SectionItem, SectionItem]
+    };
+
+    const courseModule: CourseModule = {
+      courseModuleID: 0,
+      courseId: 0,
+      moduleOrderIndex: 0,
+      moduleName: "Module Test",
+      moduleSections: [CourseModuleSection, CourseModuleSection, CourseModuleSection]
+    };
+
+    const CourseModules: CourseModule[] = [courseModule, courseModule, courseModule, courseModule];
 
     return {
       course,
       events,
       menuChoices,
       menuIndex,
-      MenuUpdate
+      MenuUpdate,
+      CourseModules
     };
   }
 });
@@ -224,6 +263,11 @@ export default defineComponent({
   background-color: rgba(27, 41, 69, 0.95);
   z-index: -1;
 }
+
+.course-banner > .container {
+  position: relative;
+}
+
 .details_banner_content .title {
   font-size: 36px;
   color: #fff;
@@ -274,7 +318,8 @@ export default defineComponent({
   min-width: 6rem;
   min-height: 3.4rem;
   color: black;
-  /* margin-bottom: 5%; */
+  padding: 3%;
+  font-size: small;
 }
 .event-cards:not(:last-child) {
   margin-right: 4%;
@@ -346,50 +391,66 @@ export default defineComponent({
   position: relative;
 }
 
-.course-page-container .sidebar {
-  width: 10%;
-  height: fit-content;
-  min-height: 65vh;
+.sidebar-container {
   position: absolute;
-  left: 0;
+  top: 163%;
+  width: 100%;
+}
+
+.sidebar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sidebar ul {
-  padding-left: 5%;
-  padding-top: 5%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 0;
 }
 
-.sidebar ul li {
+.sidebar ul li[data-v-3aef9135] {
   height: 2.5em;
-  /* background-color: rgb(248, 248, 248); */
-  margin-bottom: 1%;
-  border-left: 5px solid transparent;
-  padding-left: 1%;
+  border-bottom: 5px solid transparent;
   display: flex;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.411);
   opacity: 0.7;
   padding-left: 5%;
   transition: all 0.3s;
+  min-width: fit-content;
+  padding: 0 4%;
 }
 
 .sidebar ul li:hover {
-  border-left: 5px solid rgba(179, 179, 179, 0.308);
+  border-bottom: 5px solid rgba(179, 179, 179, 0.308);
   cursor: pointer;
 }
 
 .sidebar ul li.active {
-  border-left: 5px solid rgb(179, 179, 179);
-  background-color: white;
-  opacity: 1;
-  font-weight: 600;
+  border-bottom: 5px solid rgb(179, 179, 179);
+  font-weight: 700;
 }
 
 .course-page-view-container {
   min-height: 85vh;
+  padding: 1%;
+  margin-top: 1%;
 }
 
-.course-page-view-inner-container{
+.course-page-view-inner-container {
   transition: all 0.3s;
+}
+
+.course-page-view-inner-header {
+  height: 5rem;
+  padding: 1% 1%;
+  border-bottom: 1px solid grey;
+}
+
+.course-page-view-inner-body {
+  padding-top: 1%;
+  width: 100%;
 }
 </style>
