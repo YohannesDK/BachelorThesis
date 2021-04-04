@@ -55,7 +55,7 @@
               </ul>
             </nav>
           </div>
-          <div class="dashboard-card-info d-flex">
+          <div class="dashboard-card-info myscrollbar d-flex">
             <div class="documents-container d-flex p-1" v-if="navHeaderId == 0">
               <document-card
                 v-for="doc in Documents"
@@ -84,7 +84,7 @@
               Notifications
             </div>
             <div class="dashboard-card-">
-              <ul class="list-unstyled p-1">
+              <ul class="list-unstyled p-1 myscrollbar">
                 <li
                   v-for="notification in Notifications"
                   :key="notification.id"
@@ -256,7 +256,7 @@ export default defineComponent({
 }
 .dashboard-card-notivication-nav {
   height: 100%;
-  overflow: scroll;
+  overflow: hidden;
 }
 
 .dashboard-card-notivication-nav .tittle {
@@ -333,13 +333,19 @@ export default defineComponent({
   max-width: 100%;
 }
 
-.dashboard-card-info::-webkit-scrollbar {
+.dashboard-card-info::-webkit-scrollbar,
+.myscrollbar::-webkit-scrollbar {
   width: 2px;
   height: 0.5rem;
   margin-top: 1%;
 }
 
-.dashboard-card-info::-webkit-scrollbar-thumb {
+.myscrollbar::-webkit-scrollbar {
+  width: 0.3rem;
+}
+
+.dashboard-card-info::-webkit-scrollbar-thumb,
+.myscrollbar::-webkit-scrollbar-thumb {
   background: rgb(177, 176, 176);
   border-radius: 9px;
 }
@@ -358,7 +364,6 @@ export default defineComponent({
 .notification-card .notification-date {
   font-size: 0.7rem;
 }
-
 
 .documents-container {
   max-width: 100%;

@@ -1,39 +1,36 @@
 <template>
   <div class="assignment-container shadow-sm">
-    <div class="assignment-header"
-    @click="ToogleAssignmentBody()"
-    >
-      <h3>{{Assignment.AssignmentName}}</h3>
+    <div class="assignment-header" @click="ToogleAssignmentBody()">
+      <h3>{{ Assignment.AssignmentName }}</h3>
       <div class="icon-container">
-        <p class="mx-3 mb-0">Due {{Assignment.Date}}</p>
+        <p class="mx-3 mb-0">Due {{ Assignment.Date }}</p>
         <div class="icon">
           <fa icon="ellipsis-v" />
         </div>
       </div>
     </div>
-    <div class="assignment-body"
-    :class="{ showAssignment: ShowAssignmentBody }"
+    <div
+      class="assignment-body"
+      :class="{ showAssignment: ShowAssignmentBody }"
     >
       <div class="assignment-readings">
         <div class="assignment-readings-header">
           <h4>Reading</h4>
         </div>
         <ul class="list-unstyled assignment-reading-list">
-          <li
-          v-for="(read, index) in Assignment.ReadingList"
-          :key="index"
-          >{{read.ReadingDesc}}</li>
+          <li v-for="(read, index) in Assignment.ReadingList" :key="index">
+            {{ read.ReadingDesc }}
+          </li>
         </ul>
       </div>
       <div class="assignment-tests">
         <div class="assignment-tests-header">
           <h4>Tests</h4>
-        </div> 
+        </div>
         <ul class="list-unstyled assignment-test-list">
-          <li
-          v-for="(Test, index) in Assignment.TestList"
-          :key="index"
-          >{{Test.QSID}}</li>
+          <li v-for="(Test, index) in Assignment.TestList" :key="index">
+            {{ Test.QSID }}
+          </li>
         </ul>
       </div>
     </div>
@@ -41,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from "vue";
 import { Assignment } from "@/store/interfaces/assignments.types";
 export default defineComponent({
   name: "Assignments",
@@ -58,13 +55,12 @@ export default defineComponent({
       ShowAssignmentBody.value = !ShowAssignmentBody.value;
     };
 
-
     return {
       ShowAssignmentBody,
       ToogleAssignmentBody
-    }
+    };
   }
-})
+});
 </script>
 
 <style scoped>
@@ -124,20 +120,23 @@ export default defineComponent({
   height: fit-content;
 }
 
-.assignment-readings-header, .assignment-tests-header {
+.assignment-readings-header,
+.assignment-tests-header {
   height: 3rem;
   display: flex;
   align-items: center;
   padding: 1% 1%;
 }
 
-.assignment-readings-header > h4, .assignment-tests-header > h4  {
+.assignment-readings-header > h4,
+.assignment-tests-header > h4 {
   width: 100%;
   /* border-bottom: 1px solid; */
   padding: 1% 0;
 }
 
-.assignment-reading-list, .assignment-test-list {
+.assignment-reading-list,
+.assignment-test-list {
   padding: 1% 1%;
 }
 
@@ -148,7 +147,6 @@ export default defineComponent({
   width: fit-content;
   margin-bottom: 1rem;
 }
-
 
 .assignment-test-list li {
   display: flex;

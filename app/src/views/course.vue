@@ -68,6 +68,12 @@
     </div>
   </div>
 
+  <course-editing-modal ref="courseEditingModal">
+    <template v-slot:content>
+      <div>hahaha</div>
+    </template>
+  </course-editing-modal>
+
   <div class="course-page-container">
     <div class="container">
       <div class="course-page-view-container">
@@ -111,7 +117,11 @@
             <h1>Assignments</h1>
           </div>
           <div class="course-page-view-inner-body">
-            <assignments v-for="(assignment, index) in Assignments" :key="index" :Assignment="assignment" />
+            <assignments
+              v-for="(assignment, index) in Assignments"
+              :key="index"
+              :Assignment="assignment"
+            />
           </div>
         </div>
 
@@ -148,7 +158,6 @@ import {
   computed,
   reactive
 } from "vue";
-import axios from "@/services/api";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
 import {
@@ -160,10 +169,15 @@ import {
 } from "@/store/interfaces/course";
 import { documentType } from "@/store/interfaces/document";
 import Assignments from "@/components/Assignments.vue";
-import { Assignment, AssignmentReading, AssignmentTest } from "@/store/interfaces/assignments.types";
+import {
+  Assignment,
+  AssignmentReading,
+  AssignmentTest
+} from "@/store/interfaces/assignments.types";
+import CourseEditingModal from "@/components/CourseEditingModal.vue";
 
 export default defineComponent({
-  components: { courseModule, DocumentCard, Assignments },
+  components: { courseModule, DocumentCard, Assignments, CourseEditingModal },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
@@ -172,6 +186,8 @@ export default defineComponent({
     const documents: documentType = store.getters.getDocuments;
 
     const menuIndex = ref<number>(0);
+
+    const courseEditingModal = ref<any>();
 
     const menuChoices = [
       "Home",
@@ -243,14 +259,14 @@ export default defineComponent({
 
     const Test: AssignmentTest = {
       TestID: 0,
-      QSID: 0,
-    }
+      QSID: 0
+    };
 
     const Reading: AssignmentReading = {
       ReadingID: 0,
       ReadingDesc: "Read Chapter 1 of Narnia",
       documentID: 2
-    }
+    };
     const Assignment: Assignment = {
       AssignmentID: 0,
       courseID: 0,
@@ -258,9 +274,9 @@ export default defineComponent({
       Date: "11 May 2021",
       ReadingList: [Reading, Reading, Reading],
       TestList: [Test, Test]
-    }
+    };
 
-    const Assignments: Assignment[] = [Assignment, Assignment, Assignment]
+    const Assignments: Assignment[] = [Assignment, Assignment, Assignment];
 
     return {
       course,
@@ -270,7 +286,8 @@ export default defineComponent({
       MenuUpdate,
       CourseModules,
       documents,
-      Assignments
+      Assignments,
+      courseEditingModal
     };
   }
 });

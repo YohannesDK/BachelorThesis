@@ -4,17 +4,17 @@
     @click="OpenCourse()"
     v-test="{ id: 'course-card-container' }"
   >
-    <img src="" alt="" class="card-img-top course-image" 
-    v-test="{ id: 'course-card-thumbnail' }"
-    
+    <img
+      src=""
+      alt=""
+      class="card-img-top course-image"
+      v-test="{ id: 'course-card-thumbnail' }"
     />
     <div class="card-body">
-      <h6
-      v-test="{ id: 'course-card-name' }"
-      >{{ course.courseName }}</h6>
-      <p
-      v-test="{ id: 'course-card-shorthand' }"
-      >{{ course.courseShorthand }}</p>
+      <h6 v-test="{ id: 'course-card-name' }">{{ course.courseName }}</h6>
+      <p v-test="{ id: 'course-card-shorthand' }">
+        {{ course.courseShorthand }}
+      </p>
     </div>
   </div>
 </template>

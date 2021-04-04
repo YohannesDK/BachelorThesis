@@ -7,16 +7,15 @@
           <div class="icon">
             <fa icon="plus" />
           </div>
-          <div class="icon"
-          @click.stop="HandleDropDown()" 
-          @mouseleave="RemoveDropDowns()"
+          <div
+            class="icon"
+            @click.stop="HandleDropDown()"
+            @mouseleave="RemoveDropDowns()"
           >
             <fa icon="ellipsis-v" />
             <div class="dropdowncontainer" v-if="showModuleDropDown">
               <div class="course-module-dropdown-drop shadow-sm">
-                <ul
-                  class="list-unstyled mb-0"
-                >
+                <ul class="list-unstyled mb-0">
                   <li>Edit</li>
                   <li>Publish</li>
                   <li>Hide</li>
@@ -35,20 +34,21 @@
           :key="index"
         >
           <div class="course-module-section-header">
-            {{section.SectionName}}
+            {{ section.SectionName }}
           </div>
-          <div class="course-section-item"
-          v-for="(sectionItem, sIndex) in section.SectionItems"
-          :key="sIndex"
+          <div
+            class="course-section-item"
+            v-for="(sectionItem, sIndex) in section.SectionItems"
+            :key="sIndex"
           >
             <div class="section-item-item">
-              {{sectionItem.Item}}
+              {{ sectionItem.Item }}
             </div>
             <div class="icon-container">
               <div class="icon">
                 <fa icon="ellipsis-v" />
               </div>
-            </div> 
+            </div>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default defineComponent({
   props: {
     courseModule: {
       type: Object as () => CourseModule,
-      default: () => ({}) 
+      default: () => ({})
     },
     index: {
       type: Number,
@@ -94,12 +94,12 @@ export default defineComponent({
         return;
       }
       dropdownIndex.value = newdropdownIndex;
-    }
+    };
 
     const RemoveDropDowns = () => {
       showModuleDropDown.value = false;
       dropdownIndex.value = -1;
-    }
+    };
 
     onMounted(() => {
       if (props.index === 0) {
@@ -203,7 +203,8 @@ export default defineComponent({
   padding: 0;
 }
 
-.course-module-section-header, .course-section-item {
+.course-module-section-header,
+.course-section-item {
   width: 100%;
   height: 3rem;
   display: flex;
@@ -308,5 +309,4 @@ export default defineComponent({
   border-bottom-left-radius: 0.8rem;
   color: #bd0000;
 }
-
 </style>

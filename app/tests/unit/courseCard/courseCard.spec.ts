@@ -15,7 +15,6 @@ const wrapper = shallowMount(CourseCard, {
   }
 });
 
-
 describe("Course Card", () => {
   it("Course Card should exists", () => {
     const CourseCardContainer = wrapper.find(
@@ -30,15 +29,11 @@ describe("Course Card", () => {
     );
     expect(CourseCardthumbnail.exists()).to.equal(true);
   });
-
 });
 
 describe("Course Card - body", () => {
-
   it("Course Card should contain course name", () => {
-    const CourseCardName = wrapper.find(
-      "[data-test-id='course-card-name']"
-    );
+    const CourseCardName = wrapper.find("[data-test-id='course-card-name']");
     expect(CourseCardName.text()).to.equal(dummyCourse.courseName);
   });
 
@@ -48,6 +43,4 @@ describe("Course Card - body", () => {
     );
     expect(CourseCardShorthand.text()).to.equal(dummyCourse.courseShorthand);
   });
-
-})
-
+});

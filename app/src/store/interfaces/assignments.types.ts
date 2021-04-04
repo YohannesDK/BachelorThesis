@@ -1,15 +1,14 @@
-
 export type AssignmentTest = {
   TestID: number;
   QSID: number;
-}
+};
 
 export type AssignmentReading = {
   ReadingID: number;
   ReadingDesc: string;
   documentID?: number;
   link?: string;
-}
+};
 
 export type Assignment = {
   AssignmentID: number;
@@ -18,4 +17,4 @@ export type Assignment = {
   Date: string;
   ReadingList: AssignmentReading[];
   TestList: AssignmentTest[];
-}
+};

@@ -16,14 +16,17 @@ export type CourseModuleSectionItems = {
   ItemID: number;
   Item: string; // this will either be document name, test name or a link to other resources
   ItemResourceID: number;
-  ItemType: CourseModuleItemEnum.DOCUMENT | CourseModuleItemEnum.TEST | CourseModuleItemEnum.Link;
-}
+  ItemType:
+    | CourseModuleItemEnum.DOCUMENT
+    | CourseModuleItemEnum.TEST
+    | CourseModuleItemEnum.Link;
+};
 
 export type CourseModuleSection = {
   SectionID: number;
   SectionName: string;
   SectionItems: CourseModuleSectionItems[];
-}
+};
 
 export type CourseModule = {
   courseModuleID: number;
@@ -31,4 +34,4 @@ export type CourseModule = {
   moduleOrderIndex: number;
   moduleName: string;
   moduleSections: CourseModuleSection[];
-}
+};

@@ -1,6 +1,3 @@
-
-
-
 // Course Page Spec
 
 // 1. Course Page should have a sidebar
@@ -19,10 +16,10 @@
 //    - for displaying different info about course
 //  2.1 Home view should display modules that the teacher has created
 //  2.2 Document view should display all documents related to that course
-//  2.3 Assignments view should display all assignments 
-//  2.4 Tests view should display all practice tests 
+//  2.3 Assignments view should display all assignments
+//  2.4 Tests view should display all practice tests
 //  2.5 grades view should display grades for passed tests
-//  2.6 grades / class stats view should display all student stats  
+//  2.6 grades / class stats view should display all student stats
 //  2.6 Events view view should display all student stats  (last pri)
 
 // 3. Course Page should have a jumbotron - with document info

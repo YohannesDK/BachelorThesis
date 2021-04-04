@@ -37,7 +37,7 @@ export default {
         Teacher: 0,
         documents: [1]
       }
-    ] as courseType[],
+    ] as courseType[]
   },
   mutations: {},
   actions: {},
@@ -49,6 +49,6 @@ export default {
       return state.courses.find(
         (course: courseType) => course.courseId === CourseId
       );
-    },
-  },
-}
+    }
+  }
+};

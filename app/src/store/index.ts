@@ -57,7 +57,7 @@ const store = createStore({
     getIsLoading: state => {
       return state.loading;
     },
-    
+
     getIsAuthenticated: () => {
       return !localStorage.getItem("token");
     },
