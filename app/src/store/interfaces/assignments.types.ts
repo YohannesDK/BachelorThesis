@@ -10,7 +10,7 @@ export type AssignmentReading = {
   link?: string;
 };
 
-export type Assignment = {
+export type AssignmentModule = {
   AssignmentID: number;
   courseID: number;
   AssignmentName: string;

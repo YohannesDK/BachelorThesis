@@ -1,10 +1,4 @@
-export type courseType = {
-  courseId: number;
-  courseName: string;
-  courseShorthand: string;
-  Teacher: number;
-  documents: number[];
-};
+import { AssignmentModule } from "./assignments.types";
 
 export enum CourseModuleItemEnum {
   DOCUMENT = 0,
@@ -32,6 +26,18 @@ export type CourseModule = {
   courseModuleID: number;
   courseId: number;
   moduleOrderIndex: number;
+  public: boolean;
   moduleName: string;
   moduleSections: CourseModuleSection[];
+};
+
+export type courseType = {
+  courseId: number;
+  courseName: string;
+  courseShorthand: string;
+  Teacher: number;
+  documents: number[];
+  courseModules: CourseModule[];
+  AssignmentModules: AssignmentModule[];
+  QuestionSets: number[];
 };

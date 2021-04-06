@@ -39,12 +39,12 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { Assignment } from "@/store/interfaces/assignments.types";
+import { AssignmentModule } from "@/store/interfaces/assignments.types";
 export default defineComponent({
   name: "Assignments",
   props: {
     Assignment: {
-      type: Object as () => Assignment,
+      type: Object as () => AssignmentModule,
       default: () => ({})
     }
   },

@@ -70,7 +70,8 @@
 
   <course-editing-modal ref="courseEditingModal">
     <template v-slot:content>
-      <div>hahaha</div>
+      <add-course-module v-if="AddingType === 0" :courseID="course.courseId" />
+      <div v-if="AddingType === 1">Adding assigment module</div>
     </template>
   </course-editing-modal>
 
@@ -80,7 +81,7 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 0">
           <div class="course-page-view-inner-header">
             <h1>Home</h1>
-            <div class="icon-container">
+            <div class="icon-container" @click="AddNew(0)">
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -88,7 +89,7 @@
           </div>
           <div class="course-page-view-inner-body">
             <course-module
-              v-for="(courseModule, index) in CourseModules"
+              v-for="(courseModule, index) in course.courseModules"
               :key="index"
               :index="index"
               :courseModule="courseModule"
@@ -115,10 +116,15 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 2">
           <div class="course-page-view-inner-header">
             <h1>Assignments</h1>
+            <div class="icon-container" @click="AddNew(1)">
+              <div class="icon">
+                <fa icon="plus" />
+              </div>
+            </div>
           </div>
           <div class="course-page-view-inner-body">
             <assignments
-              v-for="(assignment, index) in Assignments"
+              v-for="(assignment, index) in course.AssignmentModules"
               :key="index"
               :Assignment="assignment"
             />
@@ -170,14 +176,21 @@ import {
 import { documentType } from "@/store/interfaces/document";
 import Assignments from "@/components/Assignments.vue";
 import {
-  Assignment,
+  AssignmentModule,
   AssignmentReading,
   AssignmentTest
 } from "@/store/interfaces/assignments.types";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
+import AddCourseModule from "@/components/AddCourseModule.vue";
 
 export default defineComponent({
-  components: { courseModule, DocumentCard, Assignments, CourseEditingModal },
+  components: {
+    courseModule,
+    DocumentCard,
+    Assignments,
+    CourseEditingModal,
+    AddCourseModule
+  },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
@@ -185,109 +198,37 @@ export default defineComponent({
 
     const documents: documentType = store.getters.getDocuments;
 
+    const AddingType = ref(0);
+
     const menuIndex = ref<number>(0);
 
     const courseEditingModal = ref<any>();
 
-    const menuChoices = [
-      "Home",
-      "Documents",
-      "Assignments",
-      "Tests",
-      "Grades",
-      "Events"
-    ];
-
-    const events = [
-      {
-        event: "Test",
-        date: "23 Feb. 2021"
-      },
-      {
-        event: "Test 2",
-        date: "23 Feb. 2021"
-      },
-      {
-        event: "Test 2",
-        date: "23 Feb. 2021"
-      },
-      {
-        event: "Test 2",
-        date: "23 Feb. 2021"
-      },
-      {
-        event: "Test 2",
-        date: "23 Feb. 2021"
-      }
-    ];
+    const menuChoices = ["Home", "Documents", "Assignments", "Tests", "Grades"];
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
     };
 
-    const SectionItem: CourseModuleSectionItems = {
-      ItemID: 0,
-      Item: "Section Item Test",
-      ItemResourceID: 0,
-      ItemType: CourseModuleItemEnum.Link
+    const AddNew = (addingType: number) => {
+      if (courseEditingModal.value) {
+        try {
+          AddingType.value = addingType;
+          courseEditingModal.value.showModal.call();
+        } catch (e) {
+          return;
+        }
+      }
     };
-
-    const CourseModuleSection: CourseModuleSection = {
-      SectionID: 0,
-      SectionName: "Section Test",
-      SectionItems: [SectionItem, SectionItem]
-    };
-
-    const courseModule: CourseModule = {
-      courseModuleID: 0,
-      courseId: 0,
-      moduleOrderIndex: 0,
-      moduleName: "Module Test",
-      moduleSections: [
-        CourseModuleSection,
-        CourseModuleSection,
-        CourseModuleSection
-      ]
-    };
-
-    const CourseModules: CourseModule[] = [
-      courseModule,
-      courseModule,
-      courseModule,
-      courseModule
-    ];
-
-    const Test: AssignmentTest = {
-      TestID: 0,
-      QSID: 0
-    };
-
-    const Reading: AssignmentReading = {
-      ReadingID: 0,
-      ReadingDesc: "Read Chapter 1 of Narnia",
-      documentID: 2
-    };
-    const Assignment: Assignment = {
-      AssignmentID: 0,
-      courseID: 0,
-      AssignmentName: "HomeWork ",
-      Date: "11 May 2021",
-      ReadingList: [Reading, Reading, Reading],
-      TestList: [Test, Test]
-    };
-
-    const Assignments: Assignment[] = [Assignment, Assignment, Assignment];
-
     return {
       course,
-      events,
       menuChoices,
       menuIndex,
       MenuUpdate,
-      CourseModules,
       documents,
-      Assignments,
-      courseEditingModal
+      courseEditingModal,
+      AddNew,
+      AddingType
     };
   }
 });
@@ -442,11 +383,11 @@ export default defineComponent({
 .sidebar ul {
   display: flex;
   width: 100%;
-  justify-content: center;
+  justify-content: space-between;
   margin: 0;
 }
 
-.sidebar ul li[data-v-3aef9135] {
+.sidebar ul li {
   height: 2.5em;
   border-bottom: 5px solid transparent;
   display: flex;
@@ -454,8 +395,14 @@ export default defineComponent({
   opacity: 0.7;
   padding-left: 5%;
   transition: all 0.3s;
-  min-width: fit-content;
+  min-width: max-content;
+  width: 100%;
   padding: 0 4%;
+  justify-content: center;
+}
+
+.sidebar ul li:not(:last-child) {
+  margin-right: 1rem;
 }
 
 .sidebar ul li:hover {

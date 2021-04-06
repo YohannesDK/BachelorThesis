@@ -4,9 +4,6 @@
       <div class="course-module-header" @click="ToogleCourseModule()">
         <h3 class="tittle">{{ courseModule.moduleName }}</h3>
         <div class="icon-container">
-          <div class="icon">
-            <fa icon="plus" />
-          </div>
           <div
             class="icon"
             @click.stop="HandleDropDown()"
@@ -43,11 +40,6 @@
           >
             <div class="section-item-item">
               {{ sectionItem.Item }}
-            </div>
-            <div class="icon-container">
-              <div class="icon">
-                <fa icon="ellipsis-v" />
-              </div>
             </div>
           </div>
         </div>
