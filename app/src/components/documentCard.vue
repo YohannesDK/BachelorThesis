@@ -175,6 +175,7 @@ export default defineComponent({
   cursor: pointer;
   opacity: 1;
   width: fit-content;
+  max-width: 178px;
   height: 208px;
   margin-bottom: 20px;
   margin-right: 20px;

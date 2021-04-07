@@ -47,12 +47,15 @@ export default defineComponent({
       if (appContainer.value) {
         if (showSideBar) {
           appContainer.value.style.marginLeft = "250px";
+          appContainer.value.style.maxWidth = "calc(100% - 250px)";
         } else {
           // TODO - fix this navbar shit
           if (sideBarType === 0) {
             appContainer.value.style.marginLeft = "0px";
+            appContainer.value.style.maxWidth = "100%";
           } else {
             appContainer.value.style.marginLeft = "3.3rem";
+            appContainer.value.style.maxWidth = "calc(100% - 3.3rem)";
           }
         }
       }
@@ -89,11 +92,10 @@ export default defineComponent({
 
 .appContainer {
   z-index: 0;
-  /* max-width: calc(100% - 250px); */
 }
 
 .appFullWidth {
   margin-left: 250px;
-  max-width: calc(100% - 3.3rem);
+  max-width: calc(100% - 250px);
 }
 </style>

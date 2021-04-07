@@ -1,11 +1,11 @@
 const express = require("express");
 let router = express.Router();
 
-const document_controller = require("../controllers/document.controller.js")
+const document_controller = require("../controllers/document.controller.js");
 
 
 
-router.post("/getAllDocuments", document_controller.getAllDocuments)
+router.post("/getAllDocuments", document_controller.getAllDocuments);
 
 
 // app.post("/api/getAllDocuments", (request, response) => {

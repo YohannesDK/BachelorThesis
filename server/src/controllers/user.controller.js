@@ -6,7 +6,7 @@ const axios = require("axios");
 
 //This api call is called when users log in.
 exports.login = (request, response) => {
-  console.log("loginnnn")
+  console.log("loginnnn");
   models.users.findOne({where: {username: request.body.username} }).then(function (users){
     // If the user does not exist, return error
     if(!users){
@@ -44,27 +44,27 @@ exports.login = (request, response) => {
       console.log(err);
   });
 
-}
+};
 
 
 exports.register = (req, res) => {
-  res.send("Not IMplemented")
-}
+  res.send("Not IMplemented");
+};
 
 
 //This api call creates a user, probably swapped out for the api above.
 exports.users = (req, res) => {
-  res.send("Not IMplemented")
-}
+  res.send("Not IMplemented");
+};
 
 
 exports.getUserInfo = (req, res) => {
-  res.send("Not IMplemented")
-}
+  res.send("Not IMplemented");
+};
 
 
 //This api call retrieves all the courses that belong to one user.
 //It is abit messy but it works
 exports.studentCourses = (req, res) => {
-  res.send("Not IMplemented")
-}
+  res.send("Not IMplemented");
+};

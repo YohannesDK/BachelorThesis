@@ -70,7 +70,18 @@
 
   <course-editing-modal ref="courseEditingModal">
     <template v-slot:content>
-      <add-course-module v-if="AddingType === 0" :courseID="course.courseId" />
+      <add-course-module
+        v-if="AddingType === 0 && CourseModuleAction === 0"
+        :CourseModuleAction="CourseModuleAction"
+        :courseID="course.courseId"
+      />
+      <add-course-module
+        v-if="AddingType === 0 && CourseModuleAction === 1"
+        :CourseModuleAction="CourseModuleAction"
+        :courseID="course.courseId"
+        :courseModule="courseModule"
+      />
+
       <div v-if="AddingType === 1">Adding assigment module</div>
     </template>
   </course-editing-modal>
@@ -93,6 +104,8 @@
               :key="index"
               :index="index"
               :courseModule="courseModule"
+              @edit="OnEdit(courseModule, 0)"
+              @delete="OnDelete(courseModule)"
             />
           </div>
         </div>
@@ -162,7 +175,8 @@ import {
   onMounted,
   ref,
   computed,
-  reactive
+  reactive,
+  Ref
 } from "vue";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
@@ -194,11 +208,21 @@ export default defineComponent({
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
-    const course: courseType = store.getters.getCoursebyId(CourseId);
+    const course: Ref<courseType> = ref(store.getters.getCoursebyId(CourseId));
+    const courseModule: Ref<CourseModule> = ref({
+      courseModuleID: -1,
+      courseId: -1,
+      moduleOrderIndex: 0,
+      public: false,
+      moduleName: "",
+      moduleSections: []
+    });
 
-    const documents: documentType = store.getters.getDocuments;
+    const documents: Ref<documentType> = ref(store.getters.getDocuments);
 
     const AddingType = ref(0);
+
+    const CourseModuleAction = ref(0);
 
     const menuIndex = ref<number>(0);
 
@@ -220,6 +244,24 @@ export default defineComponent({
         }
       }
     };
+
+    const OnEdit = (editcourseModule: CourseModule, addingtype: number) => {
+      courseModule.value = editcourseModule;
+      CourseModuleAction.value = 1;
+      if (courseEditingModal.value) {
+        try {
+          AddingType.value = addingtype;
+          courseEditingModal.value.showModal.call();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    const OnDelete = (courseModule: CourseModule) => {
+      store.dispatch("deleteCourseModule", courseModule);
+    };
+
     return {
       course,
       menuChoices,
@@ -228,7 +270,11 @@ export default defineComponent({
       documents,
       courseEditingModal,
       AddNew,
-      AddingType
+      AddingType,
+      CourseModuleAction,
+      OnEdit,
+      courseModule,
+      OnDelete
     };
   }
 });

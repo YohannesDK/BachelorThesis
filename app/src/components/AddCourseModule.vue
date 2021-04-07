@@ -114,19 +114,19 @@
                 v-for="doc in searcheddocuments"
                 :key="doc"
                 :class="{ active: SectionItemDocID === doc.Documentid }"
-                @click="updateDocumentSelection(doc.Documentid)"
+                @click="updateItemResourceIdSelection(doc.Documentid)"
               >
                 <span>{{ doc.name }}</span>
               </li>
             </ul>
             <ul class="list-unstyled" v-if="addOption === 1">
               <li
-                v-for="doc in searcheddocuments"
-                :key="doc"
-                :class="{ active: SelectedQSID === doc.Documentid }"
-                @click="SelectedDocID = doc.Documentid"
+                v-for="qs in searchedquestionsets"
+                :key="qs"
+                :class="{ active: SectionItemQSID === qs.QSID }"
+                @click="updateItemResourceIdSelection(qs.QSID)"
               >
-                <span>{{ doc.name }}</span>
+                <span>{{ qs.Tittle }}</span>
               </li>
             </ul>
 
@@ -164,16 +164,34 @@ import {
 } from "@/store/interfaces/course";
 import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
+import { QuestionSet } from "@/store/interfaces/question.type";
+import router from "@/router";
 export default defineComponent({
   name: "AddCourseModule",
   props: {
     courseID: {
       type: Number,
       default: -1
+    },
+    CourseModuleAction: {
+      type: Number,
+      default: 0
+    },
+    courseModule: {
+      type: Object as () => CourseModule,
+      default: () => ({})
     }
   },
   setup(props) {
-    const Title = ref("Add New Course Module");
+    // TODO - validering av input
+    const Title = computed(() => {
+      if (props.CourseModuleAction === 0) {
+        return "Add New Course Module";
+      }
+      if (props.CourseModuleAction === 1) {
+        return "Edit Course Module";
+      }
+    });
     const ModuleName = ref<string>("");
     const showDropDown = ref(false);
     const sectionIndex = ref(-1);
@@ -187,6 +205,9 @@ export default defineComponent({
     const SelectedQSID = ref(-1);
 
     const documents: Ref<documentType[]> = ref(store.getters.getDocuments);
+    const questionsets: Ref<QuestionSet[]> = ref(
+      store.getters.getAllQuestionSets
+    );
 
     const courseModuleData: Ref<CourseModule> = ref({
       courseModuleID: -1,
@@ -354,7 +375,18 @@ export default defineComponent({
       return documents.value;
     });
 
-    const updateDocumentSelection = (newItemResourceID: number) => {
+    const searchedquestionsets = computed(() => {
+      if (searchvalue.value !== "") {
+        return questionsets.value.filter((qs: QuestionSet) => {
+          return qs.Tittle.replace(/ /g, "")
+            .toUpperCase()
+            .includes(searchvalue.value.replace(/ /g, "").toUpperCase());
+        });
+      }
+      return questionsets.value;
+    });
+
+    const updateItemResourceIdSelection = (newItemResourceID: number) => {
       try {
         const sectionItem =
           courseModuleData.value.moduleSections[sectionIndex.value]
@@ -377,9 +409,47 @@ export default defineComponent({
       }
     });
 
+    const SectionItemQSID = computed(() => {
+      try {
+        const sectionItem =
+          courseModuleData.value.moduleSections[sectionIndex.value]
+            .SectionItems[sectionItemIndex.value];
+        return sectionItem.ItemResourceID;
+      } catch (error) {
+        console.error(error);
+        return -1;
+      }
+    });
+
     const Save = () => {
-      console.log(courseModuleData.value);
+      if (props.CourseModuleAction === 0) {
+        store.dispatch("AddNewCourseModule", courseModuleData.value);
+        return;
+      }
+      store.dispatch("UpdateCourseModule", courseModuleData.value);
     };
+
+    const InitilizeCourseModule = () => {
+      if (props.CourseModuleAction === 0) {
+        courseModuleData.value.courseId = Number(
+          router.currentRoute.value.query.cid
+        );
+        return;
+      }
+
+      // editing existing coursemodule
+      if (props.CourseModuleAction === 1) {
+        if (props.courseModule) {
+          console.log("Her");
+          console.log(props.courseModule);
+          courseModuleData.value = props.courseModule;
+        }
+      }
+    };
+
+    onMounted(() => {
+      InitilizeCourseModule();
+    });
 
     return {
       Title,
@@ -407,7 +477,9 @@ export default defineComponent({
       AddToItem,
       Added,
       SectionItemDocID,
-      updateDocumentSelection
+      updateItemResourceIdSelection,
+      searchedquestionsets,
+      SectionItemQSID
     };
   }
 });

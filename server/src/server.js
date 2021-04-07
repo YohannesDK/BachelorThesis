@@ -403,7 +403,7 @@ app.post("/api/createDocument", async (request, response) => {
         "name": newDocument.title,
         "lastEdited": `${newDocument.createdAt}`,
         "QuestionSetID": []
-    }
+    };
     
     return response.status(200).json({document: document_right_format});
 });
@@ -438,7 +438,7 @@ app.get("/api/documentInfo", (request, response) => {
                 "name": doc.title,
                 "lastEdited": `${doc.updatedAt}`,
                 "QuestionSetID": []
-             }
+             };
          });
     
         if (documents) {
@@ -460,7 +460,7 @@ app.get("/api/documentInfo", (request, response) => {
 //TODO: authorize this api call
 app.get("/api/fetchDoc", async (request, response) => {
 
-        let document = await models.document.findOne({where: {id: request.query.docId}})
+        let document = await models.document.findOne({where: {id: request.query.docId}});
 
         if (document) {
             return response.status(200).json({
@@ -474,10 +474,10 @@ app.get("/api/fetchDoc", async (request, response) => {
 app.post("/api/deleteDocument", async (request, response) => {
     const DeletedDocument = await models.document.destroy({
         where: {id: request.body.docID}
-    }) 
-    console.log(DeletedDocument)
+    }); 
+    console.log(DeletedDocument);
     return response.send(200);
-})
+});
 
 
 //This api call is called when a user joins a course.

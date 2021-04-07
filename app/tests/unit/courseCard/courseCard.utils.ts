@@ -5,5 +5,8 @@ export const dummyCourse: courseType = {
   courseName: "Web Programming",
   courseShorthand: "DAT310",
   Teacher: 0,
-  documents: []
+  documents: [],
+  courseModules: [],
+  AssignmentModules: [],
+  QuestionSets: []
 };

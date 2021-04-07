@@ -1,7 +1,7 @@
 <template>
-  <div class="assignment-container shadow-sm">
+  <div class="assignment-container shadow rounded">
     <div class="assignment-header" @click="ToogleAssignmentBody()">
-      <h3>{{ Assignment.AssignmentName }}</h3>
+      <h3 class="tittle">{{ Assignment.AssignmentName }}</h3>
       <div class="icon-container">
         <p class="mx-3 mb-0">Due {{ Assignment.Date }}</p>
         <div class="icon">
@@ -76,7 +76,13 @@ export default defineComponent({
   align-items: center;
   padding: 0 1%;
   justify-content: space-between;
+  color: #969696;
 }
+
+.assignment-header:hover {
+  cursor: pointer;
+}
+
 .icon-container {
   width: fit-content;
   padding-left: 1%;

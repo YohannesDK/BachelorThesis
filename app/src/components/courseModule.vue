@@ -13,11 +13,11 @@
             <div class="dropdowncontainer" v-if="showModuleDropDown">
               <div class="course-module-dropdown-drop shadow-sm">
                 <ul class="list-unstyled mb-0">
-                  <li>Edit</li>
-                  <li>Publish</li>
-                  <li>Hide</li>
+                  <li @click="Edit()">Edit</li>
+                  <li v-if="courseModule.public === false">Publish</li>
+                  <li v-if="courseModule.public === true">Hide</li>
                   <hr />
-                  <li>Delete</li>
+                  <li @click="Delete()">Delete</li>
                 </ul>
               </div>
             </div>
@@ -37,6 +37,7 @@
             class="course-section-item"
             v-for="(sectionItem, sIndex) in section.SectionItems"
             :key="sIndex"
+            @click="OpenSectionItem(index, sIndex)"
           >
             <div class="section-item-item">
               {{ sectionItem.Item }}
@@ -57,6 +58,7 @@ import {
   CourseModuleSectionItems,
   CourseModuleItemEnum
 } from "@/store/interfaces/course";
+import router from "@/router";
 
 export default defineComponent({
   name: "CourseModule",
@@ -70,7 +72,8 @@ export default defineComponent({
       default: -1
     }
   },
-  setup(props) {
+  emits: ["edit", "delete"],
+  setup(props, { emit }) {
     const msg = "hello world";
     const ShowModuleBody = ref(false);
     const showModuleDropDown = ref(false);
@@ -93,6 +96,44 @@ export default defineComponent({
       dropdownIndex.value = -1;
     };
 
+    const OpenSectionItem = (
+      sectionIndex: number,
+      sectionItemIndex: number
+    ) => {
+      try {
+        const sectionItem: CourseModuleSectionItems =
+          props.courseModule.moduleSections[sectionIndex].SectionItems[
+            sectionItemIndex
+          ];
+        if (sectionItem.ItemType === CourseModuleItemEnum.DOCUMENT) {
+          router.push({
+            name: "EditorView",
+            query: { did: sectionItem.ItemResourceID }
+          });
+        } else if (sectionItem.ItemType === CourseModuleItemEnum.TEST) {
+          router.push({
+            name: "questiontest",
+            query: { QSID: sectionItem.ItemResourceID }
+          });
+        }
+        return;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const Edit = () => {
+      if (props.courseModule) {
+        emit("edit");
+      }
+    };
+
+    const Delete = () => {
+      if (props.courseModule) {
+        emit("delete");
+      }
+    };
+
     onMounted(() => {
       if (props.index === 0) {
         ShowModuleBody.value = true;
@@ -105,7 +146,10 @@ export default defineComponent({
       ShowModuleBody,
       showModuleDropDown,
       HandleDropDown,
-      RemoveDropDowns
+      RemoveDropDowns,
+      OpenSectionItem,
+      Edit,
+      Delete
     };
   }
 });
@@ -130,6 +174,7 @@ export default defineComponent({
 .course-module-header {
   min-height: 5rem;
   background: whitesmoke;
+  /* background: #dedede; */
   display: flex;
   align-items: center;
   /* flex-direction: column; */
@@ -243,7 +288,7 @@ export default defineComponent({
   padding-left: 6%;
   transition: all 1s;
   color: black;
-  top: 100%;
+  top: 70%;
   width: 11rem;
   left: -8.2rem;
 }

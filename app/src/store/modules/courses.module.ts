@@ -81,7 +81,8 @@ export default {
         courseShorthand: "DAT310",
         Teacher: 0,
         documents: [],
-        courseModules: [dummycourseModule],
+        // courseModules: [dummycourseModule],
+        courseModules: [],
         AssignmentModules: [dummyAssignmentModule],
         QuestionSets: []
       },
@@ -96,8 +97,72 @@ export default {
       }
     ] as courseType[]
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    AddNewCourseModule: (state: any, courseModule: CourseModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(courseModule.courseId);
+
+      if (courseIndex !== -1) {
+        const course = (state.courses as courseType[])[courseIndex];
+        courseModule.courseModuleID = course.courseModules.length;
+        course.courseModules.push(courseModule);
+      }
+    },
+    UpdateCourseModule: (state: any, courseModule: CourseModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(courseModule.courseId);
+
+      if (courseIndex !== -1) {
+        const moduleindex = (state.courses[
+          courseIndex
+        ] as courseType).courseModules
+          .map((cm: CourseModule) => cm.courseModuleID)
+          .indexOf(courseModule.courseModuleID);
+
+        if (moduleindex === -1) {
+          (state.courses[courseIndex] as courseType).courseModules.push(
+            courseModule
+          );
+        } else {
+          (state.courses[courseIndex] as courseType).courseModules[
+            moduleindex
+          ] = courseModule;
+        }
+      }
+    },
+    deleteCourseModule: (state: any, courseModule: CourseModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(courseModule.courseId);
+
+      if (courseIndex !== -1) {
+        const moduleindex = (state.courses[
+          courseIndex
+        ] as courseType).courseModules
+          .map((cm: CourseModule) => cm.courseModuleID)
+          .indexOf(courseModule.courseModuleID);
+        if (moduleindex !== -1) {
+          (state.courses[courseIndex] as courseType).courseModules.splice(
+            moduleindex,
+            1
+          );
+        }
+      }
+    }
+  },
+  actions: {
+    AddNewCourseModule: (context: any, courseModule: CourseModule) => {
+      context.commit("AddNewCourseModule", courseModule);
+    },
+    UpdateCourseModule: (context: any, courseModule: CourseModule) => {
+      context.commit("UpdateCourseModule", courseModule);
+    },
+    deleteCourseModule: (context: any, courseModule: CourseModule) => {
+      context.commit("deleteCourseModule", courseModule);
+    }
+  },
   getters: {
     getCourses: (state: any) => {
       return state.courses;
