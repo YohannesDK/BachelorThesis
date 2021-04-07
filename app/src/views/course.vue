@@ -235,6 +235,7 @@ export default defineComponent({
     };
 
     const AddNew = (addingType: number) => {
+      CourseModuleAction.value = 0;
       if (courseEditingModal.value) {
         try {
           AddingType.value = addingType;
