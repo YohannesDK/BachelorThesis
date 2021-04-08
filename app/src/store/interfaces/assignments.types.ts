@@ -1,6 +1,6 @@
 export type AssignmentTest = {
   TestID: number;
-  QSID: number;
+  TestDesc: string;
 };
 
 export type AssignmentReading = {

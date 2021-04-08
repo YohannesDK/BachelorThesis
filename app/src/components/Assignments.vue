@@ -4,8 +4,20 @@
       <h3 class="tittle">{{ Assignment.AssignmentName }}</h3>
       <div class="icon-container">
         <p class="mx-3 mb-0">Due {{ Assignment.Date }}</p>
-        <div class="icon">
+        <div class="icon"
+          @click.stop="HandleDropDown()"
+          @mouseleave="RemoveDropDowns()"
+        >
           <fa icon="ellipsis-v" />
+          <div class="dropdowncontainer" v-if="showModuleDropDown">
+              <div class="course-module-dropdown-drop shadow-sm">
+                <ul class="list-unstyled mb-0">
+                  <li @click="Edit()">Edit</li>
+                  <hr />
+                  <li @click="Delete()">Delete</li>
+                </ul>
+              </div>
+            </div>
         </div>
       </div>
     </div>
@@ -29,7 +41,7 @@
         </div>
         <ul class="list-unstyled assignment-test-list">
           <li v-for="(Test, index) in Assignment.TestList" :key="index">
-            {{ Test.QSID }}
+            {{ Test.TestDesc }}
           </li>
         </ul>
       </div>
@@ -48,16 +60,46 @@ export default defineComponent({
       default: () => ({})
     }
   },
-  setup() {
+  emits: ["edit", "delete"],
+  setup(props, { emit }) {
     const ShowAssignmentBody = ref(false);
+    const showModuleDropDown = ref(false);
 
     const ToogleAssignmentBody = () => {
       ShowAssignmentBody.value = !ShowAssignmentBody.value;
     };
+    const HandleDropDown = (newdropdownIndex = -1) => {
+      console.log("her")
+      if (newdropdownIndex === -1) {
+        showModuleDropDown.value = true;
+        return;
+      }
+    };
+
+    const RemoveDropDowns = () => {
+      showModuleDropDown.value = false;
+    };
+
+    const Edit = () => {
+      if (props.Assignment) {
+        emit("edit");
+      }
+    };
+
+    const Delete = () => {
+      if (props.Assignment) {
+        emit("delete");
+      }
+    };
 
     return {
       ShowAssignmentBody,
-      ToogleAssignmentBody
+      ToogleAssignmentBody,
+      showModuleDropDown,
+      HandleDropDown,
+      RemoveDropDowns,
+      Edit,
+      Delete
     };
   }
 });
@@ -102,6 +144,7 @@ export default defineComponent({
   padding: 1%;
   transition: all 0.3s;
   color: rgb(194, 189, 189);
+  position: relative;
 }
 
 .icon-container:hover .icon {
@@ -160,5 +203,76 @@ export default defineComponent({
   align-items: center;
   width: fit-content;
   margin-bottom: 1rem;
+}
+
+.dropdowncontainer:hover {
+  display: block;
+}
+
+.dropdowncontainer {
+    display: block;
+    position: absolute;
+    z-index: 5;
+    min-width: 100%;
+    padding-left: 6%;
+    transition: all 1s;
+    color: black;
+    top: 1rem;
+    width: 7rem;
+    left: -5.9rem;
+}
+
+.course-module-dropdown-drop {
+  float: right;
+  width: 100%;
+  transition: all 0.4s;
+  border-radius: 0.8rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 100%;
+}
+
+.course-module-dropdown-drop ul li {
+  min-height: 2.5em;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  transition: background-color 0.7s ease-out;
+  background-color: white;
+  padding-left: 10px !important;
+  padding: 4%;
+  font-size: small;
+}
+
+.course-module-dropdown-drop ul hr {
+  width: 92%;
+  margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.course-module-dropdown-drop ul li:hover {
+  background: whitesmoke;
+}
+
+.course-module-dropdown-drop ul li a {
+  padding: 12px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.course-module-dropdown-drop ul li:nth-child(1) {
+  border-top-right-radius: 0.8rem;
+  border-top-left-radius: 0.8rem;
+  padding-top: 5%;
+}
+
+.course-module-dropdown-drop ul li:last-child {
+  border-bottom-right-radius: 0.8rem;
+  border-bottom-left-radius: 0.8rem;
+  color: #bd0000;
 }
 </style>

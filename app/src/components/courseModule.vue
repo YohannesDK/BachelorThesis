@@ -115,6 +115,16 @@ export default defineComponent({
             name: "questiontest",
             query: { QSID: sectionItem.ItemResourceID }
           });
+        } else if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
+          if (sectionItem.ItemLink !== "" && sectionItem.ItemLink) {
+            if (window) {
+              try {
+                window.open(sectionItem.ItemLink, '_blank')!.focus() 
+              } catch (error) {
+                console.error(error) 
+              }
+            }
+          }
         }
         return;
       } catch (error) {

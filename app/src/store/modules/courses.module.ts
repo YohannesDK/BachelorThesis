@@ -12,65 +12,7 @@ import {
   AssignmentTest
 } from "../interfaces/assignments.types";
 
-// #region dummy data
-const SectionItem1: CourseModuleSectionItems = {
-  ItemID: 0,
-  Item: "Section Item Test 1",
-  ItemResourceID: 0,
-  ItemType: CourseModuleItemEnum.Link
-};
-const SectionItem2: CourseModuleSectionItems = {
-  ItemID: 1,
-  Item: "Section Item Test 2",
-  ItemResourceID: 0,
-  ItemType: CourseModuleItemEnum.Link
-};
 
-const CourseModuleSection: CourseModuleSection = {
-  SectionID: 0,
-  SectionName: "Section Test",
-  SectionItems: [SectionItem1, SectionItem2]
-};
-
-const dummycourseModule: CourseModule = {
-  courseModuleID: 0,
-  courseId: 0,
-  moduleOrderIndex: 0,
-  public: false,
-  moduleName: "Module Test",
-  moduleSections: [CourseModuleSection]
-};
-
-const Test: AssignmentTest = {
-  TestID: 0,
-  QSID: 0
-};
-const Test1: AssignmentTest = {
-  TestID: 1,
-  QSID: 0
-};
-
-const Reading: AssignmentReading = {
-  ReadingID: 0,
-  ReadingDesc: "Read Chapter 1 of Narnia",
-  documentID: 2
-};
-const Reading2: AssignmentReading = {
-  ReadingID: 1,
-  ReadingDesc: "Read Chapter 1 of Harry Potter",
-  documentID: 2
-};
-
-const dummyAssignmentModule: AssignmentModule = {
-  AssignmentID: 0,
-  courseID: 0,
-  AssignmentName: "HomeWork ",
-  Date: "11 May 2021",
-  ReadingList: [Reading, Reading2],
-  TestList: [Test, Test1]
-};
-
-// #endregion
 
 export default {
   state: {
@@ -81,9 +23,8 @@ export default {
         courseShorthand: "DAT310",
         Teacher: 0,
         documents: [],
-        // courseModules: [dummycourseModule],
         courseModules: [],
-        AssignmentModules: [dummyAssignmentModule],
+        AssignmentModules: [],
         QuestionSets: []
       },
       {
@@ -150,6 +91,61 @@ export default {
           );
         }
       }
+    },
+
+    AddNewAssignmentModule: (state: any, assingmentModule: AssignmentModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(assingmentModule.courseID);
+
+      if (courseIndex !== -1) {
+        const course = (state.courses as courseType[])[courseIndex] 
+        assingmentModule.AssignmentID = course.AssignmentModules.length
+        course.AssignmentModules.push(assingmentModule);
+      }
+    },
+    updateAssignmentModule: (state: any, assignmentmodule: AssignmentModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(assignmentmodule.courseID);
+
+      if (courseIndex !== -1) {
+        const moduleindex = (state.courses[
+          courseIndex
+        ] as courseType).AssignmentModules
+          .map((am: AssignmentModule) => am.AssignmentID)
+          .indexOf(assignmentmodule.AssignmentID);
+
+        if (moduleindex === -1) {
+          (state.courses[courseIndex] as courseType).AssignmentModules.push(
+            assignmentmodule
+          );
+        } else {
+          (state.courses[courseIndex] as courseType).AssignmentModules[
+            moduleindex
+          ] = assignmentmodule;
+        }
+      }
+    },
+
+    deleteAssignmentModule: (state: any, assignmentmodule: AssignmentModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) => course.courseId)
+        .indexOf(assignmentmodule.courseID);
+
+      if (courseIndex !== -1) {
+        const moduleindex = (state.courses[
+          courseIndex
+        ] as courseType).AssignmentModules
+          .map((am: AssignmentModule) => am.AssignmentID)
+          .indexOf(assignmentmodule.AssignmentID);
+        if (moduleindex !== -1) {
+          (state.courses[courseIndex] as courseType).AssignmentModules.splice(
+            moduleindex,
+            1
+          );
+        }
+      }
     }
   },
   actions: {
@@ -161,7 +157,19 @@ export default {
     },
     deleteCourseModule: (context: any, courseModule: CourseModule) => {
       context.commit("deleteCourseModule", courseModule);
-    }
+    },
+
+    AddNewAssignmentModule: (context: any, assingmentModule: AssignmentModule) => {
+      context.commit("AddNewAssignmentModule", assingmentModule)
+    },
+    
+    updateAssignmentModule: (context: any, assignmentmodule: AssignmentModule) => {
+      context.commit("updateAssignmentModule", assignmentmodule)
+    },
+    deleteAssignmentModule: (context: any, assignmentmodule: AssignmentModule) => {
+      context.commit("deleteAssignmentModule", assignmentmodule)
+    },
+    
   },
   getters: {
     getCourses: (state: any) => {

@@ -33,20 +33,6 @@
                   </a>
                 </div>
               </div>
-
-              <div class="details_media d-flex align-items-center mt-30">
-                <div class="media_image">
-                  <img
-                    class="bookmark"
-                    :src="require(`../assets/bookmark.png`)"
-                    alt="bookmark"
-                  />
-                </div>
-                <div class="media_content media-body">
-                  <p>Tags</p>
-                  <h6 class="title"><a href="#">Andorid / Development</a></h6>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -82,7 +68,19 @@
         :courseModule="courseModule"
       />
 
-      <div v-if="AddingType === 1">Adding assigment module</div>
+      <div v-if="AddingType === 1">documents</div>
+
+      <add-assignment-module  
+        v-if="AddingType === 2 && AssigmentModuleAction === 0"
+        :AssigmentModuleAction="AssigmentModuleAction" />
+
+      <add-assignment-module  
+        v-if="AddingType === 2 && AssigmentModuleAction === 1"
+        :AssigmentModuleAction="AssigmentModuleAction"
+        :AssignmentModule="assignmentModule"
+        />
+      
+      <div v-if="AddingType === 3">tests</div>
     </template>
   </course-editing-modal>
 
@@ -111,8 +109,13 @@
         </div>
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 1">
-          <div class="course-page-view-inner-header p-0">
-            <h1 class="p-0">Documents</h1>
+          <div class="course-page-view-inner-header">
+            <h1>Documents</h1>
+            <div class="icon-container" @click="AddNew(1)">
+              <div class="icon">
+                <fa icon="plus" />
+              </div>
+            </div>
           </div>
           <div class="course-page-view-inner-body">
             <div class="documents-container">
@@ -129,7 +132,7 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 2">
           <div class="course-page-view-inner-header">
             <h1>Assignments</h1>
-            <div class="icon-container" @click="AddNew(1)">
+            <div class="icon-container" @click="AddNew(2)">
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -140,6 +143,8 @@
               v-for="(assignment, index) in course.AssignmentModules"
               :key="index"
               :Assignment="assignment"
+              @edit="OnAssingmentEdit(assignment, 1)"
+              @delete="OnAssignmentDelete(assignment)"
             />
           </div>
         </div>
@@ -147,6 +152,11 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 3">
           <div class="course-page-view-inner-header">
             <h1>Tests</h1>
+            <div class="icon-container" @click="AddNew(3)">
+              <div class="icon">
+                <fa icon="plus" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -196,6 +206,7 @@ import {
 } from "@/store/interfaces/assignments.types";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
 import AddCourseModule from "@/components/AddCourseModule.vue";
+import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 
 export default defineComponent({
   components: {
@@ -203,7 +214,8 @@ export default defineComponent({
     DocumentCard,
     Assignments,
     CourseEditingModal,
-    AddCourseModule
+    AddCourseModule,
+    AddAssignmentModule
   },
   name: "Course",
   setup() {
@@ -218,11 +230,21 @@ export default defineComponent({
       moduleSections: []
     });
 
+    const assignmentModule: Ref<AssignmentModule> = ref({
+      AssignmentID: -1,
+      courseID: -1,
+      AssignmentName: "",
+      Date: "",
+      ReadingList: [],
+      TestList: []
+    });
+
     const documents: Ref<documentType> = ref(store.getters.getDocuments);
 
     const AddingType = ref(0);
 
     const CourseModuleAction = ref(0);
+    const AssigmentModuleAction = ref(0);
 
     const menuIndex = ref<number>(0);
 
@@ -263,6 +285,24 @@ export default defineComponent({
       store.dispatch("deleteCourseModule", courseModule);
     };
 
+
+    const OnAssingmentEdit = (AssignmentModule: AssignmentModule, addingtype: number) => {
+      assignmentModule.value = AssignmentModule
+      AssigmentModuleAction.value = 1
+      if (courseEditingModal.value) {
+        try {
+          AddingType.value = addingtype
+          courseEditingModal.value.showModal.call(); 
+        } catch (error) {
+          console.error(error) 
+        } 
+      }
+    }
+    const OnAssignmentDelete = (assigmentmodule: AssignmentModule) => {
+      store.dispatch("deleteAssignmentModule", assigmentmodule);
+    };
+
+
     return {
       course,
       menuChoices,
@@ -275,7 +315,11 @@ export default defineComponent({
       CourseModuleAction,
       OnEdit,
       courseModule,
-      OnDelete
+      OnDelete,
+      assignmentModule,
+      OnAssingmentEdit,
+      OnAssignmentDelete,
+      AssigmentModuleAction
     };
   }
 });

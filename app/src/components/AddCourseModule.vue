@@ -136,14 +136,11 @@
                 class="search-result-link-input shadow"
                 placeholder="Enter Link..."
                 v-model="itemlink"
+                @change="updateItemLink()"
               />
             </div>
           </div>
           <div class="search-result-actions">
-            <div class="search-result-action-btn shadow" @click="AddToItem()">
-              <span v-if="!Added">Add To Item</span>
-              <span v-if="Added">Added</span>
-            </div>
             <div class="search-result-action-btn shadow" @click="Save()">
               <span>Save</span>
             </div>
@@ -155,7 +152,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, Ref, ref } from "vue";
+import { computed, defineComponent, onMounted, Ref, ref, watch } from "vue";
 import {
   CourseModule,
   CourseModuleSection,
@@ -218,6 +215,17 @@ export default defineComponent({
       moduleSections: []
     });
 
+
+    const ValidIndex = computed(() : boolean => {
+      if (sectionIndex.value !== -1 && sectionIndex.value <= courseModuleData.value.moduleSections.length - 1) { 
+        const section = courseModuleData.value.moduleSections[sectionIndex.value] 
+        if (sectionItemIndex.value !== -1 && sectionItemIndex.value <= section.SectionItems.length - 1) {
+          return true 
+        }
+      }
+      return false;
+    })
+
     const AddNewSection = () => {
       const newSection: CourseModuleSection = {
         SectionID: courseModuleData.value.moduleSections.length,
@@ -225,24 +233,6 @@ export default defineComponent({
         SectionItems: []
       };
       courseModuleData.value.moduleSections.push(newSection);
-    };
-
-    const AddToItem = () => {
-      try {
-        const sectionItem =
-          courseModuleData.value.moduleSections[sectionIndex.value]
-            .SectionItems[sectionItemIndex.value];
-        if (sectionItem.ItemType === CourseModuleItemEnum.DOCUMENT) {
-          sectionItem.ItemResourceID = SelectedDocID.value;
-        } else if (sectionItem.ItemType === CourseModuleItemEnum.TEST) {
-          sectionItem.ItemResourceID = SelectedQSID.value;
-        } else if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
-          sectionItem.ItemResourceID = -1;
-        }
-        Added.value = true;
-      } catch (error) {
-        console.error(error);
-      }
     };
 
     const NewSectionItem = () => {
@@ -255,6 +245,7 @@ export default defineComponent({
             courseModuleData.value.moduleSections[sectionIndex.value]
               .SectionItems.length,
           Item: "",
+          ItemLink: "",
           ItemResourceID: -1,
           ItemType: -1
         };
@@ -273,12 +264,14 @@ export default defineComponent({
 
     const SectionItemChange = (newsectionitemindex: number) => {
       sectionItemIndex.value = newsectionitemindex;
-      // AddToItem();
     };
 
     const DeleteSection = (sectionindex: number) => {
+      if (!ValidIndex.value) {
+        return
+      }
       const ConfirmDelete = confirm(
-        "Are you sure you want to delete the whole module?"
+        "Are you sure you want to delete the entire section?"
       );
       if (ConfirmDelete) {
         try {
@@ -297,6 +290,9 @@ export default defineComponent({
     };
 
     const DeleteSectionItem = (sectionindex: number, itemindex: number) => {
+      if (!ValidIndex.value) {
+        return
+      }
       try {
         courseModuleData.value.moduleSections[sectionindex].SectionItems.splice(
           itemindex,
@@ -396,8 +392,23 @@ export default defineComponent({
         console.error(error);
       }
     };
+    const updateItemLink = () => {
+      try {
+        const sectionItem =
+          courseModuleData.value.moduleSections[sectionIndex.value]
+            .SectionItems[sectionItemIndex.value];
+        if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
+          sectionItem.ItemLink = itemlink.value 
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     const SectionItemDocID = computed(() => {
+      if (!ValidIndex.value) {
+        return
+      } 
       try {
         const sectionItem =
           courseModuleData.value.moduleSections[sectionIndex.value]
@@ -410,6 +421,9 @@ export default defineComponent({
     });
 
     const SectionItemQSID = computed(() => {
+      if (!ValidIndex.value) {
+        return
+      }
       try {
         const sectionItem =
           courseModuleData.value.moduleSections[sectionIndex.value]
@@ -429,6 +443,21 @@ export default defineComponent({
       store.dispatch("UpdateCourseModule", courseModuleData.value);
     };
 
+    // for handling mulitple links with a single v-model variable
+    watch([sectionIndex, sectionItemIndex], () => {
+      if (!ValidIndex.value) {
+        return
+      }
+      try {
+        const sectionitem = courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[sectionItemIndex.value];
+        if (sectionitem.ItemLink) {
+          itemlink.value = sectionitem.ItemLink
+        }
+      } catch (error) {
+        console.error(error) 
+      }
+    })
+
     const InitilizeCourseModule = () => {
       if (props.CourseModuleAction === 0) {
         courseModuleData.value.courseId = Number(
@@ -440,8 +469,6 @@ export default defineComponent({
       // editing existing coursemodule
       if (props.CourseModuleAction === 1) {
         if (props.courseModule) {
-          console.log("Her");
-          console.log(props.courseModule);
           courseModuleData.value = props.courseModule;
         }
       }
@@ -474,12 +501,12 @@ export default defineComponent({
       SelectedDocID,
       itemlink,
       SelectedQSID,
-      AddToItem,
       Added,
       SectionItemDocID,
       updateItemResourceIdSelection,
       searchedquestionsets,
-      SectionItemQSID
+      SectionItemQSID,
+      updateItemLink
     };
   }
 });
@@ -803,7 +830,6 @@ export default defineComponent({
 
 .search-result-inner {
   width: 67%;
-  padding: 0 3%;
 }
 
 .search-result-inner ul {
