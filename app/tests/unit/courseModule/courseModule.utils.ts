@@ -1,8 +1,8 @@
-import { 
-  CourseModule, 
-  CourseModuleSection, 
-  CourseModuleSectionItems, 
-  CourseModuleItemEnum 
+import {
+  CourseModule,
+  CourseModuleSection,
+  CourseModuleSectionItems,
+  CourseModuleItemEnum
 } from "@/store/interfaces/course";
 
 export const SectionItem1: CourseModuleSectionItems = {

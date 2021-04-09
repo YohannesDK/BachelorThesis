@@ -1,12 +1,13 @@
 <template>
-  <div class="course-module-container"
+  <div
+    class="course-module-container"
     v-test="{ id: 'course-module-container' }"
   >
     <div class="course-module shadow rounded">
       <div class="course-module-header" @click="ToogleCourseModule()">
-        <h3 class="tittle"
-          v-test="{ id: 'course-module-name' }"
-        >{{ courseModule.moduleName }}</h3>
+        <h3 class="tittle" v-test="{ id: 'course-module-name' }">
+          {{ courseModule.moduleName }}
+        </h3>
         <div class="icon-container">
           <div
             class="icon"
@@ -34,10 +35,10 @@
           v-for="(section, index) in courseModule.moduleSections"
           :key="index"
           v-test="{ id: 'course-module-section' }"
-          
         >
-          <div class="course-module-section-header"
-          v-test="{ id: 'course-module-section-name' }"
+          <div
+            class="course-module-section-header"
+            v-test="{ id: 'course-module-section-name' }"
           >
             {{ section.SectionName }}
           </div>
@@ -48,8 +49,9 @@
             @click="OpenSectionItem(index, sIndex)"
             v-test="{ id: 'course-module-section-item' }"
           >
-            <div class="section-item-item"
-            v-test="{ id: 'course-module-section-item-name' }"
+            <div
+              class="section-item-item"
+              v-test="{ id: 'course-module-section-item-name' }"
             >
               {{ sectionItem.Item }}
             </div>
@@ -134,9 +136,9 @@ export default defineComponent({
           if (sectionItem.ItemLink !== "" && sectionItem.ItemLink) {
             if (window) {
               try {
-                window.open(sectionItem.ItemLink, '_blank')!.focus() 
+                window.open(sectionItem.ItemLink, "_blank")!.focus();
               } catch (error) {
-                console.error(error) 
+                console.error(error);
               }
             }
           }

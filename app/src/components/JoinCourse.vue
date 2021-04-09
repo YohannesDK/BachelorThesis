@@ -3,11 +3,7 @@
     <div class="row tittle-row">
       <h2 class="title">Join Course</h2>
       <div class="searchbar-container">
-          <input
-            type="text"
-            class="searchbar shadow"
-            placeholder="Search..."
-          />
+        <input type="text" class="searchbar shadow" placeholder="Search..." />
       </div>
     </div>
 
@@ -20,35 +16,36 @@
       <div class="join-course-form">
         <form action="">
           <div class="form-group">
-            <input type="text" disabled>
-            <small id="emailHelp" class="form-text text-muted">Course Name</small>
+            <input type="text" disabled />
+            <small id="emailHelp" class="form-text text-muted"
+              >Course Name</small
+            >
           </div>
           <div class="form-group">
-            <input type="text" class="">
+            <input type="text" class="" />
             <small class="form-text text-muted">Enter Course Password</small>
           </div>
         </form>
         <div class="search-result-actions">
-            <div class="search-result-action-btn shadow" @click="Join()">
-              <span>Join</span>
-            </div>
+          <div class="search-result-action-btn shadow" @click="Join()">
+            <span>Join</span>
           </div>
+        </div>
       </div>
     </div>
   </div>
-  
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from 'vue';
+import { defineComponent, onBeforeMount } from "vue";
 import { getAllCourses } from "@/services/api/course.service";
 
 export default defineComponent({
   name: "JoinCourse",
   setup() {
     const Join = () => {
-      console.log("Join")
-    }
+      console.log("Join");
+    };
 
     onBeforeMount(() => {
       const courses = getAllCourses();
@@ -57,15 +54,13 @@ export default defineComponent({
 
     return {
       Join
-    }
-  },
-})
+    };
+  }
+});
 </script>
 
-
-
 <style scoped>
-.join-course-container{
+.join-course-container {
   display: flex;
   flex-direction: column;
   width: 93%;

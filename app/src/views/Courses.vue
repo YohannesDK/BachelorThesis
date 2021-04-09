@@ -1,11 +1,12 @@
 <template>
-  <div class="courses-container d-flex justify-content-end p-1 align-items-center container"
+  <div
+    class="courses-container d-flex justify-content-end p-1 align-items-center container"
     style="margin-top:3%;"
   >
     <course-editing-modal ref="Modal">
       <template v-slot:content>
         <join-course v-if="coursesAction === 0" />
-        <create-course v-if="coursesAction === 1"/>
+        <create-course v-if="coursesAction === 1" />
       </template>
     </course-editing-modal>
 
@@ -13,22 +14,18 @@
       <h1>My Courses</h1>
 
       <div class="icon-container">
-        <div class="join-course"
-        @click="JoinCourse"
-        >
+        <div class="join-course" @click="JoinCourse">
           <fa icon="user-plus" />
         </div>
-        <div class="join-course"
-        @click="CreateCourse"
-        >
+        <div class="join-course" @click="CreateCourse">
           <fa icon="plus" />
         </div>
-
       </div>
     </div>
 
     <div class="course-container-inner p-1">
-      <course-card v-for="(course, index) in courses"
+      <course-card
+        v-for="(course, index) in courses"
         :key="index"
         :course="course"
       />
@@ -56,16 +53,14 @@ export default defineComponent({
     const Modal = ref<any>();
     const coursesAction = ref(0);
 
-
     const JoinCourse = () => {
       coursesAction.value = 0;
       if (Modal.value) {
         try {
-          Modal.value.showModal.call(); 
+          Modal.value.showModal.call();
         } catch (error) {
           console.error(error);
         }
-        
       }
     };
 
@@ -73,13 +68,12 @@ export default defineComponent({
       coursesAction.value = 1;
       if (Modal.value) {
         try {
-          Modal.value.showModal.call(); 
+          Modal.value.showModal.call();
         } catch (error) {
           console.error(error);
         }
-        
       }
-    }
+    };
 
     return {
       courses,

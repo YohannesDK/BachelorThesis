@@ -70,16 +70,17 @@
 
       <div v-if="AddingType === 1">documents</div>
 
-      <add-assignment-module  
+      <add-assignment-module
         v-if="AddingType === 2 && AssigmentModuleAction === 0"
-        :AssigmentModuleAction="AssigmentModuleAction" />
+        :AssigmentModuleAction="AssigmentModuleAction"
+      />
 
-      <add-assignment-module  
+      <add-assignment-module
         v-if="AddingType === 2 && AssigmentModuleAction === 1"
         :AssigmentModuleAction="AssigmentModuleAction"
         :AssignmentModule="assignmentModule"
-        />
-      
+      />
+
       <div v-if="AddingType === 3">tests</div>
     </template>
   </course-editing-modal>
@@ -285,23 +286,24 @@ export default defineComponent({
       store.dispatch("deleteCourseModule", courseModule);
     };
 
-
-    const OnAssingmentEdit = (AssignmentModule: AssignmentModule, addingtype: number) => {
-      assignmentModule.value = AssignmentModule
-      AssigmentModuleAction.value = 1
+    const OnAssingmentEdit = (
+      AssignmentModule: AssignmentModule,
+      addingtype: number
+    ) => {
+      assignmentModule.value = AssignmentModule;
+      AssigmentModuleAction.value = 1;
       if (courseEditingModal.value) {
         try {
-          AddingType.value = addingtype
-          courseEditingModal.value.showModal.call(); 
+          AddingType.value = addingtype;
+          courseEditingModal.value.showModal.call();
         } catch (error) {
-          console.error(error) 
-        } 
+          console.error(error);
+        }
       }
-    }
+    };
     const OnAssignmentDelete = (assigmentmodule: AssignmentModule) => {
       store.dispatch("deleteAssignmentModule", assigmentmodule);
     };
-
 
     return {
       course,

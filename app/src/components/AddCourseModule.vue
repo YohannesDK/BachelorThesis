@@ -215,16 +215,22 @@ export default defineComponent({
       moduleSections: []
     });
 
-
-    const ValidIndex = computed(() : boolean => {
-      if (sectionIndex.value !== -1 && sectionIndex.value <= courseModuleData.value.moduleSections.length - 1) { 
-        const section = courseModuleData.value.moduleSections[sectionIndex.value] 
-        if (sectionItemIndex.value !== -1 && sectionItemIndex.value <= section.SectionItems.length - 1) {
-          return true 
+    const ValidIndex = computed((): boolean => {
+      if (
+        sectionIndex.value !== -1 &&
+        sectionIndex.value <= courseModuleData.value.moduleSections.length - 1
+      ) {
+        const section =
+          courseModuleData.value.moduleSections[sectionIndex.value];
+        if (
+          sectionItemIndex.value !== -1 &&
+          sectionItemIndex.value <= section.SectionItems.length - 1
+        ) {
+          return true;
         }
       }
       return false;
-    })
+    });
 
     const AddNewSection = () => {
       const newSection: CourseModuleSection = {
@@ -245,7 +251,8 @@ export default defineComponent({
           ItemID:
             courseModuleData.value.moduleSections[sectionIndex.value]
               .SectionItems.length,
-          SectionID: courseModuleData.value.moduleSections[sectionIndex.value].SectionID,
+          SectionID:
+            courseModuleData.value.moduleSections[sectionIndex.value].SectionID,
           Item: "",
           ItemLink: "",
           ItemResourceID: -1,
@@ -270,7 +277,7 @@ export default defineComponent({
 
     const DeleteSection = (sectionindex: number) => {
       if (!ValidIndex.value) {
-        return
+        return;
       }
       const ConfirmDelete = confirm(
         "Are you sure you want to delete the entire section?"
@@ -293,7 +300,7 @@ export default defineComponent({
 
     const DeleteSectionItem = (sectionindex: number, itemindex: number) => {
       if (!ValidIndex.value) {
-        return
+        return;
       }
       try {
         courseModuleData.value.moduleSections[sectionindex].SectionItems.splice(
@@ -400,7 +407,7 @@ export default defineComponent({
           courseModuleData.value.moduleSections[sectionIndex.value]
             .SectionItems[sectionItemIndex.value];
         if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
-          sectionItem.ItemLink = itemlink.value 
+          sectionItem.ItemLink = itemlink.value;
         }
       } catch (error) {
         console.error(error);
@@ -409,8 +416,8 @@ export default defineComponent({
 
     const SectionItemDocID = computed(() => {
       if (!ValidIndex.value) {
-        return
-      } 
+        return;
+      }
       try {
         const sectionItem =
           courseModuleData.value.moduleSections[sectionIndex.value]
@@ -424,7 +431,7 @@ export default defineComponent({
 
     const SectionItemQSID = computed(() => {
       if (!ValidIndex.value) {
-        return
+        return;
       }
       try {
         const sectionItem =
@@ -448,17 +455,19 @@ export default defineComponent({
     // for handling mulitple links with a single v-model variable
     watch([sectionIndex, sectionItemIndex], () => {
       if (!ValidIndex.value) {
-        return
+        return;
       }
       try {
-        const sectionitem = courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[sectionItemIndex.value];
+        const sectionitem =
+          courseModuleData.value.moduleSections[sectionIndex.value]
+            .SectionItems[sectionItemIndex.value];
         if (sectionitem.ItemLink) {
-          itemlink.value = sectionitem.ItemLink
+          itemlink.value = sectionitem.ItemLink;
         }
       } catch (error) {
-        console.error(error) 
+        console.error(error);
       }
-    })
+    });
 
     const InitilizeCourseModule = () => {
       if (props.CourseModuleAction === 0) {

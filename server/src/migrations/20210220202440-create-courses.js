@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      body: {
+      courseName: {
         type: Sequelize.STRING
       },
       shorthand: {

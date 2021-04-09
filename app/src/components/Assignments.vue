@@ -1,29 +1,31 @@
 <template>
-  <div class="assignment-container shadow rounded"
-  v-test="{ id: 'assignment-module-container' }"
+  <div
+    class="assignment-container shadow rounded"
+    v-test="{ id: 'assignment-module-container' }"
   >
     <div class="assignment-header" @click="ToogleAssignmentBody()">
-      <h3 class="tittle"
-        v-test="{ id: 'assignment-module-name' }"
-      >{{ Assignment.AssignmentName }}</h3>
+      <h3 class="tittle" v-test="{ id: 'assignment-module-name' }">
+        {{ Assignment.AssignmentName }}
+      </h3>
       <div class="icon-container">
-        <p class="mx-3 mb-0"
-        v-test="{ id: 'assignment-module-date' }"
-        >Due {{ Assignment.Date }}</p>
-        <div class="icon"
+        <p class="mx-3 mb-0" v-test="{ id: 'assignment-module-date' }">
+          Due {{ Assignment.Date }}
+        </p>
+        <div
+          class="icon"
           @click.stop="HandleDropDown()"
           @mouseleave="RemoveDropDowns()"
         >
           <fa icon="ellipsis-v" />
           <div class="dropdowncontainer" v-if="showModuleDropDown">
-              <div class="course-module-dropdown-drop shadow-sm">
-                <ul class="list-unstyled mb-0">
-                  <li @click="Edit()">Edit</li>
-                  <hr />
-                  <li @click="Delete()">Delete</li>
-                </ul>
-              </div>
+            <div class="course-module-dropdown-drop shadow-sm">
+              <ul class="list-unstyled mb-0">
+                <li @click="Edit()">Edit</li>
+                <hr />
+                <li @click="Delete()">Delete</li>
+              </ul>
             </div>
+          </div>
         </div>
       </div>
     </div>
@@ -31,29 +33,34 @@
       class="assignment-body"
       :class="{ showAssignment: ShowAssignmentBody }"
     >
-      <div class="assignment-readings"
+      <div
+        class="assignment-readings"
         v-test="{ id: 'assignment-module-reading-container' }"
       >
         <div class="assignment-readings-header">
           <h4>Reading</h4>
         </div>
         <ul class="list-unstyled assignment-reading-list">
-          <li v-for="(read, index) in Assignment.ReadingList" :key="index"
-          
+          <li
+            v-for="(read, index) in Assignment.ReadingList"
+            :key="index"
             v-test="{ id: 'assignment-module-reading-assignment' }"
           >
             {{ read.ReadingDesc }}
           </li>
         </ul>
       </div>
-      <div class="assignment-tests"
+      <div
+        class="assignment-tests"
         v-test="{ id: 'assignment-module-test-container' }"
       >
         <div class="assignment-tests-header">
           <h4>Tests</h4>
         </div>
         <ul class="list-unstyled assignment-test-list">
-          <li v-for="(Test, index) in Assignment.TestList" :key="index"
+          <li
+            v-for="(Test, index) in Assignment.TestList"
+            :key="index"
             v-test="{ id: 'assignment-module-test-assignment' }"
           >
             {{ Test.TestDesc }}
@@ -88,7 +95,7 @@ export default defineComponent({
       ShowAssignmentBody.value = !ShowAssignmentBody.value;
     };
     const HandleDropDown = (newdropdownIndex = -1) => {
-      console.log("her")
+      console.log("her");
       if (newdropdownIndex === -1) {
         showModuleDropDown.value = true;
         return;
@@ -229,16 +236,16 @@ export default defineComponent({
 }
 
 .dropdowncontainer {
-    display: block;
-    position: absolute;
-    z-index: 5;
-    min-width: 100%;
-    padding-left: 6%;
-    transition: all 1s;
-    color: black;
-    top: 1rem;
-    width: 7rem;
-    left: -5.9rem;
+  display: block;
+  position: absolute;
+  z-index: 5;
+  min-width: 100%;
+  padding-left: 6%;
+  transition: all 1s;
+  color: black;
+  top: 1rem;
+  width: 7rem;
+  left: -5.9rem;
 }
 
 .course-module-dropdown-drop {

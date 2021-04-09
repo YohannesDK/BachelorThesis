@@ -1,11 +1,9 @@
 <template>
   <div class="addassignmentmodule-container">
     <div class="row title-container">
-      <h2 class="title">{{Title}}</h2>
+      <h2 class="title">{{ Title }}</h2>
       <div class="save-btn-container">
-        <div class="save-btn shadow"
-        @click="Save()"
-        >
+        <div class="save-btn shadow" @click="Save()">
           Save
         </div>
       </div>
@@ -35,14 +33,9 @@
         <div class="input-container">
           <h5>Reading</h5>
           <div class="btn-container">
-            <input type="text"
-            placeholder="Reading..." 
-            v-model="ReadingDesc"
-            />
+            <input type="text" placeholder="Reading..." v-model="ReadingDesc" />
 
-            <div class="icon-container"
-            @click="AddNewReading()"
-            >
+            <div class="icon-container" @click="AddNewReading()">
               <span>+</span>
             </div>
           </div>
@@ -51,13 +44,8 @@
         <div class="input-container">
           <h5>Test</h5>
           <div class="btn-container">
-            <input type="text"
-            placeholder="Test..."
-            v-model="TestDesc"
-            />
-            <div class="icon-container"
-            @click="AddNewTest()"
-            >
+            <input type="text" placeholder="Test..." v-model="TestDesc" />
+            <div class="icon-container" @click="AddNewTest()">
               <span>+</span>
             </div>
           </div>
@@ -69,15 +57,13 @@
         <div class="reading-preview">
           <ul class="list-unstyled">
             <li
-            v-for="(reading, index) in assignmentModuleData.ReadingList"
-            :key="reading"
+              v-for="(reading, index) in assignmentModuleData.ReadingList"
+              :key="reading"
             >
-            <span class="desc">
-              {{reading.ReadingDesc}}
-            </span>
-            <span
-            @click="DeleteReading(index)"
-            >x</span>
+              <span class="desc">
+                {{ reading.ReadingDesc }}
+              </span>
+              <span @click="DeleteReading(index)">x</span>
             </li>
           </ul>
         </div>
@@ -85,15 +71,13 @@
         <div class="test-preview">
           <ul class="list-unstyled">
             <li
-            v-for="(test, index) in assignmentModuleData.TestList"
-            :key="test"
+              v-for="(test, index) in assignmentModuleData.TestList"
+              :key="test"
             >
-            <span class="desc">
-              {{test.TestDesc}}
-            </span>
-            <span
-            @click="DeleteTest(index)"
-            >x</span>
+              <span class="desc">
+                {{ test.TestDesc }}
+              </span>
+              <span @click="DeleteTest(index)">x</span>
             </li>
           </ul>
         </div>
@@ -103,10 +87,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, Ref } from 'vue'
-import { AssignmentModule, AssignmentReading, AssignmentTest } from "@/store/interfaces/assignments.types";
-import router from '@/router';
-import store from '@/store';
+import { computed, defineComponent, onMounted, ref, Ref } from "vue";
+import {
+  AssignmentModule,
+  AssignmentReading,
+  AssignmentTest
+} from "@/store/interfaces/assignments.types";
+import router from "@/router";
+import store from "@/store";
 export default defineComponent({
   name: "AddAssignmentModule",
   props: {
@@ -122,10 +110,10 @@ export default defineComponent({
   setup(props) {
     const Title = computed(() => {
       if (props.AssigmentModuleAction === 0) {
-        return "Add New Assignment Module" 
+        return "Add New Assignment Module";
       }
       if (props.AssigmentModuleAction === 1) {
-       return "Edit Assignment Module" 
+        return "Edit Assignment Module";
       }
     });
 
@@ -148,9 +136,9 @@ export default defineComponent({
           ReadingDesc: ReadingDesc.value
         };
         assignmentModuleData.value.ReadingList.push(newReading);
-        ReadingDesc.value = ""
+        ReadingDesc.value = "";
       }
-    }
+    };
 
     const AddNewTest = () => {
       if (TestDesc.value !== "") {
@@ -159,29 +147,29 @@ export default defineComponent({
           TestDesc: TestDesc.value
         };
         assignmentModuleData.value.TestList.push(newTest);
-        TestDesc.value = ""
+        TestDesc.value = "";
       }
-    }
+    };
 
-    const DeleteReading = (readingIndex:number) => {
+    const DeleteReading = (readingIndex: number) => {
       try {
         if (readingIndex <= assignmentModuleData.value.ReadingList.length - 1) {
           assignmentModuleData.value.ReadingList.splice(readingIndex, 1);
-        } 
+        }
       } catch (error) {
-       console.error(error);
+        console.error(error);
       }
-    }
+    };
 
-    const DeleteTest = (TestIndex:number) => {
+    const DeleteTest = (TestIndex: number) => {
       try {
         if (TestIndex <= assignmentModuleData.value.TestList.length - 1) {
           assignmentModuleData.value.TestList.splice(TestIndex, 1);
-        } 
+        }
       } catch (error) {
-       console.error(error);
+        console.error(error);
       }
-    }
+    };
 
     const Save = () => {
       if (props.AssigmentModuleAction === 0) {
@@ -191,27 +179,25 @@ export default defineComponent({
       if (props.AssigmentModuleAction === 1) {
         store.dispatch("updateAssignmentModule", assignmentModuleData.value);
       }
-    }
-
-    
+    };
 
     const InitilizeAssingmentModule = () => {
       if (props.AssigmentModuleAction === 0) {
-        assignmentModuleData.value.courseID = Number(router.currentRoute.value.query.cid);
+        assignmentModuleData.value.courseID = Number(
+          router.currentRoute.value.query.cid
+        );
         return;
       }
       if (props.AssigmentModuleAction === 1) {
         if (props.AssignmentModule) {
-          assignmentModuleData.value = props.AssignmentModule; 
+          assignmentModuleData.value = props.AssignmentModule;
         }
       }
-    }
+    };
 
     onMounted(() => {
       InitilizeAssingmentModule();
-    })
-
-
+    });
 
     return {
       Title,
@@ -222,14 +208,13 @@ export default defineComponent({
       TestDesc,
       DeleteReading,
       DeleteTest,
-      Save,
-    }
-  },
-})
+      Save
+    };
+  }
+});
 </script>
 
 <style scoped>
-
 .addassignmentmodule-container {
   display: flex;
   flex-direction: column;
@@ -276,7 +261,6 @@ export default defineComponent({
   padding: 2% 0;
 }
 
-
 .input-container .btn-container {
   display: flex;
 }
@@ -293,14 +277,14 @@ export default defineComponent({
 }
 
 .btn-container .icon-container {
-    height: 1.4rem;
-    width: 1.4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    color: white;
-    background: #3a7892;
+  height: 1.4rem;
+  width: 1.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: white;
+  background: #3a7892;
 }
 
 .btn-container .icon-container:hover {
@@ -317,7 +301,6 @@ export default defineComponent({
   font-size: 1.3rem;
   padding-bottom: 14%;
 }
-
 
 .modulename {
   padding-right: 1.25rem;
@@ -367,7 +350,6 @@ export default defineComponent({
 .module-input:focus {
   outline: none;
 }
-
 
 .addassigmentmodule-module-preview ul {
   display: flex;
@@ -448,6 +430,4 @@ export default defineComponent({
   cursor: pointer;
   background: whitesmoke;
 }
-
-
 </style>

@@ -22,7 +22,7 @@ export function Login(username: string, password: string) {
       username: username,
       password: password
     })
-    .then((response: AxiosResponse) => {
+    .then(async (response: AxiosResponse) => {
       if (response.status === 200) {
         const user: UserType = {
           UserID: response.data.id,
@@ -34,8 +34,13 @@ export function Login(username: string, password: string) {
         store.dispatch("login");
         localStorage.setItem("token", response.data.token);
 
+        store.dispatch("loading", true);
         // load user data
-        LoadStore();
+        await LoadStore();
+
+        setTimeout(() => {
+          store.dispatch("loading", false);
+        }, 1000);
 
         // navigate user to home page
         router.push({ name: "Home" });

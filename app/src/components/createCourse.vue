@@ -8,47 +8,91 @@
       <div class="create-course-form">
         <form action="">
           <div class="form-group">
-            <input type="text">
-            <small id="emailHelp" class="form-text text-muted">Course Name</small>
+            <input type="text" v-model="course.courseName" />
+            <small id="emailHelp" class="form-text text-muted"
+              >1. Enter Course Name</small
+            >
           </div>
           <div class="form-group">
-            <input type="text" class="">
-            <small class="form-text text-muted">Enter Course Password</small>
+            <input
+              type="text"
+              v-model="course.courseShorthand"
+              :disabled="course.courseName === ''"
+            />
+            <small class="form-text text-muted"
+              >2. Enter Course Shorthand</small
+            >
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              v-model="coursePassword"
+              :disabled="course.courseShorthand === ''"
+            />
+            <small class="form-text text-muted">3. Enter Course Password</small>
           </div>
         </form>
         <div class="search-result-actions">
-            <div class="search-result-action-btn shadow" @click="create()">
-              <span>create</span>
-            </div>
+          <div class="search-result-action-btn shadow" @click="create()">
+            <span>Create</span>
           </div>
+        </div>
+      </div>
+      <div class="create-course-form course-card-container">
+        <course-card :course="course" />
       </div>
     </div>
   </div>
-  
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from 'vue';
-import { getAllCourses } from "@/services/api/course.service";
+import { defineComponent, onBeforeMount, ref, Ref } from "vue";
+import { CreateCourse } from "@/services/api/course.service";
+import courseCard from "./courseCard.vue";
+import { courseType } from "@/store/interfaces/course";
+import store from "@/store";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
 
 export default defineComponent({
+  components: { courseCard },
   name: "CreateCourse",
   setup() {
+    const course: Ref<courseType> = ref({
+      courseId: -1,
+      courseName: "",
+      courseShorthand: "",
+      Teacher: -1,
+      documents: [],
+      courseModules: [],
+      AssignmentModules: [],
+      QuestionSets: []
+    });
+    const coursePassword = ref("");
+
+    const user: Ref<UserType> = ref(store.getters.getActiveUser);
+
     const create = () => {
-      console.log("create")
-    }
+      if (!Object.entries(user.value).length) {
+        return;
+      }
+      if (user.value.Role.toLowerCase() !== RoleType.Teacher.toLowerCase()) {
+        return;
+      }
+      course.value.Teacher = user.value.UserID;
+      CreateCourse(course.value, coursePassword.value);
+    };
 
     return {
-      create
-    }
-  },
-})
+      create,
+      course,
+      coursePassword
+    };
+  }
+});
 </script>
 
-
-
 <style scoped>
-.create-course-container{
+.create-course-container {
   display: flex;
   flex-direction: column;
   width: 93%;
@@ -145,24 +189,31 @@ export default defineComponent({
 }
 
 .create-course-form {
-  width: 50%;
-  padding: 0 4%;
-  padding-right: 0;
+  width: 48%;
+  padding: 0;
 }
 
 .create-course-form input {
   border: none;
   border-bottom: 1px solid;
   width: 100%;
-  height: 3rem;
+  /* height: 3rem; */
 }
 
 .create-course-form input:disabled {
   background: none;
 }
 
+.create-course-form form {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
 .create-course-form .form-group {
   margin-bottom: 3rem;
+  margin-right: 1%;
+  max-width: 50%;
 }
 
 .create-course-form input:focus {
@@ -175,7 +226,7 @@ export default defineComponent({
   justify-content: flex-end;
   align-items: center;
   flex-direction: column;
-  float: right;
+  /* float: right; */
 }
 
 .search-result-action-btn {
@@ -193,5 +244,11 @@ export default defineComponent({
 .search-result-action-btn:hover {
   cursor: pointer;
   background: whitesmoke;
+}
+
+.course-card-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 2%;
 }
 </style>

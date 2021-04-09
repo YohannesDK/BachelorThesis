@@ -1,4 +1,8 @@
-import { AssignmentModule, AssignmentReading, AssignmentTest } from "@/store/interfaces/assignments.types";
+import {
+  AssignmentModule,
+  AssignmentReading,
+  AssignmentTest
+} from "@/store/interfaces/assignments.types";
 
 const Test: AssignmentTest = {
   TestID: 0,

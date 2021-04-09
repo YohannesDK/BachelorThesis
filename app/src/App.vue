@@ -6,7 +6,7 @@
     <!-- page content -->
     <div
       ref="appContainer"
-      :class="{ appFullWidth: showSideBar }"
+      :class="{ appFullWidth: showSideBar, loading: showLoading }"
       class="container-fluid appContainer"
     >
       <router-view />
@@ -92,6 +92,10 @@ export default defineComponent({
 
 .appContainer {
   z-index: 0;
+}
+
+.appContainer.loading {
+  z-index: 1;
 }
 
 .appFullWidth {
