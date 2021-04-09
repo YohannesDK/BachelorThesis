@@ -67,5 +67,20 @@ app.get("/api/fetchCourseDoc", (request, response) => {
 
 
 });
+app.get("/api/getAllAvailableCourse", (request, response) => {
+    console.log("her")
+    let AvalableCourses = [];
+    models.courses.findAll().then(courses => {
+        console.log(courses)
+        if (courses.length !== 0) {
+           AvalableCourses = courses;
+        }
+        return response.status(200).json({
+            courses: AvalableCourses
+        })
+    });
+    // return response.status(400);
+});
 
 };
+

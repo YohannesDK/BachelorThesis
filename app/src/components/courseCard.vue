@@ -50,8 +50,8 @@ export default defineComponent({
 <style scoped>
 .course-card-container {
   transition: box-shadow 0.3s;
-  min-height: 25vh;
-  max-height: 25vh;
+  min-height: 23vh;
+  max-height: 23vh;
   min-width: 13rem;
   max-width: 13rem;
   margin: 0 3rem 0 0;
@@ -64,7 +64,7 @@ export default defineComponent({
 
 .course-image {
   background: goldenrod;
-  min-height: 10rem;
+  min-height: 9rem;
   width: 100%;
 }
 

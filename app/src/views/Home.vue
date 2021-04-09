@@ -259,7 +259,7 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.dashboard-card-notivication-nav .tittle {
+.dashboard-card-notivication-nav .tittle, .dashboard-card-nav .tittle {
   font-weight: 600;
   font-size: 1.3rem;
 }

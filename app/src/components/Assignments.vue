@@ -1,9 +1,15 @@
 <template>
-  <div class="assignment-container shadow rounded">
+  <div class="assignment-container shadow rounded"
+  v-test="{ id: 'assignment-module-container' }"
+  >
     <div class="assignment-header" @click="ToogleAssignmentBody()">
-      <h3 class="tittle">{{ Assignment.AssignmentName }}</h3>
+      <h3 class="tittle"
+        v-test="{ id: 'assignment-module-name' }"
+      >{{ Assignment.AssignmentName }}</h3>
       <div class="icon-container">
-        <p class="mx-3 mb-0">Due {{ Assignment.Date }}</p>
+        <p class="mx-3 mb-0"
+        v-test="{ id: 'assignment-module-date' }"
+        >Due {{ Assignment.Date }}</p>
         <div class="icon"
           @click.stop="HandleDropDown()"
           @mouseleave="RemoveDropDowns()"
@@ -25,22 +31,31 @@
       class="assignment-body"
       :class="{ showAssignment: ShowAssignmentBody }"
     >
-      <div class="assignment-readings">
+      <div class="assignment-readings"
+        v-test="{ id: 'assignment-module-reading-container' }"
+      >
         <div class="assignment-readings-header">
           <h4>Reading</h4>
         </div>
         <ul class="list-unstyled assignment-reading-list">
-          <li v-for="(read, index) in Assignment.ReadingList" :key="index">
+          <li v-for="(read, index) in Assignment.ReadingList" :key="index"
+          
+            v-test="{ id: 'assignment-module-reading-assignment' }"
+          >
             {{ read.ReadingDesc }}
           </li>
         </ul>
       </div>
-      <div class="assignment-tests">
+      <div class="assignment-tests"
+        v-test="{ id: 'assignment-module-test-container' }"
+      >
         <div class="assignment-tests-header">
           <h4>Tests</h4>
         </div>
         <ul class="list-unstyled assignment-test-list">
-          <li v-for="(Test, index) in Assignment.TestList" :key="index">
+          <li v-for="(Test, index) in Assignment.TestList" :key="index"
+            v-test="{ id: 'assignment-module-test-assignment' }"
+          >
             {{ Test.TestDesc }}
           </li>
         </ul>
@@ -52,8 +67,12 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { AssignmentModule } from "@/store/interfaces/assignments.types";
+import Test from "@/directives/test.directive";
 export default defineComponent({
   name: "Assignments",
+  directives: {
+    Test
+  },
   props: {
     Assignment: {
       type: Object as () => AssignmentModule,
