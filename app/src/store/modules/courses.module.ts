@@ -47,6 +47,10 @@ export default {
       if (courseIndex !== -1) {
         const course = (state.courses as courseType[])[courseIndex];
         courseModule.courseModuleID = course.courseModules.length;
+
+        courseModule.moduleSections.forEach((ms: CourseModuleSection) => {
+          ms.courseModuleID = courseModule.courseModuleID;
+        })
         course.courseModules.push(courseModule);
       }
     },
@@ -63,10 +67,19 @@ export default {
           .indexOf(courseModule.courseModuleID);
 
         if (moduleindex === -1) {
+          courseModule.courseModuleID = (state.courses[courseIndex] as courseType).courseModules.length;
+          courseModule.moduleSections.forEach((ms: CourseModuleSection) => {
+            ms.courseModuleID = courseModule.courseModuleID;
+          });
           (state.courses[courseIndex] as courseType).courseModules.push(
             courseModule
-          );
+            );
         } else {
+          courseModule.moduleSections.forEach((ms: CourseModuleSection) => {
+            if (ms.courseModuleID !== (state.courses[courseIndex] as courseType).courseModules[moduleindex].courseModuleID) {
+              ms.courseModuleID = (state.courses[courseIndex] as courseType).courseModules[moduleindex].courseModuleID; 
+            };
+          });
           (state.courses[courseIndex] as courseType).courseModules[
             moduleindex
           ] = courseModule;

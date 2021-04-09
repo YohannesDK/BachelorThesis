@@ -8,6 +8,7 @@ export enum CourseModuleItemEnum {
 
 export type CourseModuleSectionItems = {
   ItemID: number;
+  SectionID: number;
   Item: string; // this will either be document name, test name or a link to other resources
   ItemLink?: string;
   ItemResourceID: number;
@@ -19,6 +20,7 @@ export type CourseModuleSectionItems = {
 
 export type CourseModuleSection = {
   SectionID: number;
+  courseModuleID: number;
   SectionName: string;
   SectionItems: CourseModuleSectionItems[];
 };

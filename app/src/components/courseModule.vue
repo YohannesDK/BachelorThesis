@@ -1,8 +1,12 @@
 <template>
-  <div class="course-module-container">
+  <div class="course-module-container"
+    v-test="{ id: 'course-module-container' }"
+  >
     <div class="course-module shadow rounded">
       <div class="course-module-header" @click="ToogleCourseModule()">
-        <h3 class="tittle">{{ courseModule.moduleName }}</h3>
+        <h3 class="tittle"
+          v-test="{ id: 'course-module-name' }"
+        >{{ courseModule.moduleName }}</h3>
         <div class="icon-container">
           <div
             class="icon"
@@ -29,8 +33,12 @@
           class="course-module-section"
           v-for="(section, index) in courseModule.moduleSections"
           :key="index"
+          v-test="{ id: 'course-module-section' }"
+          
         >
-          <div class="course-module-section-header">
+          <div class="course-module-section-header"
+          v-test="{ id: 'course-module-section-name' }"
+          >
             {{ section.SectionName }}
           </div>
           <div
@@ -38,8 +46,11 @@
             v-for="(sectionItem, sIndex) in section.SectionItems"
             :key="sIndex"
             @click="OpenSectionItem(index, sIndex)"
+            v-test="{ id: 'course-module-section-item' }"
           >
-            <div class="section-item-item">
+            <div class="section-item-item"
+            v-test="{ id: 'course-module-section-item-name' }"
+            >
               {{ sectionItem.Item }}
             </div>
           </div>
@@ -59,9 +70,13 @@ import {
   CourseModuleItemEnum
 } from "@/store/interfaces/course";
 import router from "@/router";
+import Test from "@/directives/test.directive";
 
 export default defineComponent({
   name: "CourseModule",
+  directives: {
+    Test
+  },
   props: {
     courseModule: {
       type: Object as () => CourseModule,

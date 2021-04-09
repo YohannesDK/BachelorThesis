@@ -229,6 +229,7 @@ export default defineComponent({
     const AddNewSection = () => {
       const newSection: CourseModuleSection = {
         SectionID: courseModuleData.value.moduleSections.length,
+        courseModuleID: courseModuleData.value.courseModuleID,
         SectionName: "",
         SectionItems: []
       };
@@ -244,6 +245,7 @@ export default defineComponent({
           ItemID:
             courseModuleData.value.moduleSections[sectionIndex.value]
               .SectionItems.length,
+          SectionID: courseModuleData.value.moduleSections[sectionIndex.value].SectionID,
           Item: "",
           ItemLink: "",
           ItemResourceID: -1,
