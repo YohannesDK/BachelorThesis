@@ -14,10 +14,14 @@
       <h1>My Courses</h1>
 
       <div class="icon-container">
-        <div class="join-course" @click="JoinCourse">
+        <div class="join-course" @click="JoinCourse"
+        v-if="!IsTeacher"
+        >
           <fa icon="user-plus" />
         </div>
-        <div class="join-course" @click="CreateCourse">
+        <div class="join-course" @click="CreateCourse"
+        v-if="IsTeacher"
+        >
           <fa icon="plus" />
         </div>
       </div>
@@ -35,7 +39,7 @@
 
 <script lang="ts">
 // https://codepen.io/umeshagouda/pen/QggMve
-import { defineComponent, Ref, ref } from "vue";
+import { computed, defineComponent, Ref, ref } from "vue";
 import router from "@/router";
 import axios from "../services/api";
 import store from "@/store";
@@ -75,12 +79,15 @@ export default defineComponent({
       }
     };
 
+    const IsTeacher = computed(() => store.getters.getIsTeacher)
+
     return {
       courses,
       Modal,
       JoinCourse,
       CreateCourse,
-      coursesAction
+      coursesAction,
+      IsTeacher
     };
   }
 });

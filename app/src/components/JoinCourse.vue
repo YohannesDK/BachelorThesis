@@ -10,19 +10,24 @@
     <div class="row join-course-data">
       <div class="available-courses-container search-result-inner">
         <ul class="list-unstyled">
-          <li>1</li>
+          <li 
+          v-for="course in AvailabeCourses"
+          :key="course"
+          :class="{'active': SelectedCourseID === course.id}"
+          @click="SelectedCourseID = course.id, SelectedCourseName = course.courseName"
+          >{{course.courseName}}</li>
         </ul>
       </div>
       <div class="join-course-form">
         <form action="">
           <div class="form-group">
-            <input type="text" disabled />
+            <input type="text" v-model="SelectedCourseName" disabled />
             <small id="emailHelp" class="form-text text-muted"
               >Course Name</small
             >
           </div>
           <div class="form-group">
-            <input type="text" class="" />
+            <input type="text" v-model="coursePassword" />
             <small class="form-text text-muted">Enter Course Password</small>
           </div>
         </form>
@@ -37,23 +42,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from "vue";
-import { getAllCourses } from "@/services/api/course.service";
+import { defineComponent, onBeforeMount, onMounted, Ref, ref } from "vue";
+import { getAvailableCourses, JoinCourse } from "@/services/api/course.service";
 
 export default defineComponent({
   name: "JoinCourse",
   setup() {
+    const SelectedCourseID = ref(-1);
+    const SelectedCourseName = ref("");
+    const coursePassword = ref("");
+
+    const AvailabeCourses: Ref<any> = ref([]);
     const Join = () => {
-      console.log("Join");
+      if (SelectedCourseID.value !== -1 && coursePassword.value !== "") {
+        JoinCourse(SelectedCourseID.value, coursePassword.value);
+      }
     };
 
-    onBeforeMount(() => {
-      const courses = getAllCourses();
-      console.log(courses);
+    onMounted(async () => {
+      AvailabeCourses.value = await getAvailableCourses();
     });
 
     return {
-      Join
+      Join,
+      AvailabeCourses,
+      SelectedCourseID,
+      SelectedCourseName,
+      coursePassword
     };
   }
 });

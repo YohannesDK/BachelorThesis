@@ -28,12 +28,44 @@ export function getAllCourses() {
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         const courses: courseType[] = response.data.courses;
-        courses.forEach((course: courseType) => {
-          store.dispatch("AddCourse", course);
-        });
+        if (courses) {
+          courses.forEach((course: courseType) => {
+            store.dispatch("AddCourse", course);
+          });
+        }
       }
     })
     .catch((error: AxiosError) => {
       console.error(error);
     });
+}
+
+
+export function getAvailableCourses() {
+  return axios
+    .get("/getAvailableCourses")
+      .then((response: AxiosResponse) => {
+        if (response.status && response.status === 200) {
+          return response.data.availableCourses 
+        }
+      }).catch((error: AxiosError) => {
+        console.error(error);
+        return []
+      })
+}
+
+
+export function JoinCourse(courseId: number, coursePassword: string) {
+  axios
+    .post("/JoinCourse", {
+      courseId: courseId,
+      coursePassword: coursePassword
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("AddCourse", response.data.course);
+      }
+    }).catch((error: AxiosError) => {
+      console.error(error);
+    })
 }

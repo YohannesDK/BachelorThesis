@@ -81,6 +81,7 @@ app.get("/api/register", (request, response) => {
                     password: bcrypt.hashSync(password, 10),
                     role: role
                 });
+                return response.send(200);
             }
 
             if(users){
@@ -91,7 +92,6 @@ app.get("/api/register", (request, response) => {
             }
 
         });
-        response.send(200);
     }).catch((error) => {
         console.error(error);
     });

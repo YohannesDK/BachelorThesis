@@ -5,28 +5,60 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (app) => {
 
-app.get("/api/courseInfo", (request, response) => {
+app.post("/api/JoinCourse", (request, response) => {
 
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", async (err, decoded) => {
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
+
+        models.courses.findOne({where: {id: request.body.courseId}}).then(async (course) => {
+            if(!course){
+                return response.status(400).json({
+                    title: "Course Not Found",
+                    error: "No course found"
+                });
+            };
     
-    models.courses.findOne({where: {coursePassword: request.query.coursePass}}).then(function(course){
-        models.StudentCourseJunction.create({
-            userId: request.query.userId,
-            courseId: course.id
-        });
-        if(!course){
-            return response.json({
-                title: "Course Not Found",
-                error: "No course found"
+            let alreadyJoined = await models.StudentCourseJunction.findOne({
+                where: {userId: decoded.id, courseId: course.id }
             });
-        }
+    
+            if (!alreadyJoined) {
+                if (request.body.coursePassword === course.coursePassword) {
+                    models.StudentCourseJunction.create({
+                        userId: decoded.id,
+                        courseId: course.id
+                    });
 
-        return response.json({
-            title: "Fetch Course",
-            course: course
+                    let course_right_format = {
+                        courseId: course.id,
+                        courseName: course.courseName,
+                        courseShorthand: course.shorthand,
+                        documents: [],
+                        courseModules: [],
+                        AssignmentModules: [],
+                        QuestionSets: []
+                    };
+    
+                    return response.status(200).json({
+                        title: "Joined Course",
+                        course: course_right_format,
+                    });
+                }
+                return response.status(400).json({
+                    title: "Wrong Password",
+                });
+            }
+    
+            return response.status(400).json({
+                title: "Already Joined",
+            });
         });
-
-    });
-
+    })
+    
 });
 
 //This api call creates a course
@@ -113,6 +145,40 @@ app.get("/api/getCourses", (request, response) => {
                 return response.send(400);
             }
         }
+        
+        if (role.toLowerCase() === "student") {
+            let studentCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id}});
+            if (!studentCourses) { 
+                return response.status(204).json({
+                    tittle: "No Courses"
+                })
+            }
+            studentCourses = studentCourses.map(scourse => scourse.courseId);
+
+            let courses = await models.courses.findAll({where: {
+                id: studentCourses 
+            }});
+
+            if (courses) {
+                let courses_right_format = courses.map(course => {
+                    return {
+                        courseId: course.id,
+                        courseName: course.courseName,
+                        courseShorthand: course.shorthand,
+                        documents: [],
+                        courseModules: [],
+                        AssignmentModules: [],
+                        QuestionSets: []
+                    } 
+                });
+                return response.status(200).json({
+                    courses: courses_right_format
+                })
+            } else {
+                return response.send(400)
+            }
+
+        }
     })
 });
 
@@ -120,27 +186,31 @@ app.get("/api/getCourses", (request, response) => {
 app.get("/api/getAvailableCourses", (request, response) => {
     let availableCourses = [];
 
-
     let token = request.headers.token;
     jwt.verify(token, "secretkey", async (err, decoded )=> {
-        // if(err) return response.status(401).json({
-        //     title: "unauthorized",
-        //     error: err
-        // });
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
 
         // find all joined courses
-        let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: 4} });
-        availableCourses = await models.courses.findAll()
-
+        let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id} });
+        let courses = await models.courses.findAll()
 
         if (joinedCourses.length === 0) {
-            availableCourses = allCourses
+            availableCourses = courses
         } else {
-
+            joinedCourses.forEach(junction => {
+                courses.forEach(course => {
+                    if (course.courseId !== junction.courseId) {
+                        availableCourses.push(course);
+                    } 
+                }); 
+            });
         }
+
         return response.status(200).json({
-            a: availableCourses,
-            j: joinedCourses
+            availableCourses: availableCourses,
         })
 
     });

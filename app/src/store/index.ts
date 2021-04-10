@@ -62,6 +62,12 @@ const store = createStore({
     },
     getActiveUser: state => {
       return state.user;
+    },
+    getIsTeacher: state => {
+      if (state.user) {
+        return state.user.Role.toLocaleLowerCase() === "teacher";
+      }
+      return -1
     }
   },
   modules: {

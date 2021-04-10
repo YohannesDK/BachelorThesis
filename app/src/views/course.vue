@@ -91,7 +91,9 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 0">
           <div class="course-page-view-inner-header">
             <h1>Home</h1>
-            <div class="icon-container" @click="AddNew(0)">
+            <div class="icon-container" @click="AddNew(0)"
+            v-if="IsTeacher"
+            >
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -112,7 +114,9 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 1">
           <div class="course-page-view-inner-header">
             <h1>Documents</h1>
-            <div class="icon-container" @click="AddNew(1)">
+            <div class="icon-container" @click="AddNew(1)"
+            v-if="IsTeacher"
+            >
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -133,7 +137,9 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 2">
           <div class="course-page-view-inner-header">
             <h1>Assignments</h1>
-            <div class="icon-container" @click="AddNew(2)">
+            <div class="icon-container" @click="AddNew(2)"
+            v-if="IsTeacher"
+            >
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -153,7 +159,9 @@
         <div class="course-page-view-inner-container" v-if="menuIndex === 3">
           <div class="course-page-view-inner-header">
             <h1>Tests</h1>
-            <div class="icon-container" @click="AddNew(3)">
+            <div class="icon-container" @click="AddNew(3)"
+            v-if="IsTeacher"
+            >
               <div class="icon">
                 <fa icon="plus" />
               </div>
@@ -305,6 +313,8 @@ export default defineComponent({
       store.dispatch("deleteAssignmentModule", assigmentmodule);
     };
 
+    const IsTeacher = computed(() => store.getters.getIsTeacher)
+
     return {
       course,
       menuChoices,
@@ -321,7 +331,8 @@ export default defineComponent({
       assignmentModule,
       OnAssingmentEdit,
       OnAssignmentDelete,
-      AssigmentModuleAction
+      AssigmentModuleAction,
+      IsTeacher
     };
   }
 });
