@@ -115,6 +115,15 @@ export default {
       if (courseIndex !== -1) {
         const course = (state.courses as courseType[])[courseIndex];
         assingmentModule.AssignmentID = course.AssignmentModules.length;
+
+        assingmentModule.ReadingList.forEach((reading: AssignmentReading) => {
+          reading.AssignmentID = assingmentModule.AssignmentID
+        });
+
+        assingmentModule.TestList.forEach((test: AssignmentTest) => {
+          test.AssignmentID = assingmentModule.AssignmentID
+        });
+
         course.AssignmentModules.push(assingmentModule);
       }
     },

@@ -16,6 +16,21 @@ export function CreateCourse(course: courseType, coursePassword: string) {
         store.dispatch("AddCourse", response.data.course);
       }
     });
+  }
+  
+export function JoinCourse(courseId: number, coursePassword: string) {
+  axios
+    .post("/JoinCourse", {
+      courseId: courseId,
+      coursePassword: coursePassword
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("AddCourse", response.data.course);
+      }
+    }).catch((error: AxiosError) => {
+      console.error(error);
+    })
 }
 
 export function getAllCourses() {
@@ -55,17 +70,30 @@ export function getAvailableCourses() {
 }
 
 
-export function JoinCourse(courseId: number, coursePassword: string) {
-  axios
-    .post("/JoinCourse", {
-      courseId: courseId,
-      coursePassword: coursePassword
-    })
-    .then((response: AxiosResponse) => {
-      if (response.status && response.status === 200) {
-        store.dispatch("AddCourse", response.data.course);
-      }
-    }).catch((error: AxiosError) => {
-      console.error(error);
-    })
+export function CreateCourseModule() {
+  return "Not Implemented"
 }
+
+export function UpdateCourseModule() {
+  return "Not Implemented"
+}
+
+
+export function DeleteCourseModule() {
+  return "Not Implemented"
+}
+
+export function CreateAssignmentModule() {
+  return "Not Implemented"
+}
+
+export function UpdateAssignmentModule() {
+  return "Not Implemented"
+}
+
+
+export function DeleteAssignmentModule() {
+  return "Not Implemented"
+}
+
+

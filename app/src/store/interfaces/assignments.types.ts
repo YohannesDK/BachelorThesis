@@ -1,10 +1,12 @@
 export type AssignmentTest = {
   TestID: number;
+  AssignmentID: number;
   TestDesc: string;
 };
 
 export type AssignmentReading = {
   ReadingID: number;
+  AssignmentID: number;
   ReadingDesc: string;
   documentID?: number;
   link?: string;

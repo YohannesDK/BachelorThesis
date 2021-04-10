@@ -133,6 +133,7 @@ export default defineComponent({
       if (ReadingDesc.value !== "") {
         const newReading: AssignmentReading = {
           ReadingID: assignmentModuleData.value.ReadingList.length,
+          AssignmentID: assignmentModuleData.value.AssignmentID,
           ReadingDesc: ReadingDesc.value
         };
         assignmentModuleData.value.ReadingList.push(newReading);
@@ -144,6 +145,7 @@ export default defineComponent({
       if (TestDesc.value !== "") {
         const newTest: AssignmentTest = {
           TestID: assignmentModuleData.value.TestList.length,
+          AssignmentID: assignmentModuleData.value.AssignmentID,
           TestDesc: TestDesc.value
         };
         assignmentModuleData.value.TestList.push(newTest);
