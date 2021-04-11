@@ -142,4 +142,8 @@ export default defineComponent({
 .icon-container {
   display: flex;
 }
+
+.course-card-container {
+  margin-bottom: 2rem;
+}
 </style>

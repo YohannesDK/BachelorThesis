@@ -142,7 +142,8 @@
           </div>
           <div class="search-result-actions">
             <div class="search-result-action-btn shadow" @click="Save()">
-              <span>Save</span>
+              <span v-if="Saved === false">Save</span>
+              <span v-if="Saved === true">Saved</span>
             </div>
           </div>
         </div>
@@ -197,6 +198,7 @@ export default defineComponent({
     const searchvalue = ref("");
     const itemlink = ref("");
     const Added = ref(false);
+    const Saved = ref(false);
 
     const SelectedDocID = ref(-1);
     const SelectedQSID = ref(-1);
@@ -232,7 +234,20 @@ export default defineComponent({
       return false;
     });
 
+
+    const SectionChange = (sectionindex: number) => {
+      sectionItemIndex.value = -1;
+      SelectedDocID.value = -1;
+      sectionIndex.value = sectionindex;
+    };
+
+    const SectionItemChange = (newsectionitemindex: number) => {
+      sectionItemIndex.value = newsectionitemindex;
+    };
+
+    // #region mutations
     const AddNewSection = () => {
+      Saved.value = false;
       const newSection: CourseModuleSection = {
         SectionID: courseModuleData.value.moduleSections.length,
         courseModuleID: courseModuleData.value.courseModuleID,
@@ -247,6 +262,7 @@ export default defineComponent({
         sectionIndex.value !== -1 &&
         courseModuleData.value.moduleSections.length > 0
       ) {
+        Saved.value = false;
         const newSectionitem: CourseModuleSectionItems = {
           ItemID:
             courseModuleData.value.moduleSections[sectionIndex.value]
@@ -265,16 +281,6 @@ export default defineComponent({
       }
     };
 
-    const SectionChange = (sectionindex: number) => {
-      sectionItemIndex.value = -1;
-      SelectedDocID.value = -1;
-      sectionIndex.value = sectionindex;
-    };
-
-    const SectionItemChange = (newsectionitemindex: number) => {
-      sectionItemIndex.value = newsectionitemindex;
-    };
-
     const DeleteSection = (sectionindex: number) => {
       if (!ValidIndex.value) {
         return;
@@ -283,6 +289,7 @@ export default defineComponent({
         "Are you sure you want to delete the entire section?"
       );
       if (ConfirmDelete) {
+        Saved.value = false;
         try {
           courseModuleData.value.moduleSections.splice(sectionindex, 1);
 
@@ -303,6 +310,7 @@ export default defineComponent({
         return;
       }
       try {
+        Saved.value = false;
         courseModuleData.value.moduleSections[sectionindex].SectionItems.splice(
           itemindex,
           1
@@ -313,6 +321,43 @@ export default defineComponent({
       }
     };
 
+    const updateItemResourceIdSelection = (newItemResourceID: number) => {
+      try {
+        const sectionItem =
+          courseModuleData.value.moduleSections[sectionIndex.value]
+            .SectionItems[sectionItemIndex.value];
+        sectionItem.ItemResourceID = newItemResourceID;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const updateItemLink = () => {
+      try {
+        const sectionItem =
+          courseModuleData.value.moduleSections[sectionIndex.value]
+            .SectionItems[sectionItemIndex.value];
+        if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
+          sectionItem.ItemLink = itemlink.value;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    
+    const updateItemType = (itemtype: number) => {
+      try {
+        Saved.value = false;
+        courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[
+          sectionItemIndex.value
+        ].ItemType = itemtype;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // #endregion
+
+    // #region computation
     const DisableAttachArea = computed(() => {
       if (sectionIndex.value !== -1 && sectionItemIndex.value !== -1) {
         return true;
@@ -358,16 +403,6 @@ export default defineComponent({
       return "Add ...";
     });
 
-    const updateItemType = (itemtype: number) => {
-      try {
-        courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[
-          sectionItemIndex.value
-        ].ItemType = itemtype;
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     const searcheddocuments = computed(() => {
       if (searchvalue.value !== "") {
         return documents.value.filter((doc: documentType) => {
@@ -390,29 +425,6 @@ export default defineComponent({
       }
       return questionsets.value;
     });
-
-    const updateItemResourceIdSelection = (newItemResourceID: number) => {
-      try {
-        const sectionItem =
-          courseModuleData.value.moduleSections[sectionIndex.value]
-            .SectionItems[sectionItemIndex.value];
-        sectionItem.ItemResourceID = newItemResourceID;
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const updateItemLink = () => {
-      try {
-        const sectionItem =
-          courseModuleData.value.moduleSections[sectionIndex.value]
-            .SectionItems[sectionItemIndex.value];
-        if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
-          sectionItem.ItemLink = itemlink.value;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
     const SectionItemDocID = computed(() => {
       if (!ValidIndex.value) {
@@ -444,12 +456,17 @@ export default defineComponent({
       }
     });
 
+    // #endregion
+
     const Save = () => {
-      if (props.CourseModuleAction === 0) {
-        store.dispatch("AddNewCourseModule", courseModuleData.value);
-        return;
+      if (Saved.value === false) {
+        if (props.CourseModuleAction === 0) {
+          store.dispatch("AddNewCourseModule", courseModuleData.value); 
+          return;
+        }
+        store.dispatch("UpdateCourseModule", courseModuleData.value);
       }
-      store.dispatch("UpdateCourseModule", courseModuleData.value);
+      Saved.value = true;
     };
 
     // for handling mulitple links with a single v-model variable
@@ -517,7 +534,8 @@ export default defineComponent({
       updateItemResourceIdSelection,
       searchedquestionsets,
       SectionItemQSID,
-      updateItemLink
+      updateItemLink,
+      Saved
     };
   }
 });

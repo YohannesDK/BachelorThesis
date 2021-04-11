@@ -6,20 +6,24 @@ import {
 
 const Test: AssignmentTest = {
   TestID: 0,
+  AssignmentID: 0,
   TestDesc: "Vue Test - lifecycle"
 };
 const Test1: AssignmentTest = {
   TestID: 1,
+  AssignmentID: 0,
   TestDesc: "Vue Test - Reactivity"
 };
 
 const Reading: AssignmentReading = {
   ReadingID: 0,
+  AssignmentID: 0,
   ReadingDesc: "Read Chapter 1 of Narnia",
   documentID: 2
 };
 const Reading2: AssignmentReading = {
   ReadingID: 1,
+  AssignmentID: 0,
   ReadingDesc: "Read Chapter 1 of Harry Potter",
   documentID: 2
 };
