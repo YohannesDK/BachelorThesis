@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   CourseModule.init({
-    courseModuleID: DataTypes.INTEGER,
+    courseModuleID: {
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+      type: DataTypes.INTEGER
+    },
     courseId: DataTypes.INTEGER,
     moduleOrderIndex: DataTypes.INTEGER,
     public: DataTypes.BOOLEAN,
@@ -24,5 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'CourseModule',
   });
+  CourseModule.removeAttribute("id");
   return CourseModule;
 };

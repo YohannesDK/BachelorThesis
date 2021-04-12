@@ -164,6 +164,7 @@ import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import router from "@/router";
+import { CreateCourseModule } from "@/services/api/course.service";
 export default defineComponent({
   name: "AddCourseModule",
   props: {
@@ -461,6 +462,7 @@ export default defineComponent({
     const Save = () => {
       if (Saved.value === false) {
         if (props.CourseModuleAction === 0) {
+          CreateCourseModule(courseModuleData.value);
           store.dispatch("AddNewCourseModule", courseModuleData.value); 
           return;
         }

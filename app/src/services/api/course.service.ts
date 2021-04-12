@@ -1,6 +1,6 @@
 import axios from "@/services/api";
 import { AxiosError, AxiosResponse } from "axios";
-import { courseType } from "@/store/interfaces/course";
+import { CourseModule, courseType } from "@/store/interfaces/course";
 import store from "@/store";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
@@ -70,8 +70,14 @@ export function getAvailableCourses() {
 }
 
 
-export function CreateCourseModule() {
-  return "Not Implemented"
+export function CreateCourseModule(newCourseModule: CourseModule) {
+  axios
+    .post("/createCourseModule", {
+      courseModule: newCourseModule
+    })
+    .then((response: AxiosResponse) => {
+      console.log(response.data);
+    })
 }
 
 export function UpdateCourseModule() {

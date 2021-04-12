@@ -231,7 +231,98 @@ module.exports = (app) => {
     })
 
     app.post("/api/createCourseModule", (request, response) => {
-        console.log("create course")
+
+        let token = request.headers.token;
+        jwt.verify(token, "secretkey", (err, decoded )=> {
+            if(err) return response.status(401).json({
+                title: "unauthorized",
+                error: err
+            });
+
+            if (decoded.role.toLowerCase() !== "teacher") {
+                return response.status(401).json({
+                    title: "unauthorized",
+                    error: err
+                });
+            }
+        });
+
+        const courseModule = request.body.courseModule;
+
+        const NewcourseModule = {
+            courseModuleID: -1,
+            courseId: -1,
+            moduleOrderIndex: -1,
+            public: false,
+            moduleName: "",
+            moduleSections: []
+        };
+
+        // create courseModule
+        models.CourseModule.create({
+            courseId: courseModule.courseId,
+            moduleOrderIndex: courseModule.moduleOrderIndex,
+            public: courseModule.public,
+            moduleName: courseModule.moduleName
+        }).then((createdCourseModule) => {
+            NewcourseModule.courseModuleID = createdCourseModule.courseModuleID;
+            NewcourseModule.courseId = createdCourseModule.courseId;
+            NewcourseModule.moduleOrderIndex = createdCourseModule.moduleOrderIndex;
+            NewcourseModule.public = createdCourseModule.public;
+            NewcourseModule.moduleName = createdCourseModule.moduleName;
+
+            let sectionItems = [];
+
+            // create sections and sectionitems
+            courseModule.moduleSections.forEach( async (section) => {
+                sectionItems.length = 0
+
+                // create courseModuleSections
+                let createdCourseModuleSection = await models.CourseModuleSection.create({
+                    courseModuleID: createdCourseModule.courseModuleID,
+                    SectionName: section.SectionName
+                });
+    
+                // create courseModuleSectionItems
+                section.SectionItems.forEach(async (sectionItem) => {
+                    let createdCourseModuleSectionItem;
+                    if (sectionItem.ItemType === 2) {
+                        createdCourseModuleSectionItem = await models.CourseModuleSectionItem.create({
+                            SectionID: createdCourseModuleSection.SectionID,
+                            Item: sectionItem.Item,
+                            ItemLink: sectionItem.ItemLink,
+                            ItemType: sectionItem.ItemType
+                        });
+                    } else {
+                        createdCourseModuleSectionItem = await models.CourseModuleSectionItem.create({
+                            SectionID: createdCourseModuleSection.SectionID,
+                            Item: sectionItem.Item,
+                            ItemResourceID: sectionItem.ItemResourceID,
+                            ItemType: sectionItem.ItemType
+                        });
+                    }
+                    // console.log("created item", createdCourseModuleSectionItem)
+                    sectionItems.push(createdCourseModuleSectionItem);
+                });
+    
+                let section_with_sectionItems = {
+                    SectionID: createdCourseModuleSection.SectionID,
+                    courseModuleID: createdCourseModule.courseModuleID,
+                    SectionName: createdCourseModuleSection.SectionName,
+                    SectionItems: sectionItems
+                };
+                console.log("Section with items", section_with_sectionItems);
+                NewcourseModule.moduleSections.push(section_with_sectionItems);
+            });
+
+            return response.status(200).json({
+                newcourseModule: NewcourseModule
+            });
+
+        }).catch(() => {
+            return response.sendStatus(400);
+        })
+
     })
 };
 

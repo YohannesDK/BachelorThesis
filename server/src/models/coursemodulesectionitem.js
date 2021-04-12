@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   CourseModuleSectionItem.init({
-    ItemID: DataTypes.INTEGER,
+    ItemID: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
     SectionID: DataTypes.INTEGER,
     Item: DataTypes.STRING,
     ItemLink: DataTypes.STRING,
@@ -25,5 +30,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'CourseModuleSectionItem',
   });
+  CourseModuleSectionItem.removeAttribute("id");
   return CourseModuleSectionItem;
 };
