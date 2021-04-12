@@ -10,12 +10,17 @@
     <div class="row join-course-data">
       <div class="available-courses-container search-result-inner">
         <ul class="list-unstyled">
-          <li 
-          v-for="course in AvailabeCourses"
-          :key="course"
-          :class="{'active': SelectedCourseID === course.id}"
-          @click="SelectedCourseID = course.id, SelectedCourseName = course.courseName"
-          >{{course.courseName}}</li>
+          <li
+            v-for="course in AvailabeCourses"
+            :key="course"
+            :class="{ active: SelectedCourseID === course.id }"
+            @click="
+              (SelectedCourseID = course.id),
+                (SelectedCourseName = course.courseName)
+            "
+          >
+            {{ course.courseName }}
+          </li>
         </ul>
       </div>
       <div class="join-course-form">

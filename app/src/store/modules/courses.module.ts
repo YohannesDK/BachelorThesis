@@ -117,11 +117,11 @@ export default {
         assingmentModule.AssignmentID = course.AssignmentModules.length;
 
         assingmentModule.ReadingList.forEach((reading: AssignmentReading) => {
-          reading.AssignmentID = assingmentModule.AssignmentID
+          reading.AssignmentID = assingmentModule.AssignmentID;
         });
 
         assingmentModule.TestList.forEach((test: AssignmentTest) => {
-          test.AssignmentID = assingmentModule.AssignmentID
+          test.AssignmentID = assingmentModule.AssignmentID;
         });
 
         course.AssignmentModules.push(assingmentModule);

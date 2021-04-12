@@ -67,7 +67,7 @@ const store = createStore({
       if (state.user) {
         return state.user.Role.toLocaleLowerCase() === "teacher";
       }
-      return -1
+      return -1;
     }
   },
   modules: {

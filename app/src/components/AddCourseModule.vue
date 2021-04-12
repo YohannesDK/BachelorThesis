@@ -164,7 +164,10 @@ import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import router from "@/router";
-import { CreateCourseModule } from "@/services/api/course.service";
+import {
+  CreateCourseModule,
+  UpdateCourseModule
+} from "@/services/api/course.service";
 export default defineComponent({
   name: "AddCourseModule",
   props: {
@@ -218,6 +221,16 @@ export default defineComponent({
       moduleSections: []
     });
 
+    // object for capturing difference, when updating
+    const oldcourseModuleData: Ref<CourseModule> = ref({
+      courseModuleID: -1,
+      courseId: -1,
+      moduleOrderIndex: 0,
+      public: false,
+      moduleName: "",
+      moduleSections: []
+    });
+
     const ValidIndex = computed((): boolean => {
       if (
         sectionIndex.value !== -1 &&
@@ -234,7 +247,6 @@ export default defineComponent({
       }
       return false;
     });
-
 
     const SectionChange = (sectionindex: number) => {
       sectionItemIndex.value = -1;
@@ -344,7 +356,7 @@ export default defineComponent({
         console.error(error);
       }
     };
-    
+
     const updateItemType = (itemtype: number) => {
       try {
         Saved.value = false;
@@ -462,10 +474,12 @@ export default defineComponent({
     const Save = () => {
       if (Saved.value === false) {
         if (props.CourseModuleAction === 0) {
-          CreateCourseModule(courseModuleData.value);
-          store.dispatch("AddNewCourseModule", courseModuleData.value); 
+          const newCourseModule = CreateCourseModule(courseModuleData.value);
+          console.log(newCourseModule);
+          store.dispatch("AddNewCourseModule", newCourseModule);
           return;
         }
+        UpdateCourseModule(oldcourseModuleData.value, courseModuleData.value);
         store.dispatch("UpdateCourseModule", courseModuleData.value);
       }
       Saved.value = true;
@@ -499,6 +513,7 @@ export default defineComponent({
       // editing existing coursemodule
       if (props.CourseModuleAction === 1) {
         if (props.courseModule) {
+          oldcourseModuleData.value = props.courseModule;
           courseModuleData.value = props.courseModule;
         }
       }

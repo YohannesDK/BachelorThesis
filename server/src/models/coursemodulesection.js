@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.CourseModule, {sourceKey: 'courseModuleID', foreignKey: 'fk_courseModuleID', targetKey: 'courseModuleID'})
+      this.belongsTo(models.CourseModule, {sourceKey: 'courseModuleID', foreignKey: 'courseModuleID', targetKey: 'courseModuleID'})
     }
   };
   CourseModuleSection.init({

@@ -14,14 +14,10 @@
       <h1>My Courses</h1>
 
       <div class="icon-container">
-        <div class="join-course" @click="JoinCourse"
-        v-if="!IsTeacher"
-        >
+        <div class="join-course" @click="JoinCourse" v-if="!IsTeacher">
           <fa icon="user-plus" />
         </div>
-        <div class="join-course" @click="CreateCourse"
-        v-if="IsTeacher"
-        >
+        <div class="join-course" @click="CreateCourse" v-if="IsTeacher">
           <fa icon="plus" />
         </div>
       </div>
@@ -79,7 +75,7 @@ export default defineComponent({
       }
     };
 
-    const IsTeacher = computed(() => store.getters.getIsTeacher)
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     return {
       courses,

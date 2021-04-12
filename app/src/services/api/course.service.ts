@@ -16,8 +16,8 @@ export function CreateCourse(course: courseType, coursePassword: string) {
         store.dispatch("AddCourse", response.data.course);
       }
     });
-  }
-  
+}
+
 export function JoinCourse(courseId: number, coursePassword: string) {
   axios
     .post("/JoinCourse", {
@@ -28,9 +28,10 @@ export function JoinCourse(courseId: number, coursePassword: string) {
       if (response.status && response.status === 200) {
         store.dispatch("AddCourse", response.data.course);
       }
-    }).catch((error: AxiosError) => {
-      console.error(error);
     })
+    .catch((error: AxiosError) => {
+      console.error(error);
+    });
 }
 
 export function getAllCourses() {
@@ -44,6 +45,7 @@ export function getAllCourses() {
       if (response.status && response.status === 200) {
         const courses: courseType[] = response.data.courses;
         if (courses) {
+          console.log(response.data.courses);
           courses.forEach((course: courseType) => {
             store.dispatch("AddCourse", course);
           });
@@ -55,51 +57,58 @@ export function getAllCourses() {
     });
 }
 
-
 export function getAvailableCourses() {
   return axios
     .get("/getAvailableCourses")
-      .then((response: AxiosResponse) => {
-        if (response.status && response.status === 200) {
-          return response.data.availableCourses 
-        }
-      }).catch((error: AxiosError) => {
-        console.error(error);
-        return []
-      })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        return response.data.availableCourses;
+      }
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+      return [];
+    });
 }
 
-
 export function CreateCourseModule(newCourseModule: CourseModule) {
-  axios
+  return axios
     .post("/createCourseModule", {
       courseModule: newCourseModule
     })
     .then((response: AxiosResponse) => {
-      console.log(response.data);
+      if (response.status && response.status === 200) {
+        return response.data.newcourseModule;
+      }
+    });
+}
+
+export function UpdateCourseModule(
+  oldCourseModule: CourseModule,
+  updatedCourseModule: CourseModule
+) {
+  axios
+    .post("/updateCourseModule", {
+      oldCourseModule: oldCourseModule,
+      updatedCourseModule: updatedCourseModule
     })
+    .then((response: AxiosResponse) => {
+      console.log(response.data);
+    });
 }
-
-export function UpdateCourseModule() {
-  return "Not Implemented"
-}
-
 
 export function DeleteCourseModule() {
-  return "Not Implemented"
+  return "Not Implemented";
 }
 
 export function CreateAssignmentModule() {
-  return "Not Implemented"
+  return "Not Implemented";
 }
 
 export function UpdateAssignmentModule() {
-  return "Not Implemented"
+  return "Not Implemented";
 }
-
 
 export function DeleteAssignmentModule() {
-  return "Not Implemented"
+  return "Not Implemented";
 }
-
-

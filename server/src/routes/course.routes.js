@@ -1,6 +1,7 @@
 //This file contains endpoints related to courses
 const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
+const updateDifference = require("../controllers/course.controller").updateDifference
 
 
 module.exports = (app) => {
@@ -151,6 +152,51 @@ module.exports = (app) => {
                             QuestionSets: []
                         } 
                     });
+                    
+                    await Promise.all(courses_right_format.map(async (course) => {
+                        // fetch all course modules, sections and sectionitems
+
+                        let courseModules = await models.CourseModule.findAll({where: {
+                            courseId: course.courseId,
+                        }});
+
+                        let course_modules_right_format = courseModules.map(courseModule => {
+                            return {
+                                courseModuleID: courseModule.courseModuleID,
+                                courseId: courseModule.courseId,
+                                moduleOrderIndex: courseModule.moduleOrderIndex,
+                                public: courseModule.public,
+                                moduleName: courseModule.moduleName,
+                                moduleSections: []
+                            }
+                        });
+
+                        await Promise.all(course_modules_right_format.map(async (coursemodule) => {
+                            let courseModuleSections = await models.CourseModuleSection.findAll({where: {
+                                courseModuleID: coursemodule.courseModuleID 
+                            }})
+
+                            let course_module_section_right_format = courseModuleSections.map(section => {
+                                return {
+                                    SectionID: section.SectionID,
+                                    courseModuleID: section.courseModuleID,
+                                    SectionName: section.SectionName,
+                                    SectionItems: [] 
+                                }
+                            });
+
+                            await Promise.all(course_module_section_right_format.map(async (section) => {
+                                let coursemodulesectionitems = await models.CourseModuleSectionItem.findAll({where: {
+                                    SectionID: section.SectionID 
+                                }});
+                                section.SectionItems = [...coursemodulesectionitems];
+                            }))
+
+                            coursemodule.moduleSections = [...course_module_section_right_format];
+                        }))
+                        course.courseModules = [...course_modules_right_format];
+                    }));
+
                     return response.status(200).json({
                         courses: courses_right_format
                     })
@@ -185,6 +231,52 @@ module.exports = (app) => {
                             QuestionSets: []
                         } 
                     });
+
+
+                    await Promise.all(courses_right_format.map(async (course) => {
+                        // fetch all course modules, sections and sectionitems
+
+                        let courseModules = await models.CourseModule.findAll({where: {
+                            courseId: course.courseId,
+                            public: true
+                        }});
+
+                        let course_modules_right_format = courseModules.map(courseModule => {
+                            return {
+                                courseModuleID: coursemodule.courseModuleID,
+                                courseId: courseModule.courseId,
+                                moduleOrderIndex: courseModule.moduleOrderIndex,
+                                public: courseModule.public,
+                                moduleName: courseModule.moduleName,
+                                moduleSections: []
+                            }
+                        });
+
+                        await Promise.all(course_modules_right_format.map(async (coursemodule) => {
+                            let courseModuleSections = await models.CourseModuleSection.findAll({where: {
+                                courseModuleID: coursemodule.courseModuleID 
+                            }})
+
+                            let course_module_section_right_format = courseModuleSections.map(section => {
+                                return {
+                                    SectionID: section.SectionID,
+                                    courseModuleID: section.courseModuleID,
+                                    SectionName: section.SectionName,
+                                    SectionItems: [] 
+                                }
+                            });
+
+                            await Promise.all(course_module_section_right_format.map(async (section) => {
+                                let coursemodulesectionitems = await models.CourseModuleSectionItem.findAll({where: {
+                                    SectionID: section.SectionID 
+                                }});
+                                section.SectionItems = [...coursemodulesectionitems];
+                            }))
+                            coursemodule.moduleSections = [...course_module_section_right_format];
+                        }))
+                        course.courseModules = [...course_modules_right_format];
+                    }));
+
                     return response.status(200).json({
                         courses: courses_right_format
                     })
@@ -264,27 +356,24 @@ module.exports = (app) => {
             moduleOrderIndex: courseModule.moduleOrderIndex,
             public: courseModule.public,
             moduleName: courseModule.moduleName
-        }).then((createdCourseModule) => {
+        }).then(async (createdCourseModule) => {
             NewcourseModule.courseModuleID = createdCourseModule.courseModuleID;
             NewcourseModule.courseId = createdCourseModule.courseId;
             NewcourseModule.moduleOrderIndex = createdCourseModule.moduleOrderIndex;
             NewcourseModule.public = createdCourseModule.public;
             NewcourseModule.moduleName = createdCourseModule.moduleName;
+            
+            await Promise.all(courseModule.moduleSections.map(async (section) => {
+                let sectionItems = [];
 
-            let sectionItems = [];
-
-            // create sections and sectionitems
-            courseModule.moduleSections.forEach( async (section) => {
-                sectionItems.length = 0
-
-                // create courseModuleSections
+                //create module section
                 let createdCourseModuleSection = await models.CourseModuleSection.create({
                     courseModuleID: createdCourseModule.courseModuleID,
                     SectionName: section.SectionName
                 });
     
                 // create courseModuleSectionItems
-                section.SectionItems.forEach(async (sectionItem) => {
+                await Promise.all(section.SectionItems.map(async (sectionItem) => {
                     let createdCourseModuleSectionItem;
                     if (sectionItem.ItemType === 2) {
                         createdCourseModuleSectionItem = await models.CourseModuleSectionItem.create({
@@ -301,19 +390,16 @@ module.exports = (app) => {
                             ItemType: sectionItem.ItemType
                         });
                     }
-                    // console.log("created item", createdCourseModuleSectionItem)
                     sectionItems.push(createdCourseModuleSectionItem);
-                });
-    
+                }))
                 let section_with_sectionItems = {
                     SectionID: createdCourseModuleSection.SectionID,
                     courseModuleID: createdCourseModule.courseModuleID,
                     SectionName: createdCourseModuleSection.SectionName,
                     SectionItems: sectionItems
                 };
-                console.log("Section with items", section_with_sectionItems);
                 NewcourseModule.moduleSections.push(section_with_sectionItems);
-            });
+            }))
 
             return response.status(200).json({
                 newcourseModule: NewcourseModule
@@ -323,6 +409,14 @@ module.exports = (app) => {
             return response.sendStatus(400);
         })
 
+    });
+
+    app.post("/api/updateCourseModule", (request, response) => {
+        return response.send(200);
+    });
+
+    app.delete("/api/deleteCourseModule", (request, response) => {
+        console.log(request.data.courseModule);
     })
 };
 
