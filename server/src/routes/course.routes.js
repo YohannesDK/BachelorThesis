@@ -412,7 +412,103 @@ module.exports = (app) => {
     });
 
     app.post("/api/updateCourseModule", (request, response) => {
-        return response.send(200);
+        const courseModule = request.body.EditData.courseModule
+        const updatedsections = request.body.EditData.updatedsections
+        const updatedsectionitems = request.body.EditData.updatedsectionitems
+        const deletedsections = request.body.EditData.deletedsections
+        const deletedsectionitems = request.body.EditData.deletedsectionitems
+
+        let token = request.headers.token;
+        jwt.verify(token, "secretkey", async (err, decoded) => {
+            if(err) return response.status(401).json({
+                title: "unauthorized",
+                error: err
+            });
+
+            // update tittle
+            await models.CourseModule.update({moduleName: courseModule.moduleName},
+                {where: {courseModuleID: courseModule.courseModuleID}});
+
+            // create new sections and update old sections
+            await Promise.all( courseModule.moduleSections.map(async(section, section_index) => {
+                // add new section if id is -1
+                if (section.SectionID === -1) {
+                    // create section
+                    let createdCourseModuleSection = await models.CourseModuleSection.create({
+                        courseModuleID: courseModule.courseModuleID,
+                        SectionName: section.SectionName
+                    });
+                    // assingn created section id
+                    courseModule.moduleSections[section_index].SectionID = createdCourseModuleSection.SectionID
+
+                    // create each item in section
+                    await Promise.all( section.SectionItems.map(async(sectionitem, section_item_index) => {
+                        let createdCourseModuleSectionItem;
+                        if (sectionitem.ItemType === 2) {
+                            createdCourseModuleSectionItem = await models.CourseModuleSectionItem.create({
+                                SectionID: createdCourseModuleSection.SectionID,
+                                Item: sectionitem.Item,
+                                ItemLink: sectionitem.ItemLink,
+                                ItemType: sectionitem.ItemType
+                            });
+                        } else {
+                            createdCourseModuleSectionItem = await models.CourseModuleSectionItem.create({
+                                SectionID: createdCourseModuleSection.SectionID,
+                                Item: sectionitem.Item,
+                                ItemResourceID: sectionitem.ItemResourceID,
+                                ItemType: sectionitem.ItemType
+                            });
+                        }
+
+                        // assign created sectionitem id
+                        courseModule.moduleSections[section_index].SectionItems[section_item_index] = {
+                            ItemID: createdCourseModuleSectionItem.ItemID,
+                            SectionID: createdCourseModuleSectionItem.SectionID,
+                        }
+                    }))
+
+                }
+
+                // update section name
+                if (String(section.SectionID) in updatedsections) {
+                    await models.CourseModuleSection.update({SectionName: section.SectionName}, {where: {SectionID: section.SectionID}})
+                }
+            }));
+
+            // delete entire sections
+            await Promise.all(Object.keys(deletedsections).map(async (sectionID) => {
+                await models.CourseModuleSection.destroy({where: {SectionID: Number(sectionID)}})
+
+                // TODO - this should be done automatically using foreign keys
+                await Promise.all( deletedsections[sectionID].SectionItems.map(async(sectionItem) => {
+                    await models.CourseModuleSectionItem.destroy({where: {ItemID: sectionItem.ItemID}});
+                }));
+            }));
+
+            // delete single sectionitem
+            await Promise.all(Object.keys(deletedsectionitems).map(async (itemID) => {
+                await models.CourseModuleSectionItem.destroy({where: {ItemID: itemID}});
+            }));
+
+
+            // update every section item
+            await Promise.all(Object.keys(updatedsectionitems).map(async (itemID) => {
+                const Sectionitem = updatedsectionitems[itemID];
+
+                await models.CourseModuleSectionItem.update({
+                        Item: Sectionitem.Item, 
+                        ItemLink: Sectionitem.ItemLink, 
+                        ItemResourceID: Sectionitem.ItemResourceID,
+                        ItemType: Sectionitem.ItemType
+                    }, 
+                    {where: {ItemID: Number(itemID)}});
+            }));
+
+        });
+
+        return response.status(200).json({
+            courseModule: courseModule
+        });
     });
 
     app.delete("/api/deleteCourseModule", (request, response) => {

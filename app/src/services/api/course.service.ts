@@ -72,28 +72,30 @@ export function getAvailableCourses() {
 }
 
 export function CreateCourseModule(newCourseModule: CourseModule) {
-  return axios
+  axios
     .post("/createCourseModule", {
       courseModule: newCourseModule
     })
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
-        return response.data.newcourseModule;
+        if (response.data.newcourseModule) {
+          store.dispatch("AddNewCourseModule", response.data.newcourseModule);
+        }
       }
     });
 }
 
-export function UpdateCourseModule(
-  oldCourseModule: CourseModule,
-  updatedCourseModule: CourseModule
-) {
+export function UpdateCourseModule(EditData: any) {
   axios
     .post("/updateCourseModule", {
-      oldCourseModule: oldCourseModule,
-      updatedCourseModule: updatedCourseModule
+      EditData: EditData,
     })
     .then((response: AxiosResponse) => {
-      console.log(response.data);
+      if (response.status && response.status === 200) {
+        if (response.data.courseModule) {
+          store.dispatch("UpdateCourseModule", response.data.courseModule) 
+        }
+      }
     });
 }
 

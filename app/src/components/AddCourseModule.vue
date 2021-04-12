@@ -39,6 +39,7 @@
                   type="text"
                   v-model="section.SectionName"
                   placeholder="Section Name..."
+                  @input="UpdatedSection(section)"
                   :disabled="sectionIndex !== index"
                 />
                 <span @click="DeleteSection(index)">x</span>
@@ -69,6 +70,7 @@
                   <input
                     type="text"
                     v-model="sectionitem.Item"
+                    @input="UpdatedSectionItem(sectionitem)"
                     placeholder="Section Name..."
                     :disabled="sectionItemIndex !== index"
                   />
@@ -221,16 +223,44 @@ export default defineComponent({
       moduleSections: []
     });
 
-    // object for capturing difference, when updating
-    const oldcourseModuleData: Ref<CourseModule> = ref({
-      courseModuleID: -1,
-      courseId: -1,
-      moduleOrderIndex: 0,
-      public: false,
-      moduleName: "",
-      moduleSections: []
-    });
+    // // object for capturing difference, when updating
+    // const oldcourseModuleData: CourseModule = {
+    //   courseModuleID: -1,
+    //   courseId: -1,
+    //   moduleOrderIndex: 0,
+    //   public: false,
+    //   moduleName: "",
+    //   moduleSections: []
+    // };
 
+    // to capture updates when editing module
+    const updatedModuleName = ref(courseModuleData.value.moduleName);
+    const updatedModuleSections: any = {};
+    const updatedModuleSectionItems: any = {};
+    const deletedModuleSections: any = {};
+    const deletedModuleSectionItems: any = {};
+
+    const UpdatedSection = (section: CourseModuleSection) => {
+      if (section.SectionID !== -1) {
+        if (!(section.SectionID in updatedModuleSections)) {
+          updatedModuleSections[section.SectionID] = section 
+          return;
+        } 
+        updatedModuleSections[section.SectionID] = section 
+      }
+    }
+
+    const UpdatedSectionItem = (sectionItem: CourseModuleSectionItems) => {
+      if (sectionItem.ItemID !== -1) {
+        if (!(sectionItem.ItemID in updatedModuleSectionItems)) {
+          updatedModuleSectionItems[sectionItem.ItemID] = sectionItem 
+          return;
+        } 
+        updatedModuleSectionItems[sectionItem.ItemID] = sectionItem 
+      }
+    }
+
+    // #region index handling
     const ValidIndex = computed((): boolean => {
       if (
         sectionIndex.value !== -1 &&
@@ -253,16 +283,16 @@ export default defineComponent({
       SelectedDocID.value = -1;
       sectionIndex.value = sectionindex;
     };
-
     const SectionItemChange = (newsectionitemindex: number) => {
       sectionItemIndex.value = newsectionitemindex;
     };
+    // #endregion
 
     // #region mutations
     const AddNewSection = () => {
       Saved.value = false;
       const newSection: CourseModuleSection = {
-        SectionID: courseModuleData.value.moduleSections.length,
+        SectionID: -1,
         courseModuleID: courseModuleData.value.courseModuleID,
         SectionName: "",
         SectionItems: []
@@ -277,9 +307,7 @@ export default defineComponent({
       ) {
         Saved.value = false;
         const newSectionitem: CourseModuleSectionItems = {
-          ItemID:
-            courseModuleData.value.moduleSections[sectionIndex.value]
-              .SectionItems.length,
+          ItemID: -1,
           SectionID:
             courseModuleData.value.moduleSections[sectionIndex.value].SectionID,
           Item: "",
@@ -304,8 +332,17 @@ export default defineComponent({
       if (ConfirmDelete) {
         Saved.value = false;
         try {
-          courseModuleData.value.moduleSections.splice(sectionindex, 1);
+          const section = courseModuleData.value.moduleSections[sectionindex];
 
+          if (section.SectionID !== -1) {
+            if (!(section.SectionID in deletedModuleSections)) {
+              deletedModuleSections[section.SectionID] = section
+            }
+            if (section.SectionID in updatedModuleSections) {
+              delete updatedModuleSections[section.SectionID]
+            }
+          }
+          courseModuleData.value.moduleSections.splice(sectionindex, 1);
           if (
             sectionIndex.value >= courseModuleData.value.moduleSections.length
           ) {
@@ -324,6 +361,17 @@ export default defineComponent({
       }
       try {
         Saved.value = false;
+        const sectionitem = courseModuleData.value.moduleSections[sectionindex].SectionItems[itemindex];
+
+        if (sectionitem.ItemID !== -1) {
+          if (!(sectionitem.ItemID in deletedModuleSectionItems)) {
+              deletedModuleSectionItems[sectionitem.ItemID] = sectionitem
+          }
+          if (sectionitem.ItemID in updatedModuleSectionItems) {
+            delete updatedModuleSectionItems[sectionitem.ItemID]
+          }
+        }
+
         courseModuleData.value.moduleSections[sectionindex].SectionItems.splice(
           itemindex,
           1
@@ -340,6 +388,9 @@ export default defineComponent({
           courseModuleData.value.moduleSections[sectionIndex.value]
             .SectionItems[sectionItemIndex.value];
         sectionItem.ItemResourceID = newItemResourceID;
+
+        // add sectionitem to updated list
+        UpdatedSectionItem(sectionItem);
       } catch (error) {
         console.error(error);
       }
@@ -351,6 +402,9 @@ export default defineComponent({
             .SectionItems[sectionItemIndex.value];
         if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
           sectionItem.ItemLink = itemlink.value;
+
+          // add sectionitem to updated list
+          UpdatedSectionItem(sectionItem);
         }
       } catch (error) {
         console.error(error);
@@ -360,9 +414,13 @@ export default defineComponent({
     const updateItemType = (itemtype: number) => {
       try {
         Saved.value = false;
-        courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[
+        const sectionItem = courseModuleData.value.moduleSections[sectionIndex.value].SectionItems[
           sectionItemIndex.value
-        ].ItemType = itemtype;
+        ]
+        sectionItem.ItemType = itemtype;
+
+        // add sectionitem to updated list
+        UpdatedSectionItem(sectionItem);
       } catch (error) {
         console.error(error);
       }
@@ -474,13 +532,25 @@ export default defineComponent({
     const Save = () => {
       if (Saved.value === false) {
         if (props.CourseModuleAction === 0) {
-          const newCourseModule = CreateCourseModule(courseModuleData.value);
-          console.log(newCourseModule);
-          store.dispatch("AddNewCourseModule", newCourseModule);
+          CreateCourseModule(courseModuleData.value);
           return;
         }
-        UpdateCourseModule(oldcourseModuleData.value, courseModuleData.value);
-        store.dispatch("UpdateCourseModule", courseModuleData.value);
+        const EditData = {
+          courseModule: courseModuleData.value,
+          updatedsections: updatedModuleSections,
+          updatedsectionitems: updatedModuleSectionItems,
+          deletedsections: deletedModuleSections,
+          deletedsectionitems: deletedModuleSectionItems
+        }
+        UpdateCourseModule(EditData);
+        // console.log("New: ", courseModuleData.value)
+        // console.log("up_sections: ", updatedModuleSections)
+        // console.log("up_sections_Item: ", updatedModuleSectionItems)
+        // console.log("up_modulename: ", updatedModuleName.value)
+        // console.log("del_sections: ", deletedModuleSections)
+        // console.log("del_sectionitems: ", deletedModuleSectionItems)
+        // UpdateCourseModule(oldcourseModuleData.value, courseModuleData.value);
+        // store.dispatch("UpdateCourseModule", courseModuleData.value);
       }
       Saved.value = true;
     };
@@ -513,7 +583,6 @@ export default defineComponent({
       // editing existing coursemodule
       if (props.CourseModuleAction === 1) {
         if (props.courseModule) {
-          oldcourseModuleData.value = props.courseModule;
           courseModuleData.value = props.courseModule;
         }
       }
@@ -552,7 +621,9 @@ export default defineComponent({
       searchedquestionsets,
       SectionItemQSID,
       updateItemLink,
-      Saved
+      Saved,
+      UpdatedSection,
+      UpdatedSectionItem
     };
   }
 });

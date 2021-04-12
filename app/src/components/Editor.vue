@@ -105,7 +105,8 @@ export default defineComponent({
           syntax: {
             highlight: (text: string) => hljs.highlightAuto(text).value
           }
-        }
+        },
+        // readOnly: true
       });
 
       //Send Get request to fetch the document that has been clicked on
