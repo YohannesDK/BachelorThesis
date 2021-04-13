@@ -2,9 +2,9 @@ name: Bachelor CI - server and app
 
 on:
   push:
-    branches: [main]
+    branches: [main, prod]
   pull_request:
-    branches: [main]
+    branches: [main, prod]
 
 jobs:
   #server job
