@@ -78,7 +78,7 @@
       <tbody>
         <tr
           class="table-questionsets-row"
-        v-for="(questionset, index) in questionSetList"
+        v-for="(questionset, index) in questionsetList"
         :key="index"
           v-test="{ id: 'myquestionset-table-rows' }"
 
@@ -191,51 +191,9 @@ export default defineComponent({
   name: "Questions",
   data(){
     return{
-    questionSetList: [] as any
+    // questionSetList: [] as any
     };
   },
-  methods: {
-    // @ts-ignore
-    // openQuestionSet(questionset) {
-    //   router.push({
-    //     path: "AddQuestionSet",
-    //     query: { QSID: questionset.questionset_id }
-    //   });
-    // },
-  },
-
-  created() {
-    if(router.currentRoute.value.query.did) {
-          axios
-          .get("/api/getDocQuestionSets", {
-            params: {did: router.currentRoute.value.query.did},
-            headers: { token: localStorage.getItem("token") }
-          })
-          .then(response => {
-            console.log(response)
-            for (let i = 0; i < response.data.questionSetList.length; i++) {
-              this.questionSetList.push(response.data.questionSetList[i]);
-            }
-          });
-      }
-
-      else
-      {
-        //fetch all documents belonging to this user
-          axios
-          .get("/api/getUserQuestionSets", {
-            headers: { token: localStorage.getItem("token") }
-          })
-          .then(response => {
-            console.log(response)
-            for (let i = 0; i < response.data.questionSetList.length; i++) {
-              this.questionSetList.push(response.data.questionSetList[i]);
-            }
-          });
-      }
-    }
-,
-
   directives: {
     Test
   },
@@ -249,6 +207,7 @@ export default defineComponent({
     const AttachQSID = ref<number>(-1);
     const Modal = ref<any>();
     const DescriptionSubstringLength = 25;
+    const questionsetList = ref<any>([]);
     const allQuestionSets = ref<Array<QuestionSet>>(
       store.getters.getAllQuestionSets
     );
@@ -261,6 +220,40 @@ export default defineComponent({
     };
 
 
+
+    const initializeQuestionSets = () => {
+          if(router.currentRoute.value.query.did) {
+          axios
+          .get("/api/getDocQuestionSets", {
+            params: {did: router.currentRoute.value.query.did},
+            headers: { token: localStorage.getItem("token") }
+          })
+          .then(response => {
+            console.log(response)
+            for (let i = 0; i < response.data.questionSetList.length; i++) {
+              questionsetList.value.push(response.data.questionSetList[i]);
+            }
+          });
+      }
+
+      else
+      {
+          axios
+          .get("/api/getUserQuestionSets", {
+            headers: { token: localStorage.getItem("token") }
+          })
+          .then(response => {
+            console.log(response)
+            for (let i = 0; i < response.data.questionSetList.length; i++) {
+              questionsetList.value.push(response.data.questionSetList[i]);
+            }
+          });
+      }
+    }
+
+    onBeforeMount(() => {
+      initializeQuestionSets();
+    });
 
     // sort and show questions sets
     const sortOptions = ref<number>(-1);
@@ -331,8 +324,6 @@ export default defineComponent({
       }
 
 
-
-
     const openQuestionSet = (QSID: number) => {
       router.push({
         name: "AddQuestionSet",
@@ -373,6 +364,7 @@ export default defineComponent({
     };
 
     return {
+      questionsetList,
       displaytype,
       Modal,
       QuestionSets,

@@ -65,7 +65,7 @@ describe("MyQuestionSets - add new question set btn", () => {
 });
 
 (async () => {
-  wrapper.vm.allQuestionSets = questionsetList;
+  wrapper.vm.questionsetList = questionsetList;
   await wrapper.vm.$nextTick();
   describe("MyQuestionSet - table", () => {
     it("MyQuestionSet should have a table for displaying all questionsets", () => {
@@ -96,6 +96,7 @@ describe("MyQuestionSets - add new question set btn", () => {
         "[data-test-id='myquestionset-table-rows']"
       );
       expect(MyQuestionSetTableRows.length).to.equal(questionsetList.length);
+      
     });
 
     it("MyQuestionSets table row should display, questionset tittle, questionset description, number of questions, and last edited", () => {

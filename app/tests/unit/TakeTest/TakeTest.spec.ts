@@ -12,7 +12,7 @@ import { dummyQuestionSet } from "../MyQuestionSets/questionset.utils";
 
 const wrapper = shallowMount(TakeTest);
 
-wrapper.vm.QuestionSet = dummyQuestionSet;
+wrapper.vm.Data = dummyQuestionSet;
 
 (async () => {
   await wrapper.vm.$nextTick(() => {
