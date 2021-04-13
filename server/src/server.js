@@ -480,7 +480,6 @@ app.post("/api/deleteDocument", async (request, response) => {
     const DeletedDocument = await models.document.destroy({
         where: {id: request.body.docID}
     }); 
-    console.log(DeletedDocument);
     return response.send(200);
 });
 
