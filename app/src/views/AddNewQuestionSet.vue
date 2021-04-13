@@ -33,7 +33,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter title"
-                    v-model="Data.Tittle"
+                    v-model="questionSetInfo.title"
                     v-test="{ id: 'qs-Tittle' }"
                     @input="saved = false"
                   />
@@ -49,7 +49,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter description"
-                    v-model="Data.Description"
+                    v-model="questionSetInfo.description"
                     v-test="{ id: 'qs-Desc' }"
                     @input="saved = false"
                   />
@@ -123,6 +123,9 @@ export default defineComponent({
   directives: {
     Test
   },
+  props: {
+    correctAnswer: Number
+  },
   setup() {
     const questionCards = ref<Array<any>>([]);
     const questionSetFlag = ref<number>(QuestionSetFlag.CREATE);
@@ -131,6 +134,7 @@ export default defineComponent({
     const Tittle = ref<string>("");
     const Desc = ref<string>("");
     const saved = ref<boolean>(true);
+    
 
     const questionSetInfo = reactive({
       title: "",
@@ -210,45 +214,109 @@ export default defineComponent({
 
     const OnAddNew = () => {
       saved.value = false;
-
-      Data.value.QuestionSet.push({
-        QuestionID: store.getters.getQuestionId,
-        QuestionType: QuestionTypeEnum.ShortText,
-        Question: {
-          Question: "",
-          Answer: ""
-        }
-      });
+     //Create question in backend
+      axios
+        .post("api/createQuestion", {
+          questionsetId: router.currentRoute.value.query.QSID,
+          question: "",
+          questionType: 0
+        })
+        .then(response => {
+          Data.value.QuestionSet.push({
+            QuestionID: response.data.question.question_id,
+            QuestionType: response.data.question.question_type,
+            Question: {
+              Question: response.data.question.question,
+              Answer: ""
+            }
+          });
+          console.log(response.data.question.question_type);
+        });
       store.dispatch("IncrementQuestionId");
     };
 
     // Initilize Question Set if it exists
-    const InitilizeQuestionSet = (QSID: number) => {
-      // her kan vi sette QuestionSetFlag til CREATE eller UPDATE også
-      // kjøre request etter det når vi saver
 
-      if (QSID !== -1) {
-        questionSetFlag.value = QuestionSetFlag.UPDATE;
-        const QuestionSet: QuestionSet = store.getters.getQuestionSetById(QSID);
-        if (QuestionSet === undefined) {
-          // hvis questionSet ikke er i store, fetch fra DB
-          // QuestionSet = FetchQS(QSID);
-          console.log("Fetch From Backend");
-          // while loading question set show loading screeen
-        }
-        Data.value.QSID = QuestionSet.QSID;
-        Data.value.Tittle = QuestionSet.Tittle;
-        Data.value.CreateBy = User.value.UserName;
-        Data.value.Description = QuestionSet.Description;
-        Data.value.QuestionSet = QuestionSet.QuestionSet;
-        return;
-      } else {
-        //if the questionset is empty, initialize it with an empty question
-        console.log("hmm");
-        Data.value.QSID = store.getters.getQuestionSetLength;
-        Data.value.CreateBy = User.value.UserName;
-        OnAddNew();
-      }
+    // Initilize Question Set if it exists
+    const InitilizeQuestionSet = (QSID: number) => {
+      //Get data from backend
+      axios
+        .get("/api/fetchQS", {
+          params: { QSID: router.currentRoute.value.query.QSID }
+        }) 
+        .then(response => {
+          console.log(response)
+          questionSetInfo.title = response.data.questionset.title;
+          questionSetInfo.description = response.data.questionset.description;
+          //if this questionset has pre-existing questions, fetch them
+          if (response.data.questions.length !== 0) {
+            const QuestionSet: QuestionSet = store.getters.getQuestionSetById(
+              QSID
+            );
+            for (let i = 0; i < response.data.questions.length; i++) {
+              for(let j = 0; j < response.data.correctAnswer.length; j++) {
+                if(response.data.questions[i].question_id == response.data.correctAnswer[j].question_id){
+                  Data.value.QuestionSet.push({
+                  QuestionID: response.data.questions[i].question_id,
+                  QuestionType: response.data.questions[i].question_type,
+                  Question: {
+                    Question: response.data.questions[i].question,
+                    Answer: {
+                      TrueOption: "True",
+                      FalseOption: "False"
+                    },
+                    CorrectAnswer: response.data.correctAnswer[j].correct_answer
+                  }
+                });
+                }
+              }
+              // if (response.data.questions[i].question_type == 2) {
+              //   Data.value.QuestionSet.push({
+              //     QuestionID: response.data.questions[i].question_id,
+              //     QuestionType: response.data.questions[i].question_type,
+              //     Question: {
+              //       Question: response.data.questions[i].question,
+              //       Answer: {
+              //         TrueOption: "True",
+              //         FalseOption: "False"
+              //       },
+              //       CorrectAnswer: 2
+              //     }
+              //   });
+              {if(response.data.questions[i].question_type != 2){
+                Data.value.QuestionSet.push({
+                  QuestionID: response.data.questions[i].question_id,
+                  QuestionType: response.data.questions[i].question_type,
+                  Question: {
+                    Question: response.data.questions[i].question,
+                    Answer: ""
+                  }
+                });
+              }
+              }
+            }
+            //Here we set the answer for shortanswer questions (Can also be used to set for longanswer)
+            //But it does not work for multiple choice / true false, therefore we have to check for it
+            for (let i = 0; i < response.data.questions.length; i++) {
+              for (let j = 0; j < response.data.answer.length; j++) {
+                if (
+                  response.data.questions[i].question_id ==
+                  response.data.answer[j].answerset_id &&
+                  response.data.questions[i].question_type == 0
+                ) {
+                  console.log(response.data.answer[j].answer_option);
+                  Data.value.QuestionSet[i].Question.Answer =
+                  response.data.answer[j].answer_option;
+                }
+              }
+            }
+            return;
+          } else {
+            //if the questionset is empty, initialize it with an empty question
+            console.log("hmm");
+            OnAddNew();
+          }
+        });
     };
 
     // Change between question cards
@@ -294,15 +362,35 @@ export default defineComponent({
         if (ele) {
           try {
             const questionData = ele.QuestionDataHandler.call();
-            Data.value.QuestionSet.push(questionData);
-          } catch (e) {
+            if(questionData.Question.CorrectAnswer){
+               console.log("denne her " + questionData.Question.CorrectAnswer)
+            }
+            // console.log(questionData.Question.CorrectAnswer)
+            //Post request to save the document info
+            axios
+              .post("api/saveQuestion", {
+                question: questionData.Question.Question,
+                answer: questionData.Question.Answer,
+                title: questionSetInfo.title,
+                description: questionSetInfo.description,
+                questionId: questionData.QuestionID,
+                questionType: questionData.QuestionType,
+                answerOption: questionData.Question.Answer,
+                correctAnswer: questionData.Question.CorrectAnswer,
+                QSID: router.currentRoute.value.query.QSID
+              })
+              .then(response => {
+                console.log("updated");
+              });
+              Data.value.QuestionSet.push(questionData);
+                } catch (e) {
             // TODO: Error with testing, everything works but when running this in node
             //       it errors out, so i catch for now to avoid nasty output
-            return;
-            // console.error("Error: call undefined");
+            console.error("Error: ", e);
           }
         }
       });
+
       // vet ikke om d er best å ha username eller userid, mtp sikkerhet så er d nok bedre med username
       if (Data.value.CreateBy === "") {
         Data.value.CreateBy = User.value.UserName;

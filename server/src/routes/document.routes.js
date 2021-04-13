@@ -1,22 +1,33 @@
 const express = require("express");
 let router = express.Router();
-
-const document_controller = require("../controllers/document.controller.js")
-
-
-
-router.post("/getAllDocuments", document_controller.getAllDocuments)
+const models = require("../models/index.js");
+const jwt = require("jsonwebtoken");
+const cache = require("../routes/routeCache.js");
 
 
-// app.post("/api/getAllDocuments", (request, response) => {
-//   models.document.findAll({where: {userId: decoded.id}}).then(function(documents){
-//       return response.json({
-//           title: "fetch course",
-//           documents: documents,
-//           userId: decoded.id
-//       });
-//   });
-// })
+const documentController = require("../controllers/document.controller")
+
+//This api call gets all the documents
+router.post("/api/getAllDocuments", documentController.get_all_documents)
+
+//This api call creates a document relation
+router.post("/api/linkDocument", documentController.link_document)
+
+//This api call creates a document
+router.post("/api/createDocument", documentController.create_document)
+
+//This api call saves / updates document content
+router.post("/api/alterDocument", documentController.alter_document)
+
+//This api call retrieves all documents that belong to one user
+router.get("/api/documentInfo", cache(300), documentController.document_info)
+
+//This api call retrieves one document based on query ID.
+//TODO: authorize this api npcall
+router.get("/api/fetchDoc", cache(300), documentController.fetch_doc )
+
+//This api call deletes a document
+router.post("/api/deleteDocument", documentController.delete_document)
 
 
 module.exports = router;

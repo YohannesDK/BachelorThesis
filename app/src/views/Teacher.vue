@@ -122,8 +122,9 @@ export default defineComponent({
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", params: { CourseId: courseId } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
+
 
     return {
       courses,

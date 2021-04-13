@@ -174,6 +174,7 @@
           }"
           @click="TrueFalseHandler(AnswerOptions.Option1), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
+          v-bind:CorrectAnswer = TrueOption
         >
           {{ TrueOption }}
         </div>
@@ -184,6 +185,7 @@
           }"
           @click="TrueFalseHandler(AnswerOptions.Option2), $emit('SaveStatus')"
           v-test="{ id: 'question-card-type-Answer' }"
+          v-bind:CorrectAnswer = FalseOption
         >
           {{ FalseOption }}
         </div>
@@ -565,7 +567,6 @@ export default defineComponent({
     const InitilizeQuestion = () => {
       if (props.QuestionProp) {
         // console.log("her");
-
         const question = props.QuestionProp;
 
         QuestionData.QuestionID = question.QuestionID;
@@ -579,7 +580,7 @@ export default defineComponent({
         } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
           TrueOption.value = (question.Question as TrueFalseQuestionType).Answer.TrueOption;
           FalseOption.value = (question.Question as TrueFalseQuestionType).Answer.FalseOption;
-          TrueFalseAnswer.value = (question.Question as TrueFalseQuestionType).CorrectAnswer;
+           TrueFalseAnswer.value = (question.Question as TrueFalseQuestionType).CorrectAnswer;
         } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
           MultipleChoiceAnswerOptions.value.Option1 = (question.Question as MultipleChoiceQuestionType).Answer.Option1;
           MultipleChoiceAnswerOptions.value.Option2 = (question.Question as MultipleChoiceQuestionType).Answer.Option2;

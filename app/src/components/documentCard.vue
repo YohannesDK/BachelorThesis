@@ -22,7 +22,7 @@
         <span
           class="doc-item-last-edited"
           v-test="{ id: 'card-last-edited' }"
-          >{{ document.lastEdited }}</span
+          >Needs formatting</span
         >
 
         <div
@@ -118,7 +118,7 @@ export default defineComponent({
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
-        name: "AddQuestionSet",
+        name: "QuestionSets",
         query: { QSID: QSID, did: props.document.Documentid }
       });
     };

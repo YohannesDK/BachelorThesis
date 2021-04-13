@@ -78,25 +78,27 @@
       <tbody>
         <tr
           class="table-questionsets-row"
-          v-for="(questionset, index) in QuestionSets"
-          :key="index"
+        v-for="(questionset, index) in questionSetList"
+        :key="index"
           v-test="{ id: 'myquestionset-table-rows' }"
+
         >
           <th scope="row">{{ index + 1 }}</th>
+          
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.Tittle }}
+                        {{ questionset.title }}
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
             {{
-              questionset.Description.substring(0, DescriptionSubstringLength) +
+              questionset.description.substring(0, DescriptionSubstringLength) +
                 "..."
             }}
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.QuestionSet.length }}
+            12
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.LastEdited }}
+            {{ questionset.updatedAt }}
           </td>
           <td class="d-flex justify-content-end">
             <div
@@ -117,7 +119,7 @@
                     v-test="{ id: 'myquestionset-options-dropdown' }"
                   >
                     <li
-                      @click="OpenQuestionSet(questionset.QSID)"
+                      @click="openQuestionSet(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Open
@@ -126,13 +128,13 @@
                       Rename
                     </li>
                     <li
-                      @click="OpenTest(questionset.QSID)"
+                      @click="OpenTest(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Practise
                     </li>
                     <li
-                      @click="attachToDocument(questionset.QSID)"
+                      @click="attachToDocument(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Attach Question Set
@@ -175,10 +177,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, ref } from "vue";
 import store from "@/store";
 import Test from "@/directives/test.directive";
 import router from "@/router";
+import axios from "axios";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import Modal from "@/components/ModalComponent.vue";
 import AttachDocumentToQuestionSet from "@/components/AttachDocumentToQuestionSet.vue";
@@ -186,6 +189,53 @@ import AttachCourseToQuestionSetVue from "@/components/AttachCourseToQuestionSet
 
 export default defineComponent({
   name: "Questions",
+  data(){
+    return{
+    questionSetList: [] as any
+    };
+  },
+  methods: {
+    // @ts-ignore
+    // openQuestionSet(questionset) {
+    //   router.push({
+    //     path: "AddQuestionSet",
+    //     query: { QSID: questionset.questionset_id }
+    //   });
+    // },
+  },
+
+  created() {
+    if(router.currentRoute.value.query.did) {
+          axios
+          .get("/api/getDocQuestionSets", {
+            params: {did: router.currentRoute.value.query.did},
+            headers: { token: localStorage.getItem("token") }
+          })
+          .then(response => {
+            console.log(response)
+            for (let i = 0; i < response.data.questionSetList.length; i++) {
+              this.questionSetList.push(response.data.questionSetList[i]);
+            }
+          });
+      }
+
+      else
+      {
+        //fetch all documents belonging to this user
+          axios
+          .get("/api/getUserQuestionSets", {
+            headers: { token: localStorage.getItem("token") }
+          })
+          .then(response => {
+            console.log(response)
+            for (let i = 0; i < response.data.questionSetList.length; i++) {
+              this.questionSetList.push(response.data.questionSetList[i]);
+            }
+          });
+      }
+    }
+,
+
   directives: {
     Test
   },
@@ -209,6 +259,8 @@ export default defineComponent({
     const ShowDropDown = (index: number) => {
       dropdownIndex.value = index;
     };
+
+
 
     // sort and show questions sets
     const sortOptions = ref<number>(-1);
@@ -248,12 +300,40 @@ export default defineComponent({
       sortOptions.value = newoption;
     };
 
+
     // Question set actions
     const AddNewQuestionSet = () => {
-      router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
-    };
 
-    const OpenQuestionSet = (QSID: number) => {
+      if(router.currentRoute.value.query.did) {
+        console.log("her")
+          axios
+            .post("api/createQSdocLink", {
+              documentId: router.currentRoute.value.query.did,
+              headers: { token: localStorage.getItem("token") }
+
+            })
+            .then(response => {
+              console.log("cute");
+            });
+        }
+        else {
+  
+            axios
+              .post("api/createQSnoLink", {
+                headers: { token: localStorage.getItem("token") },
+                documentId: router.currentRoute.value.query.did
+              })
+              .then(response => {
+                console.log("cute");
+              });
+            // router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
+          }
+      }
+
+
+
+
+    const openQuestionSet = (QSID: number) => {
       router.push({
         name: "AddQuestionSet",
         query: { QSID: QSID }
@@ -298,7 +378,6 @@ export default defineComponent({
       QuestionSets,
       ShowDropDown,
       dropdownIndex,
-      OpenQuestionSet,
       sortOptions,
       updateSortOption,
       DeleteQuestionSet,
@@ -306,6 +385,7 @@ export default defineComponent({
       AddNewQuestionSet,
       AttachQSID,
       OpenTest,
+      openQuestionSet,
       DescriptionSubstringLength,
       allQuestionSets
     };

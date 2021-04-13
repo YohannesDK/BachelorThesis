@@ -88,7 +88,7 @@
     <!-- <div id="content"></div> -->
     <div class="editing" ref="root" id="editor" spellcheck="false"></div>
 
-    <h1 class="m-auto" v-if="filteredDocuments.length === 0">
+    <!-- <h1 class="m-auto" v-if="filteredDocuments.length === 0">
       No documents found...
     </h1>
     <div id="docContainer" style="visibility: hidden; ">
@@ -100,7 +100,7 @@
         :document="doc"
         :key="index"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -133,7 +133,7 @@ hljs.highlightAll();
 export default defineComponent({
   name: "Course",
   components: {
-    DocumentCard
+    // DocumentCard
   },
   props: {
     delta: {
