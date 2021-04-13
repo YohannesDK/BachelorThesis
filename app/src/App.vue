@@ -84,6 +84,7 @@ export default defineComponent({
   display: flex;
   width: 100%;
   align-items: stretch;
+
 }
 
 .container-fluid {
