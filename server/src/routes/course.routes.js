@@ -687,7 +687,6 @@ module.exports = (app) => {
 
     app.post("/api/updateAssignmentModule", async (request, response) => {
         const needToUpdateassignmentModule = request.body.EditData.assignmentModule;
-        console.log()
         const deletedReadings = request.body.EditData.deletedAssignmentReadings;
         const deletedTests = request.body.EditData.deletedAssignmentTests;
 
