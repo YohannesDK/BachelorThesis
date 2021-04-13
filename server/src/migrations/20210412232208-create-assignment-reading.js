@@ -9,9 +9,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       AssignmentID: {
-        type: Sequelize.NUMBER
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       ReadingDesc: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       createdAt: {

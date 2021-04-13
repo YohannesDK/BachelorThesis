@@ -144,7 +144,7 @@
               v-for="(assignment, index) in course.AssignmentModules"
               :key="index"
               :Assignment="assignment"
-              @edit="OnAssingmentEdit(assignment, 1)"
+              @edit="OnAssingmentEdit(assignment, 2)"
               @delete="OnAssignmentDelete(assignment)"
             />
           </div>

@@ -9,13 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       courseID: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       AssignmentName: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       Date: {
-        type: Sequelize.DATE
+        allowNull: false,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

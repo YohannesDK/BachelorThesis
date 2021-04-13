@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     courseID: DataTypes.INTEGER,
     AssignmentName: DataTypes.STRING,
-    Date: DataTypes.DATE
+    Date: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'AssignmentModule',

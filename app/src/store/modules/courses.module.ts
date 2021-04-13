@@ -131,6 +131,8 @@ export default {
       state: any,
       assignmentmodule: AssignmentModule
     ) => {
+      console.log(assignmentmodule);
+
       const courseIndex = (state.courses as courseType[])
         .map((course: courseType) => course.courseId)
         .indexOf(assignmentmodule.courseID);

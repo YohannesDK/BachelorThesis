@@ -155,7 +155,6 @@ module.exports = (app) => {
                     
                     await Promise.all(courses_right_format.map(async (course) => {
                         // fetch all course modules, sections and sectionitems
-
                         let courseModules = await models.CourseModule.findAll({where: {
                             courseId: course.courseId,
                         }});
@@ -195,6 +194,37 @@ module.exports = (app) => {
                             coursemodule.moduleSections = [...course_module_section_right_format];
                         }))
                         course.courseModules = [...course_modules_right_format];
+
+                        // fetch all assignment modules
+                        let assignmentModules = await models.AssignmentModule.findAll({where: {
+                            courseID: course.courseId
+                        }});
+
+                        let assingment_modules_right_format = assignmentModules.map(assingmentModule => {
+                            return {
+                                AssignmentID: assingmentModule.AssignmentID,
+                                courseID: assingmentModule.courseID,
+                                AssignmentName: assingmentModule.AssignmentName,
+                                Date: assingmentModule.Date,
+                                ReadingList: [],
+                                TestList: []
+                            };
+                        });
+
+                        await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
+                            let assignmentReadings = await models.AssignmentReading.findAll({where: {
+                                AssignmentID: assingmentModule.AssignmentID
+                            }});
+                            assingmentModule.ReadingList = [...assignmentReadings];
+                        }));
+
+                        await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
+                            let assingmentTests = await models.AssignmentTest.findAll({where: {
+                                AssignmentID: assingmentModule.AssignmentID
+                            }});
+                            assingmentModule.TestList = [...assingmentTests];
+                        }));
+                        course.AssignmentModules = [...assingment_modules_right_format];
                     }));
 
                     return response.status(200).json({
@@ -275,6 +305,37 @@ module.exports = (app) => {
                             coursemodule.moduleSections = [...course_module_section_right_format];
                         }))
                         course.courseModules = [...course_modules_right_format];
+
+                        // fetch all assignment modules
+                        let assignmentModules = await models.AssignmentModule.findAll({where: {
+                            courseID: course.courseId
+                        }});
+
+                        let assingment_modules_right_format = assignmentModules.map(assingmentModule => {
+                            return {
+                                AssignmentID: assingmentModule.AssignmentID,
+                                courseID: assingmentModule.courseID,
+                                AssignmentName: assingmentModule.AssignmentName,
+                                Date: assingmentModule.Date,
+                                ReadingList: [],
+                                TestList: []
+                            };
+                        });
+
+                        await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
+                            let assignmentReadings = await models.AssignmentReading.findAll({where: {
+                                AssignmentID: assingmentModule.AssignmentID
+                            }});
+                            assingmentModule.ReadingList = [...assignmentReadings];
+                        }));
+
+                        await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
+                            let assingmentTests = await models.AssignmentTest.findAll({where: {
+                                AssignmentID: assingmentModule.AssignmentID
+                            }});
+                            assingmentModule.TestList = [...assingmentTests];
+                        }));
+                        course.AssignmentModules = [...assingment_modules_right_format];
                     }));
 
                     return response.status(200).json({
@@ -412,7 +473,7 @@ module.exports = (app) => {
 
     });
 
-    app.post("/api/updateCourseModule", (request, response) => {
+    app.post("/api/updateCourseModule", async (request, response) => {
         const courseModule = request.body.EditData.courseModule
         const updatedsections = request.body.EditData.updatedsections
         const updatedsectionitems = request.body.EditData.updatedsectionitems
@@ -421,7 +482,7 @@ module.exports = (app) => {
 
         
         let token = request.headers.token;
-        jwt.verify(token, "secretkey", async (err, decoded) => {
+        jwt.verify(token, "secretkey", (err, decoded) => {
             if(err) return response.status(401).json({
                 title: "unauthorized",
                 error: err
@@ -520,6 +581,7 @@ module.exports = (app) => {
     });
 
 
+    // TODO - need to fix this
     app.post("/api/publishCourseModule", (request, response) => {
         let token = request.headers.token;
         jwt.verify(token, "secretkey", async (err, decoded) => {
@@ -538,6 +600,7 @@ module.exports = (app) => {
 
     })
 
+    // TODO - need to fix this
     app.delete("/api/deleteCourseModule", (request, response) => {
         let token = request.headers.token;
         jwt.verify(token, "secretkey", async (err, decoded) => {
@@ -553,6 +616,148 @@ module.exports = (app) => {
                 });
             }
         });
+    })
+
+
+    app.post("/api/createAssignmentModule", (request, response) => {
+
+        let token = request.headers.token;
+        jwt.verify(token, "secretkey", (err, decoded )=> {
+            if(err) return response.status(401).json({
+                title: "unauthorized",
+                error: err
+            });
+
+            if (decoded.role.toLowerCase() !== "teacher") {
+                return response.status(401).json({
+                    title: "unauthorized",
+                    error: err
+                });
+            }
+
+        });
+
+        const assingmentModule = request.body.assignmentModule;
+
+        const newAssingmentModule = {
+            AssignmentID: -1,
+            courseId: -1,
+            AssignmentName: "",
+            Date: "",
+            ReadingList: [],
+            TestList: []
+        }
+
+        models.AssignmentModule.create({
+            courseID: assingmentModule.courseID,
+            AssignmentName: assingmentModule.AssignmentName,
+            Date: assingmentModule.Date
+        }).then(async (createdAssignmentModule) => {
+            newAssingmentModule.AssignmentID = createdAssignmentModule.AssignmentID;
+            newAssingmentModule.courseID = createdAssignmentModule.courseID
+            newAssingmentModule.AssignmentName = createdAssignmentModule.AssignmentName;
+            newAssingmentModule.Date = createdAssignmentModule.Date
+
+            await Promise.all(assingmentModule.ReadingList.map(async (reading) => {
+                // create reading assingment
+                let createdReadingAssingment = await models.AssignmentReading.create({
+                    AssignmentID: createdAssignmentModule.AssignmentID,
+                    ReadingDesc: reading.ReadingDesc
+                });
+                newAssingmentModule.ReadingList.push(createdReadingAssingment);
+            }));
+
+            await Promise.all(assingmentModule.TestList.map(async (test) => {
+                // create reading assingment
+                let createdTestAssingment = await models.AssignmentTest.create({
+                    AssignmentID: createdAssignmentModule.AssignmentID,
+                    TestDesc: test.TestDesc
+                });
+                newAssingmentModule.TestList.push(createdTestAssingment);
+            }));
+
+            return response.status(200).json({
+                newAssingmentModule: newAssingmentModule
+            });
+        }).catch(() => {
+            return response.sendStatus(400);
+        })
+
+    });
+
+    app.post("/api/updateAssignmentModule", async (request, response) => {
+        const needToUpdateassignmentModule = request.body.EditData.assignmentModule;
+        console.log()
+        const deletedReadings = request.body.EditData.deletedAssignmentReadings;
+        const deletedTests = request.body.EditData.deletedAssignmentTests;
+
+        let token = request.headers.token;
+        jwt.verify(token, "secretkey", (err, decoded) => {
+            if(err) return response.status(401).json({
+                title: "unauthorized",
+                error: err
+            });
+            // TODO - check teacher is the owner of the course
+            if (decoded.role.toLowerCase() !== "teacher") {
+                return response.status(401).json({
+                    title: "unauthorized",
+                    error: err
+                });
+            }
+        });
+
+
+        // update title and date
+        await models.AssignmentModule.update({
+            AssignmentName: needToUpdateassignmentModule.AssignmentName,
+            Date: needToUpdateassignmentModule.Date
+        }, {where: {
+            AssignmentID: needToUpdateassignmentModule.AssignmentID
+        }});
+
+        //update reading assigments
+        await Promise.all( needToUpdateassignmentModule.ReadingList.map(async(reading, reading_index) => {
+            if (reading.ReadingID === -1) {
+                let createdReadingAssingment = await models.AssignmentReading.create({
+                    AssignmentID: needToUpdateassignmentModule.AssignmentID,
+                    ReadingDesc: reading.ReadingDesc
+                }); 
+                needToUpdateassignmentModule.ReadingList[reading_index] = {
+                    ReadingID: createdReadingAssingment.ReadingID,
+                    AssignmentID: createdReadingAssingment.AssignmentID,
+                    ReadingDesc: createdReadingAssingment.ReadingDesc
+                }
+            }
+        }));
+
+        //update test assignments
+        await Promise.all( needToUpdateassignmentModule.TestList.map(async(test, test_index) => {
+            if (test.TestID === -1) {
+                let createdTestAssingment = await models.AssignmentTest.create({
+                    AssignmentID: needToUpdateassignmentModule.AssignmentID,
+                    TestDesc: test.TestDesc
+                }); 
+                needToUpdateassignmentModule.TestList[test_index] = {
+                    TestID: createdTestAssingment.TestID,
+                    AssignmentID: createdTestAssingment.AssignmentID,
+                    TestDesc: createdTestAssingment.TestDesc
+                }
+            }
+        }));
+
+        // delete, deleted reading assignments
+        await Promise.all(Object.keys(deletedReadings).map(async (ReadingID) => {
+            await models.AssignmentReading.destroy({where: {ReadingID: Number(ReadingID)}})
+        }));
+
+        // delete, deleted test assignments
+        await Promise.all(Object.keys(deletedTests).map(async (TestID) => {
+            await models.AssignmentTest.destroy({where: {TestID: Number(TestID)}})
+        }));
+
+        return response.status(200).json({
+            updatedAssignmentModule: needToUpdateassignmentModule
+        })
     })
 };
 

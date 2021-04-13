@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    AssignmentID: DataTypes.NUMBER,
+    AssignmentID: DataTypes.INTEGER,
     ReadingDesc: DataTypes.STRING
   }, {
     sequelize,

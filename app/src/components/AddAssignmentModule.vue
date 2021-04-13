@@ -95,6 +95,7 @@ import {
 } from "@/store/interfaces/assignments.types";
 import router from "@/router";
 import store from "@/store";
+import { CreateAssignmentModule, UpdateAssignmentModule } from "@/services/api/course.service";
 export default defineComponent({
   name: "AddAssignmentModule",
   props: {
@@ -129,10 +130,16 @@ export default defineComponent({
       TestList: []
     });
 
+    // to capture updates when editing
+    const deletedAssignmentReadings: any = {}
+    const deletedAssignmentTests: any = {}
+
+
+    // #region mutations
     const AddNewReading = () => {
       if (ReadingDesc.value !== "") {
         const newReading: AssignmentReading = {
-          ReadingID: assignmentModuleData.value.ReadingList.length,
+          ReadingID: -1,
           AssignmentID: assignmentModuleData.value.AssignmentID,
           ReadingDesc: ReadingDesc.value
         };
@@ -144,7 +151,7 @@ export default defineComponent({
     const AddNewTest = () => {
       if (TestDesc.value !== "") {
         const newTest: AssignmentTest = {
-          TestID: assignmentModuleData.value.TestList.length,
+          TestID: -1,
           AssignmentID: assignmentModuleData.value.AssignmentID,
           TestDesc: TestDesc.value
         };
@@ -156,6 +163,12 @@ export default defineComponent({
     const DeleteReading = (readingIndex: number) => {
       try {
         if (readingIndex <= assignmentModuleData.value.ReadingList.length - 1) {
+          const assignmentReading: AssignmentReading = assignmentModuleData.value.ReadingList[readingIndex];
+          if (assignmentReading.ReadingID !== -1) {
+            if (!(assignmentReading.ReadingID in deletedAssignmentReadings)) {
+              deletedAssignmentReadings[assignmentReading.ReadingID] = assignmentReading 
+            } 
+          } 
           assignmentModuleData.value.ReadingList.splice(readingIndex, 1);
         }
       } catch (error) {
@@ -166,20 +179,32 @@ export default defineComponent({
     const DeleteTest = (TestIndex: number) => {
       try {
         if (TestIndex <= assignmentModuleData.value.TestList.length - 1) {
+          const assingmentTest: AssignmentTest = assignmentModuleData.value.TestList[TestIndex];
+          if (assingmentTest.TestID !== -1) {
+            if (!(assingmentTest.TestID in deletedAssignmentTests)) {
+              deletedAssignmentTests[assingmentTest.TestID] = assingmentTest 
+            } 
+          } 
           assignmentModuleData.value.TestList.splice(TestIndex, 1);
         }
       } catch (error) {
         console.error(error);
       }
     };
+    // #endregion
 
     const Save = () => {
       if (props.AssigmentModuleAction === 0) {
-        store.dispatch("AddNewAssignmentModule", assignmentModuleData.value);
+        CreateAssignmentModule(assignmentModuleData.value);
         return;
       }
       if (props.AssigmentModuleAction === 1) {
-        store.dispatch("updateAssignmentModule", assignmentModuleData.value);
+        const EditData = {
+          assignmentModule: assignmentModuleData.value,
+          deletedAssignmentReadings: deletedAssignmentReadings,
+          deletedAssignmentTests: deletedAssignmentTests
+        }
+        UpdateAssignmentModule(EditData);
       }
     };
 

@@ -2,6 +2,7 @@ import axios from "@/services/api";
 import { AxiosError, AxiosResponse } from "axios";
 import { CourseModule, courseType } from "@/store/interfaces/course";
 import store from "@/store";
+import { AssignmentModule } from "@/store/interfaces/assignments.types";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -103,12 +104,32 @@ export function DeleteCourseModule() {
   return "Not Implemented";
 }
 
-export function CreateAssignmentModule() {
-  return "Not Implemented";
+export function CreateAssignmentModule(assingmentModule: AssignmentModule) {
+  axios
+    .post("/createAssignmentModule", {
+      assignmentModule: assingmentModule
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        if (response.data.newAssingmentModule) {
+          store.dispatch("AddNewAssignmentModule", response.data.newAssingmentModule);
+        }
+      }
+    });
 }
 
-export function UpdateAssignmentModule() {
-  return "Not Implemented";
+export function UpdateAssignmentModule(EditData: any) {
+  axios
+    .post("/updateAssignmentModule", {
+      EditData: EditData
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        if (response.data.updatedAssignmentModule) {
+          store.dispatch("updateAssignmentModule", response.data.updatedAssignmentModule); 
+        }
+      }
+    })
 }
 
 export function DeleteAssignmentModule() {
