@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const axios = require("axios");
+const path = require("path");
 // const MainRouter = require("./routes/router.js");
 
 dotenv.config({
@@ -31,7 +32,11 @@ app.use(session({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
+app.use(express.static(path.join(__dirname, "../../app/dist/")));
 
+app.get("/", (request, response) => {
+    response.sendFile(path.join(__dirname, "../../app/dist/index.html"));
+})
 
 // main router will delegate request to correct route handlers
 // having problems with sequelize. 
