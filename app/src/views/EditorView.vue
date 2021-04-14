@@ -70,6 +70,7 @@ export default defineComponent({
 
     const onUpdateDoc = (updatedData: any) => {
       if (DocumentTittle.value) {
+        console.log("heeerrr")
         updatedData["DocumentTittle"] = DocumentTittle.value.innerText;
       }
       store.dispatch("UpdateDocumentBody", updatedData);

@@ -22,7 +22,7 @@
         <span
           class="doc-item-last-edited"
           v-test="{ id: 'card-last-edited' }"
-          >{{ document.lastEdited }}</span
+          >Needs formatting</span
         >
 
         <div
@@ -60,7 +60,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import { DeleteDocument } from "@/services/api/document.service";
 import router from "@/router";
@@ -105,6 +105,8 @@ export default defineComponent({
         })
         .then(response => {
           console.log(response);
+        }).catch((error: AxiosError) => {
+          console.error(error);
         });
     };
 
@@ -115,7 +117,7 @@ export default defineComponent({
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
-        name: "AddQuestionSet",
+        name: "QuestionSets",
         query: { QSID: QSID, did: props.document.Documentid }
       });
     };

@@ -16,6 +16,7 @@ export function CreateDocument(userId: number) {
     })
     .then(response => {
       if (response.status && response.status === 200) {
+        console.log(response.data);
         const NewDocument: documentType = response.data.document;
         if (NewDocument.body === "") {
           NewDocument.body = [];

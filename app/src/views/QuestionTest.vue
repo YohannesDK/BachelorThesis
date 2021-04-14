@@ -1,7 +1,7 @@
 <template>
   <div class="QuestionTest-container">
     <div class="header-area container ">
-      <h1>Practise</h1>
+      <h1>Practice</h1>
     </div>
     <div class="container">
       <div class="questionset-settings-container row">
@@ -11,20 +11,20 @@
             <ul class="list-unstyled">
               <li>
                 <div class="li-info">
-                  <span>Tittle</span>
-                  <p>{{ QuestionSet.Tittle }}</p>
+                  <span>Title</span>
+                  <p>{{ Data.Tittle }}</p>
                 </div>
               </li>
               <li>
                 <div class="li-info">
                   <span>Description</span>
-                  <p>{{ QuestionSet.Description || "..." }}</p>
+                  <p>{{ Data.Description || "..." }}</p>
                 </div>
               </li>
               <li>
                 <div class="li-info">
                   <span>Number of Questions</span>
-                  <p>{{ QuestionSet.QuestionSet.length }}</p>
+                  <p>{{ Data.QuestionSet.length }}</p>
                 </div>
               </li>
             </ul>
@@ -34,7 +34,7 @@
               <li>
                 <div class="li-info">
                   <span>Previous Attempt</span>
-                  <p>1 / {{ QuestionSet.QuestionSet.length }}</p>
+                  <p>1 / {{ Data.QuestionSet.length }}</p>
                 </div>
               </li>
               <li>
@@ -98,7 +98,8 @@
 <script lang="ts">
 import router from "@/router";
 import store from "@/store";
-import { QuestionSet } from "@/store/interfaces/question.type";
+import { QuestionSet, Question } from "@/store/interfaces/question.type";
+import axios from "axios";
 import { defineComponent, onMounted, ref } from "vue";
 export default defineComponent({
   name: "QuestionTest",
@@ -108,7 +109,9 @@ export default defineComponent({
       settingsOption.value = newsetting;
     };
 
-    const QuestionSet = ref<QuestionSet>({
+    let numOfQuestions = ref<number>(0)
+
+    const Data = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
@@ -122,17 +125,50 @@ export default defineComponent({
     const OpenTest = () => {
       router.push({
         name: "TakeTest",
-        query: { QSID: QuestionSet.value.QSID }
+        query: { QSID: router.currentRoute.value.query.QSID }
       });
     };
 
     const InitilizeDocumet = (QSID: number) => {
-      const qs = store.getters.getQuestionSetById(QSID);
-      QuestionSet.value.QSID = qs.QSID;
-      QuestionSet.value.Tittle = qs.Tittle;
-      QuestionSet.value.Description = qs.Description;
-      QuestionSet.value.QuestionSet = qs.QuestionSet;
-      QuestionSet.value.LastEdited = qs.LastEdited;
+
+      //Fetch QS here
+      //Here we need to fetch questionset
+            //Get data from backend
+      axios
+        .get("/api/fetchQS", {
+          params: { QSID: router.currentRoute.value.query.QSID }
+        })
+        .then(response => {
+          // Data.value.Tittle = response.data.questionset.title;
+          // Data.value.Description = response.data.questionset.description;
+          console.log(response)
+          //if this questionset has pre-existing questions, fetch them
+          Data.value.QSID = response.data.questionset.questionset_id,
+          Data.value.Tittle = response.data.questionset.title,
+          Data.value.Description = response.data.questionset.description,
+          Data.value.LastEdited = response.data.questionset.updatedAt
+
+          for(let i = 0; i < response.data.questions.length; i++){
+            Data.value.QuestionSet.push(response.data.questions[i])
+          }
+
+          // console.log(response.data.questions.length)
+
+          numOfQuestions = response.data.questions.length
+          console.log(Data.value.QuestionSet.length)
+
+
+        });
+
+          console.log(numOfQuestions)
+
+
+      // const qs = store.getters.getQuestionSetById(QSID);
+      // QuestionSet.value.QSID = qs.QSID;
+      // QuestionSet.value.Tittle = qs.Tittle;
+      // QuestionSet.value.Description = qs.Description;
+      // QuestionSet.value.QuestionSet = qs.QuestionSet;
+      // QuestionSet.value.LastEdited = qs.LastEdited;
     };
 
     onMounted(() => {
@@ -145,10 +181,11 @@ export default defineComponent({
     });
 
     return {
-      QuestionSet,
+      Data,
       settingsOption,
       updateSettingsOption,
-      OpenTest
+      OpenTest,
+      numOfQuestions
     };
   }
 });

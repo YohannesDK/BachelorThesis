@@ -113,6 +113,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "PageNotFound",
     component: () =>
       import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")
+  },
+  {
+    path: "/chartTest",
+    name: "chartTest",
+    component: () =>
+      import(/* webpackChunkName: "chartDemo" */ "../views/chartTest.vue")
   }
 ];
 

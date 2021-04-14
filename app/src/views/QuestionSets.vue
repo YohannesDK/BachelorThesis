@@ -78,25 +78,23 @@
       <tbody>
         <tr
           class="table-questionsets-row"
-          v-for="(questionset, index) in QuestionSets"
+          v-for="(questionset, index) in questionsetList"
           :key="index"
           v-test="{ id: 'myquestionset-table-rows' }"
         >
           <th scope="row">{{ index + 1 }}</th>
+          
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.Tittle }}
+                        {{ questionset.title }}
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{
-              questionset.Description.substring(0, DescriptionSubstringLength) +
-                "..."
-            }}
+            {{ questionset.description }}
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.QuestionSet.length }}
+            {{ questionset.Questionset }}
           </td>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
-            {{ questionset.LastEdited }}
+            {{ questionset.updatedAt }}
           </td>
           <td class="d-flex justify-content-end">
             <div
@@ -117,7 +115,7 @@
                     v-test="{ id: 'myquestionset-options-dropdown' }"
                   >
                     <li
-                      @click="OpenQuestionSet(questionset.QSID)"
+                      @click="openQuestionSet(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Open
@@ -126,13 +124,13 @@
                       Rename
                     </li>
                     <li
-                      @click="OpenTest(questionset.QSID)"
+                      @click="OpenTest(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Practise
                     </li>
                     <li
-                      @click="attachToDocument(questionset.QSID)"
+                      @click="attachToDocument(questionset.questionset_id)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
                     >
                       Attach Question Set
@@ -175,10 +173,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, ref } from "vue";
 import store from "@/store";
 import Test from "@/directives/test.directive";
 import router from "@/router";
+import axios, { AxiosError } from "axios";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import Modal from "@/components/ModalComponent.vue";
 import AttachDocumentToQuestionSet from "@/components/AttachDocumentToQuestionSet.vue";
@@ -199,6 +198,7 @@ export default defineComponent({
     const AttachQSID = ref<number>(-1);
     const Modal = ref<any>();
     const DescriptionSubstringLength = 25;
+    const questionsetList = ref<any>([]);
     const allQuestionSets = ref<Array<QuestionSet>>(
       store.getters.getAllQuestionSets
     );
@@ -209,6 +209,45 @@ export default defineComponent({
     const ShowDropDown = (index: number) => {
       dropdownIndex.value = index;
     };
+
+
+
+    const initializeQuestionSets = () => {
+        if(router.currentRoute.value.query.did) {
+        axios
+        .get("/api/getDocQuestionSets", {
+          params: {did: router.currentRoute.value.query.did},
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          console.log(response.data)
+          for (let i = 0; i < response.data.questionSetList.length; i++) {
+            questionsetList.value.push(response.data.questionSetList[i]);
+          }
+        }).catch((error: AxiosError) => {
+          console.error(error);
+        })
+      }
+      else {
+        axios
+        .get("/api/getUserQuestionSets", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          console.log(response.data)
+          for (let i = 0; i < response.data.questionSetList.length; i++) {
+            questionsetList.value.push(response.data.questionSetList[i]);
+          }
+        }).catch((error: AxiosError) => {
+          console.error(error);
+        })
+      }
+      console.log(questionsetList.value)
+    }
+
+    onBeforeMount(() => {
+      // initializeQuestionSets();
+    });
 
     // sort and show questions sets
     const sortOptions = ref<number>(-1);
@@ -248,12 +287,42 @@ export default defineComponent({
       sortOptions.value = newoption;
     };
 
+
     // Question set actions
     const AddNewQuestionSet = () => {
-      router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
-    };
 
-    const OpenQuestionSet = (QSID: number) => {
+      if(router.currentRoute.value.query.did) {
+        console.log("her")
+          axios
+            .post("api/createQSdocLink", {
+              documentId: router.currentRoute.value.query.did,
+              headers: { token: localStorage.getItem("token") }
+
+            })
+            .then(response => {
+              console.log("cute");
+            }).catch((error: AxiosError) => {
+              console.error(error);
+            })
+        }
+        else {
+  
+            axios
+              .post("api/createQSnoLink", {
+                headers: { token: localStorage.getItem("token") },
+                documentId: router.currentRoute.value.query.did
+              })
+              .then(response => {
+                console.log("cute");
+              }).catch((error: AxiosError) => {
+                console.error(error);
+              })
+            // router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
+          }
+      }
+
+
+    const openQuestionSet = (QSID: number) => {
       router.push({
         name: "AddQuestionSet",
         query: { QSID: QSID }
@@ -293,12 +362,12 @@ export default defineComponent({
     };
 
     return {
+      questionsetList,
       displaytype,
       Modal,
       QuestionSets,
       ShowDropDown,
       dropdownIndex,
-      OpenQuestionSet,
       sortOptions,
       updateSortOption,
       DeleteQuestionSet,
@@ -306,6 +375,7 @@ export default defineComponent({
       AddNewQuestionSet,
       AttachQSID,
       OpenTest,
+      openQuestionSet,
       DescriptionSubstringLength,
       allQuestionSets
     };
