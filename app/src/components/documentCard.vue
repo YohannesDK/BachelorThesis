@@ -22,7 +22,7 @@
         <span
           class="doc-item-last-edited"
           v-test="{ id: 'card-last-edited' }"
-          >Needs formatting</span
+          >{{ document.lastEdited }}</span
         >
 
         <div

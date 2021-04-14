@@ -67,13 +67,13 @@ describe("document card - tittle and last edited", () => {
     expect(doclastEdited.text()).to.not.equal("");
   });
 
-  // it(`Document last edited should be: ${datify(
-  //   dummyDocument.lastEdited
-  // )}`, () => {
-  //   expect(datify(doclastEdited.text())).to.include(
-  //     datify(dummyDocument.lastEdited)
-  //   );
-  // });
+  it(`Document last edited should be: ${datify(
+    dummyDocument.lastEdited
+  )}`, () => {
+    expect(datify(doclastEdited.text())).to.include(
+      datify(dummyDocument.lastEdited)
+    );
+  });
 });
 
 describe("document card - more option", () => {
