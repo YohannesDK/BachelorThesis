@@ -19,7 +19,9 @@
               <div class="course-module-dropdown-drop shadow-sm">
                 <ul class="list-unstyled mb-0">
                   <li @click="Edit()">Edit</li>
-                  <li v-if="courseModule.public === false">Publish</li>
+                  <li v-if="courseModule.public === false"
+                  @click="Publish(courseModule)"
+                  >Publish</li>
                   <li v-if="courseModule.public === true">Hide</li>
                   <hr />
                   <li @click="Delete()">Delete</li>
@@ -73,6 +75,7 @@ import {
 } from "@/store/interfaces/course";
 import router from "@/router";
 import Test from "@/directives/test.directive";
+import { PublishCourseModule } from "@/services/api/course.service";
 
 export default defineComponent({
   name: "CourseModule",
@@ -155,6 +158,10 @@ export default defineComponent({
       }
     };
 
+    const Publish = (courseModule: CourseModule) => {
+      PublishCourseModule(courseModule);
+    }
+
     const Delete = () => {
       if (props.courseModule) {
         emit("delete");
@@ -176,7 +183,8 @@ export default defineComponent({
       RemoveDropDowns,
       OpenSectionItem,
       Edit,
-      Delete
+      Delete,
+      Publish
     };
   }
 });

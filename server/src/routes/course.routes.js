@@ -27,6 +27,9 @@ router.post("/api/createCourseModule", courseController.CreateCourseModule)
 // updates a courseModule
 router.post("/api/updateCourseModule", courseController.updateCourseModule)
 
+// publishes a coursemodule
+router.post("/api/publishCourseModule", courseController.publishCourseModule)
+
 // creates a assignmentmodule
 router.post("/api/createAssignmentModule", courseController.createAssignmentModule)
 

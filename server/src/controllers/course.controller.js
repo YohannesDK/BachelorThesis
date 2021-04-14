@@ -595,7 +595,11 @@ const updateCourseModule = async (request, response) => {
 
 
 // TODO - need to fix this
-const publishCourseModule = (request, response)  => {
+const publishCourseModule = async (request, response)  => {
+    const courseModule = request.body.courseModule;
+
+    await models.CourseModule.update({public: true},
+        {where: {courseModuleID: courseModule.courseModuleID}});
     return response.sendStatus(200);
 }
 
