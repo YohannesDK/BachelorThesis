@@ -1,3 +1,3 @@
 export const ApiConfig = {
-  API_URL: "http://localhost:8085/api"
+  API_URL: "https://itscanvas.ux.uis.no:8085/api"
 };

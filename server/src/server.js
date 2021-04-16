@@ -42,6 +42,7 @@ app.use(bodyParser.urlencoded({extended : false}));
 app.use(express.static(path.join(__dirname, "../../app/dist/")));
 
 app.get("/", (request, response) => {
+    console.log("her")
     response.sendFile(path.join(__dirname, "../../app/dist/index.html"));
 })
 
