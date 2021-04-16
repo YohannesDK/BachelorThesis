@@ -6,14 +6,15 @@ const router = express.Router();
 
 const questionsController = require('../controllers/questions.controller')
 
-//This api call creates a question 
-router.post("/api/createQuestion", questionsController.create_question )
+//This api call creates a questionSet
+router.post("/api/createQuestionSet", questionsController.createQuestionSet)
 
-//This api call creates a true or false question
-router.post("/api/createTFQ", questionsController.create_true_false_question)
+// this api call updates a questionset
+router.post("/api/updateQuestionSet", questionsController.updateQuestionSet)
 
+// This api call gets all questionSets
+router.get("/api/getAllQuestionSets", questionsController.getQuestionSets)
 
-//This API saves question info
-router.post("/api/saveQuestion", questionsController.save_question )
+router.delete("/deleteQuestionSet", questionsController.deleteQuestionSet)
 
 module.exports = router;

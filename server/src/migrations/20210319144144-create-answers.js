@@ -8,10 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      answerset_id: {
+      question_id: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       answer_option: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       createdAt: {

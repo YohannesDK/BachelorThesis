@@ -68,17 +68,6 @@ export default defineComponent({
 
     const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
 
-    //Get request to get all the documents
-    // onBeforeMount(() => {
-    //   axios
-    //   .get("/api/documentInfo", {
-    //     headers: { token: localStorage.getItem("token") }
-    //   })
-    //   .then(response => {
-    //     documents.value = response.data.documents;
-    //   });
-    // });
-
     // Create New Document
     const NewDocument = () => {
       if (user.value.UserID === -1) {

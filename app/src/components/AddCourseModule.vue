@@ -223,16 +223,6 @@ export default defineComponent({
       moduleSections: []
     });
 
-    // // object for capturing difference, when updating
-    // const oldcourseModuleData: CourseModule = {
-    //   courseModuleID: -1,
-    //   courseId: -1,
-    //   moduleOrderIndex: 0,
-    //   public: false,
-    //   moduleName: "",
-    //   moduleSections: []
-    // };
-
     // to capture updates when editing module
     const updatedModuleName = ref(courseModuleData.value.moduleName);
     const updatedModuleSections: any = {};

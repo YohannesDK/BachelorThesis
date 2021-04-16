@@ -2,7 +2,8 @@ import store from "@/store";
 import {
   Question,
   QuestionSet,
-  QuestionTypeEnum
+  QuestionTypeEnum,
+  ShortTextQuestionType
 } from "@/store/interfaces/question.type";
 import {
   TestData,
@@ -27,7 +28,7 @@ export function SingeTestStatResult(
           question.QuestionType === QuestionTypeEnum.LongText
         ) {
           result =
-            (question.Question.Answer as string).trim().toLowerCase() ===
+            (question.Question as ShortTextQuestionType).Answer.Answer.trim().toLowerCase() ===
             (TestQuestionAndAnswer.Answer as string).trim().toLowerCase()
               ? TestStatAnswerCorrect.CORRECT
               : TestStatAnswerCorrect.WRONG;

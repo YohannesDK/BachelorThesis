@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({AnswerSet}) {
+    static associate({Answers}) {
       // define association here
-      this.hasMany(AnswerSet, {foreignKey: 'question_id'})
+      this.hasMany(Answers, {foreignKey: 'question_id'})
     }
   }
   Question.init({
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     questionset_id: DataTypes.INTEGER,
     question: DataTypes.STRING,
     question_type: DataTypes.INTEGER,
-    answerset_id: DataTypes.INTEGER
+    correct_answer: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: "Question",

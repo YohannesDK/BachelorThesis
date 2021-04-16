@@ -12,19 +12,19 @@
               <li>
                 <div class="li-info">
                   <span>Title</span>
-                  <p>{{ Data.Tittle }}</p>
+                  <p>{{ QuestionSet.Tittle }}</p>
                 </div>
               </li>
               <li>
                 <div class="li-info">
                   <span>Description</span>
-                  <p>{{ Data.Description || "..." }}</p>
+                  <p>{{ QuestionSet.Description || "..." }}</p>
                 </div>
               </li>
               <li>
                 <div class="li-info">
                   <span>Number of Questions</span>
-                  <p>{{ Data.QuestionSet.length }}</p>
+                  <p>{{ QuestionSet.QuestionSet.length }}</p>
                 </div>
               </li>
             </ul>
@@ -34,7 +34,7 @@
               <li>
                 <div class="li-info">
                   <span>Previous Attempt</span>
-                  <p>1 / {{ Data.QuestionSet.length }}</p>
+                  <p>1 / {{ QuestionSet.QuestionSet.length }}</p>
                 </div>
               </li>
               <li>
@@ -109,14 +109,12 @@ export default defineComponent({
       settingsOption.value = newsetting;
     };
 
-    let numOfQuestions = ref<number>(0)
-
-    const Data = ref<QuestionSet>({
+    const QuestionSet = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
       QuestionSet: [],
-      CreateBy: "",
+      CreateBy: -1,
       LastEdited: "",
       DocumentID: [],
       CourseId: []
@@ -130,45 +128,12 @@ export default defineComponent({
     };
 
     const InitilizeDocumet = (QSID: number) => {
-
-      //Fetch QS here
-      //Here we need to fetch questionset
-            //Get data from backend
-      axios
-        .get("/api/fetchQS", {
-          params: { QSID: router.currentRoute.value.query.QSID }
-        })
-        .then(response => {
-          // Data.value.Tittle = response.data.questionset.title;
-          // Data.value.Description = response.data.questionset.description;
-          console.log(response)
-          //if this questionset has pre-existing questions, fetch them
-          Data.value.QSID = response.data.questionset.questionset_id,
-          Data.value.Tittle = response.data.questionset.title,
-          Data.value.Description = response.data.questionset.description,
-          Data.value.LastEdited = response.data.questionset.updatedAt
-
-          for(let i = 0; i < response.data.questions.length; i++){
-            Data.value.QuestionSet.push(response.data.questions[i])
-          }
-
-          // console.log(response.data.questions.length)
-
-          numOfQuestions = response.data.questions.length
-          console.log(Data.value.QuestionSet.length)
-
-
-        });
-
-          console.log(numOfQuestions)
-
-
-      // const qs = store.getters.getQuestionSetById(QSID);
-      // QuestionSet.value.QSID = qs.QSID;
-      // QuestionSet.value.Tittle = qs.Tittle;
-      // QuestionSet.value.Description = qs.Description;
-      // QuestionSet.value.QuestionSet = qs.QuestionSet;
-      // QuestionSet.value.LastEdited = qs.LastEdited;
+      const qs = store.getters.getQuestionSetById(QSID);
+      QuestionSet.value.QSID = qs.QSID;
+      QuestionSet.value.Tittle = qs.Tittle;
+      QuestionSet.value.Description = qs.Description;
+      QuestionSet.value.QuestionSet = qs.QuestionSet;
+      QuestionSet.value.LastEdited = qs.LastEdited;
     };
 
     onMounted(() => {
@@ -181,11 +146,10 @@ export default defineComponent({
     });
 
     return {
-      Data,
+      QuestionSet,
       settingsOption,
       updateSettingsOption,
-      OpenTest,
-      numOfQuestions
+      OpenTest
     };
   }
 });

@@ -8,16 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id:{
+      createdBy: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
-      createdBy: {
-        type: Sequelize.STRING
-      },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       description: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       createdAt: {

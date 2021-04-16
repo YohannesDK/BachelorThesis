@@ -1,22 +1,21 @@
-const _ = require('lodash');
+// const _ = require('lodash');
 
-
-/**
- * Deep diff between two object, using lodash
- * @param  {Object} object Object compared
- * @param  {Object} base   Object to compare with
- * @return {Object}        Return a new object who represent the diff
- */
-exports.updateDifference = (object, base) => {
-	function changes(object, base) {
-		return _.transform(object, function(result, value, key) {
-			if (!_.isEqual(value, base[key])) {
-				result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
-			}
-		});
-	}
-	return changes(object, base);
-}
+// /**
+//  * Deep diff between two object, using lodash
+//  * @param  {Object} object Object compared
+//  * @param  {Object} base   Object to compare with
+//  * @return {Object}        Return a new object who represent the diff
+//  */
+// exports.updateDifference = (object, base) => {
+// 	function changes(object, base) {
+// 		return _.transform(object, function(result, value, key) {
+// 			if (!_.isEqual(value, base[key])) {
+// 				result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+// 			}
+// 		});
+// 	}
+// 	return changes(object, base);
+// }
 
 //Create functions here
 const models = require("../models/index.js");
@@ -280,7 +279,7 @@ const getCourses = (request, response) => {
 
                     let courseModules = await models.CourseModule.findAll({where: {
                         courseId: course.courseId,
-                        public: true
+                        public: 1
                     }});
 
                     let course_modules_right_format = courseModules.map(courseModule => {
@@ -594,11 +593,10 @@ const updateCourseModule = async (request, response) => {
 }
 
 
-// TODO - need to fix this
 const publishCourseModule = async (request, response)  => {
     const courseModule = request.body.courseModule;
 
-    await models.CourseModule.update({public: true},
+    await models.CourseModule.update({public: 1},
         {where: {courseModuleID: courseModule.courseModuleID}});
     return response.sendStatus(200);
 }

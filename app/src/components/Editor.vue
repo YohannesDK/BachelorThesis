@@ -104,8 +104,6 @@ export default defineComponent({
         userId: user.value.UserID
       };
       emit("updateDoc", updatedData);
-      // if (Saved.value === false) {
-      // }
     });
 
     onBeforeMount(() => {

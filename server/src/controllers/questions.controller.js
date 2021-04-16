@@ -2,133 +2,331 @@
 const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 
-//Save attempts
-const create_question = (request, response) => {
-    //Create a question
-    models.Question.create({
-        questionset_id: parseInt(request.body.questionsetId),
-        question: request.body.question,
-        question_type: request.body.questionType
-    }).then(function(question){
-        //Create an empty answer for that question
-        models.Answers.create({
-        answerset_id: question.question_id
-        }).then(function(answer){
-        models.Question.update({
-            //The answerset_id is by default 0 when a question is first created
-            //When we create a new answer, we update the answerset_id and set it to the id of the answer
-            answerset_id: answer.answer_id
-        }, {where: {question_id: question.question_id }})
-        })
-        
-        return response.json({
-        title: "Created Question",
-        question: question,
-
+//Creates a questionset
+const createQuestionSet = (request, response) => {
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", (err, decoded )=> {
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
         });
     });
 
-}
+    // define QuestionSet, which we will manipulate
+    const QuestionSet = request.body.newquestionSet;
+
+    if (QuestionSet === undefined) {
+        return response.sendStatus(400);
+    }
+
+    models.QuestionSet.create({
+        title: QuestionSet.Tittle,
+        description: QuestionSet.Description,
+        createdBy: QuestionSet.CreateBy
+    }).then(async (createdQuestionSet) => {
+        // assign questionset_id
+        QuestionSet.QSID = createdQuestionSet.questionset_id
+
+        // create questions
+        await Promise.all(QuestionSet.QuestionSet.map(async (question, index) => {
+
+            // TODO - everyting below should be extracted to a single function
+            //        so that we can reuse it in other functions, single responsibility principle as well
+            // correct answer is -1 for short and long text questions
+            let correct_answer = -1;
+
+            // if question is type of true/false or multiple choice, get correct_answer
+            if (question.QuestionType === 2 || question.QuestionType === 3) {
+                correct_answer = question.Question.CorrectAnswer
+            }
 
 
-const create_true_false_question = (request, response) => {
-        //Here we create a question of type 2, which is a true or false question
-        models.Question.create({
-            questionset_id: parseInt(request.body.questionsetId),
-            question: request.body.question,
-            question_type: 2
-        }).then(function(question){
-            //True or false questions have two answer options; true or false.
-            // We then have to create two different answers in the answer table
-            for(let i = 0; i < Object.keys(request.body.Answers).length; i++){
-                //i can either be 0 or 1, because the length of request.body.Answers is 2.
-                //if it is 0, we create a new answer and give it the value True
-                //Then we update the question we just created, and set its answerset_id equal to the answer_id of the answer
-                if(i == 0){
-                    models.Answers.create({
-                        answerset_id: question.question_id,
-                        answer_option: request.body.Answers.TrueOption
-                    }).then(function(answer){
-                        models.Question.update({
-                            answerset_id: answer.answer_id
-                        }, {where: {question_id: question.question_id }})
-                    })
-                }
-                //if i is 1, we create an answer and give it the value False
-                //Same process as explained above
-                if(i == 1){
-                    models.Answers.create({
-                        answerset_id: question.question_id,
-                        answer_option: request.body.Answers.FalseOption
-                    }).then(function(answer){
-                        models.Question.update({
-                            answerset_id: answer.answer_id
-                        }, {where: {question_id: question.question_id }})
-                    })
-                }
-        }
-    
-    
-        models.Question.findOne({ attributes: ["question_id"], order: [["question_id", "DESC"]]}).then(function(QSet) {
-            console.log(QSet.question_id)
-    
-            models.AnswerSet.create({
-                question_id: QSet.question_id,
-                correct_answer: 2
-            })
-    
-        })
-    
-            return response.json({
-                title: "Created True False Question",
-                question: question,
-                    });
+            // create Question
+            let createdQuestion = await models.Question.create({
+                questionset_id: createdQuestionSet.questionset_id,
+                question: question.Question.Question,
+                question_type: question.QuestionType,
+                correct_answer: correct_answer
+            });
+
+            // set question id
+            QuestionSet.QuestionSet[index].QuestionID = createdQuestion.question_id;
+
+            // if question is type of short answer, or long answer, no need to loop through answers
+            if (question.QuestionType === 0 || question.QuestionType === 1 ) {
+                let createdAnswer = await models.Answers.create({
+                    question_id: createdQuestion.question_id,
+                    answer_option: question.Question.Answer.Answer
                 });
+
+                // set newly created answer and question id
+                QuestionSet.QuestionSet[index].Question.Answer.id = createdAnswer.answer_id;
+                QuestionSet.QuestionSet[index].Question.Answer.QuestionID = createdAnswer.question_id;
+            }
+
+            // if question is type of true/false, or multiple choice, need to loop through answers
+            if (question.QuestionType === 2 || question.QuestionType === 3 ) {
+                let Options = Object.keys(question.Question.Answer);
+                await Promise.all(Options.map(async (option) => {
+
+                    // create answer for each option
+                    let createdAnswer = await models.Answers.create({
+                        question_id: createdQuestion.question_id,
+                        answer_option: question.Question.Answer[option].Answer
+                    });
+
+                    // set newly created answer and question id
+                    QuestionSet.QuestionSet[index].Question.Answer[option].id = createdAnswer.answer_id;
+                    QuestionSet.QuestionSet[index].Question.Answer[option].QuestionID = createdAnswer.question_id;
+                }));
+
+            }
+
+
+        }))
+
+        return response.status(200).json({
+            QuestionSet: QuestionSet
+        });
+
+    })
 }
 
-const save_question = (request, response) => {
+// updates a questionset
+const updateQuestionSet = async (request, response) => {
+    const QuestionSet = request.body.EditedData.QuestionSetData
+    const updatedQuestions = request.body.EditedData.updatedQuestions
+    const deletedQuestions = request.body.EditedData.deletedQuestions
 
-    console.log(request.body.correctAnswer)
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", (err, decoded) => {
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
+    });
 
-    models.AnswerSet.update({
-        correct_answer: request.body.correctAnswer
-    }, {where: {question_id: request.body.questionId }})
+    // update tittle and description
+    await models.QuestionSet.update({description: QuestionSet.Description, title: QuestionSet.Tittle},
+        {where: {questionset_id: QuestionSet.QSID}});
 
-    //Here we update the title and description of the question set
-    models.QuestionSet.update({
-        title: request.body.title,
-        description: request.body.description
-    }, {where: {questionset_id: request.body.QSID}})
+    
+    await Promise.all(QuestionSet.QuestionSet.map(async(question, question_index) => {
 
-    //Here we update the question
-    models.Question.update({
-        question: request.body.question, 
-        question_type: request.body.questionType}, 
-        {where: 
-            {questionset_id: request.body.QSID, 
-            question_id: request.body.questionId}})
+        // user has added new question
+        if (question.QuestionID === -1) {
+            
+            // TODO - everyting below should be extracted to a single function
+            //        so that we can reuse it in other functions, single responsibility principle as well
+            // correct answer is -1 for short and long text questions
+            let correct_answer = -1;
 
-    //Here we check if the answer is not empty, and update it if it isnt
-    if(request.body.answerOption != "" && request.body.questionType == 0) {
-        models.Answers.update({
-            answer_option: request.body.answerOption
-        }, 
-        {where: 
-            {answerset_id: request.body.questionId}})
-    }
+            // if question is type of true/false or multiple choice, get correct_answer
+            if (question.QuestionType === 2 || question.QuestionType === 3) {
+                correct_answer = question.Question.CorrectAnswer
+            }
 
-    if(request.body.answerOption != "" && request.body.questionType == 2) {
-        for(let i = 0; i < Object.keys(request.body.answerOption).length; i++)
-        models.Answers.update({
-            answer_option: request.body.answerOption[i]
-        }, 
-        {where: 
-            {answerset_id: request.body.questionId}})
-    }
+            // create Question
+            let createdQuestion = await models.Question.create({
+                questionset_id: QuestionSet.QSID,
+                question: question.Question.Question,
+                question_type: question.QuestionType,
+                correct_answer: correct_answer
+            });
+
+            // set question id
+            QuestionSet.QuestionSet[question_index].QuestionID = createdQuestion.question_id;
+
+            
+            // if question is type of short answer, or long answer, no need to loop through answers
+            if (question.QuestionType === 0 || question.QuestionType === 1 ) {
+                let createdAnswer = await models.Answers.create({
+                    question_id: createdQuestion.question_id,
+                    answer_option: question.Question.Answer.Answer
+                });
+
+                // set newly created answer and question id
+                QuestionSet.QuestionSet[question_index].Question.Answer.id = createdAnswer.answer_id;
+                QuestionSet.QuestionSet[question_index].Question.Answer.QuestionID = createdAnswer.question_id;
+            }
+
+            if (question.QuestionType === 2 || question.QuestionType === 3 ) {
+                let Options = Object.keys(question.Question.Answer);
+                await Promise.all(Options.map(async (option) => {
+
+                    // create answer for each option
+                    let createdAnswer = await models.Answers.create({
+                        question_id: createdQuestion.question_id,
+                        answer_option: question.Question.Answer[option].Answer
+                    });
+
+                    // set newly created answer and question id
+                    QuestionSet.QuestionSet[question_index].Question.Answer[option].id = createdAnswer.answer_id;
+                    QuestionSet.QuestionSet[question_index].Question.Answer[option].QuestionID = createdAnswer.question_id;
+                }));
+
+            }
+        }
+
+        // user has updated something about this question
+        if (String(question.QuestionID) in updatedQuestions) {
+            let correct_answer = -1;
+
+            // if question is type of true/false or multiple choice, get correct_answer
+            if (question.QuestionType === 2 || question.QuestionType === 3) {
+                correct_answer = question.Question.CorrectAnswer
+            }
+
+            let updatedQS = updatedQuestions[String(question.QuestionID)];
+
+            // update question data
+            await models.Question.update({
+                question: question.Question.Question,
+                question_type: question.QuestionType,
+                correct_answer: correct_answer
+            }, {
+                where: {
+                    question_id: question.QuestionID
+                }
+            });
+
+            if (question.QuestionType === 0 || question.QuestionType === 1) {
+                await models.Answers.update({
+                    answer_option: question.Question.Answer.Answer
+                }, {
+                    where: {
+                        answer_id: question.Question.Answer.id
+                    }
+                })
+            }
+
+            if (question.QuestionType === 2 || question.QuestionType === 3) {
+                await Promise.all(Object.keys(question.Question.Answer).map(async (option) => {
+                    let answer = question.Question.Answer[option];
+                    await models.Answers.update({
+                        answer_option: answer.Answer
+                    }, {
+                        where: {
+                            answer_id: answer.id
+                        }
+                    })
+                }));
+            }
+        }
+
+        // user has deleted this question
+        if (String(question.QuestionID) in deletedQuestions) {
+            // delete all answers that belong to a question 
+            await models.Answer.destroy({where: {question_id: question.QuestionID}})
+            // await Promise.all(Object.keys(deletedsections).map(async (sectionID) => {
+            // }));
+        }
+
+    }));
+
+    return response.status(200).json({
+        updatedQuestionSet: QuestionSet
+    })
+}
+
+// Gets a users QuestionSets
+const getQuestionSets = (request, response) => {
+    let token = request.headers.token;
+    jwt.verify(token, "secretkey", async (err, decoded )=> {
+        if(err) return response.status(401).json({
+            title: "unauthorized",
+            error: err
+        });
+
+        // find all questionSets
+        const QuestionSets = await models.QuestionSet.findAll({where: {createdBy: decoded.id}})
+        if (QuestionSets) { 
+            let questionSets_right_format = QuestionSets.map(questionset => {
+                // TODO - this should not be necessary, just because some QS title and desc are empty
+                if (questionset.title && questionset.description) { 
+                    return {
+                        QSID: questionset.questionset_id,
+                        Tittle: questionset.title,
+                        Description: questionset.description || "",
+                        QuestionSet: [],
+                        CreateBy: questionset.createdBy,
+                        LastEdited: `${questionset.updatedAt}`,
+                        DocumentID: [],
+                        CourseId: []
+                    }
+                }
+            }).filter(qs => qs);
+
+            await Promise.all(questionSets_right_format.map(async (questionset, question_set_index) => {
+                // find all questions
+                let questions = await models.Question.findAll({
+                    where: { questionset_id: questionset.QSID },
+                    order: [['createdAt', 'ASC']], 
+                });
+
+                await Promise.all(questions.map(async (question) => {
+                    let question_right_format = {
+                        QuestionID: question.question_id,
+                        QuestionType: question.question_type,
+                        Question: {
+                            Question: question.question,
+                            Answer: {}
+                        }
+                    }
+
+                    // find all answers
+                    let answers = await models.Answers.findAll({ 
+                        where: { question_id: question.question_id },
+                        order: [['answer_id', 'ASC']], // order by id to keep track of correct answer index
+                    });
+
+                    // add answers to question
+                    answers.forEach((answer, index) => {
+                        // short or long text question
+                        if (question.question_type === 0 || question.question_type === 1) {
+                            question_right_format.Question.Answer = {
+                                id: answer.answer_id,
+                                QuestionID: question.question_id,
+                                Answer: answer.answer_option
+                            }
+                        } else if (question.question_type === 2 || question.question_type === 3) { // true/false or multiple choice
+                            let optionName = `Option${index+1}`
+                            question_right_format.Question.Answer[optionName] = {
+                                id: answer.answer_id,
+                                QuestionID: question.question_id,
+                                Answer: answer.answer_option
+                            }
+                            question_right_format.Question.CorrectAnswer = question.correct_answer 
+                        }
+                        
+                    });
+
+                    // add question to questionset list
+                    questionSets_right_format[question_set_index].QuestionSet.push(question_right_format)
+                }))
+
+            }));
+
+            return response.status(200).json({
+                QuestionSets: questionSets_right_format
+            })
+
+        } else {
+            return response.send(400);
+        }
+    });
+}
+
+
+// TODO -fix this
+// deletes questionset
+const deleteQuestionSet = (request, response) => {
+    return "not implemented"
 }
 
 module.exports = {
-    create_question,
-    create_true_false_question,
-    save_question
+    createQuestionSet,
+    updateQuestionSet,
+    getQuestionSets,
+    deleteQuestionSet
 }

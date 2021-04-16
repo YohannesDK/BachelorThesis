@@ -100,10 +100,11 @@ import store from "@/store";
 import { Question, QuestionTypeEnum, QuestionSetFlag, QuestionSet } from "@/store/interfaces/question.type";
 import { defineComponent, onMounted, ref, Ref } from "vue";
 import axios, { AxiosError } from "axios";
-import { TestData } from "@/store/interfaces/QuestionTest.types";
+import { SingleTestStat, TestData, TestStat } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import Test from "@/directives/test.directive";
+import { CreateTestStat } from "@/utils/testStats.utils";
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
@@ -115,7 +116,7 @@ export default defineComponent({
     const questionCards = ref<Array<any>>([]);
     const hideInfoBar = ref<boolean>(true);
     let counting = true;
-    let correct = 0;
+    const correct = 0;
     let timer = 0;
     const sortedAnswers = [] as any;
 
@@ -124,7 +125,7 @@ export default defineComponent({
       Tittle: "",
       Description: "",
       QuestionSet: [] as Question[],
-      CreateBy: "",
+      CreateBy: -1,
       LastEdited: "",
       DocumentID: [],
       CourseId: []
@@ -132,7 +133,7 @@ export default defineComponent({
 
     const TestData: Ref<TestData> = ref<TestData>({
       TestID: -1,
-      userName: "",
+      userID: -1,
       date: date,
       QSID: -1,
       TestData: []
@@ -151,7 +152,7 @@ export default defineComponent({
       }
     };
 
-    const delayReturn = function() {
+    const delayReturn = () => {
       for(let i = 0; i < TestData.value.TestData.length; i++){
 
           axios
@@ -166,42 +167,51 @@ export default defineComponent({
           });
 
       }
-      };
+    };
 
     //This function is called by the Finished function.
     const checkAnswer = () => {
 
-      correct = 0;
-      const total = Data.value.QuestionSet.length
+      let correct = 0;
+      const testStat: TestStat[] = store.getters.getAllTestStats;
 
-      for(let i = 0; i < TestData.value.TestData.length; i++){
+      if (testStat.length > 0) {
+        const latestTestStat: TestStat = testStat[testStat.length - 1];
+        const total = Data.value.QuestionSet.length
+        
+        latestTestStat.TestStats.map((STS: SingleTestStat) => {
+          correct += STS.Correct 
+          return STS 
+        })
 
-        console.log(Data.value.QuestionSet[i].Question)
-
-        if(TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.Answer || 
-          TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.CorrectAnswer ){
-
-            correct++;
-         }
+        window.alert("You got " + correct + " out of " + total + " correct answers. You spent " + timer + " seconds.");
       }
 
-      axios
-        .post("/api/saveAttempt", {
-          headers: { token: localStorage.getItem("token") },
-          // @ts-ignore
-          questionsetId: parseInt(router.currentRoute.value.query.QSID),
-          Time: timer,
-          Score: correct
-        })
-        .then(response => {
-          console.log(response)
-        }).catch((error: AxiosError) => {
-          console.error(error);
-        })
+      // for(let i = 0; i < TestData.value.TestData.length; i++){
 
-      window.alert("You got " + correct + " out of " + total + " correct answers. You spent " + timer + " seconds.");
+      //   console.log(Data.value.QuestionSet[i].Question)
 
-      
+      //   // if(TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.Answer || 
+      //   //   TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.CorrectAnswer ){
+
+      //   //     correct++;
+      //   //  }
+      // }
+
+      // axios
+      //   .post("/api/saveAttempt", {
+      //     headers: { token: localStorage.getItem("token") },
+      //     // @ts-ignore
+      //     questionsetId: parseInt(router.currentRoute.value.query.QSID),
+      //     Time: timer,
+      //     Score: correct
+      //   })
+      //   .then(response => {
+      //     console.log(response)
+      //   }).catch((error: AxiosError) => {
+      //     console.error(error);
+      //   })
+
     }
 
 
@@ -219,9 +229,7 @@ export default defineComponent({
       });
       store.dispatch("AddTestData", TestData.value);
       store.dispatch("AddNewTestStat", TestData.value);
-
       checkAnswer();
-      setTimeout(delayReturn, 500);
 
       console.log(TestData.value.TestData.length)
       // router.push({ name: "QuestionSets" });
@@ -239,8 +247,8 @@ export default defineComponent({
       //Sorting the answers from backend to a list
       //Set the counting variable to true upon loading the page.
       //When it is true, the counter starts
-      counting = true;
 
+      counting = true;
       //Starts timer
       const interval = setInterval(() => {
         if (counting === true) {
@@ -251,103 +259,24 @@ export default defineComponent({
         }             
       }, 1000)
 
+      const user: UserType = store.getters.getActiveUser;
+      if (router.currentRoute.value.query.QSID) {
+        const qs: QuestionSet = store.getters.getQuestionSetById(
+          Number(router.currentRoute.value.query.QSID)
+        );
+        Data.value.QSID = qs.QSID;
+        Data.value.Tittle = qs.Tittle;
+        Data.value.Description = qs.Description;
+        Data.value.QuestionSet = qs.QuestionSet;
+      }
 
-      //Here we need to fetch questionset
-      //Get data from backend
-      axios
-        .get("/api/fetchQS", {
-          params: { QSID: router.currentRoute.value.query.QSID }
-        })
-        .then(response => {
-          Data.value.Tittle = response.data.questionset.title;
-          Data.value.Description = response.data.questionset.description;
-          console.log(response)
-          //if this questionset has pre-existing questions, fetch them
-            if (response.data.questions.length !== 0) {
-
-            //These nested for loops are uugly
-            for (let i = 0; i < response.data.questions.length; i++) {
-              for(let j = 0; j < response.data.correctAnswer.length; j++) {
-                if(response.data.questions[i].question_id == response.data.correctAnswer[j].question_id){
-                  Data.value.QuestionSet.push({
-                  QuestionID: response.data.questions[i].question_id,
-                  QuestionType: response.data.questions[i].question_type,
-                  Question: {
-                    Question: response.data.questions[i].question,
-                    Answer: {
-                      TrueOption: "True",
-                      FalseOption: "False"
-                    },
-                    CorrectAnswer: response.data.correctAnswer[j].correct_answer
-                  }
-                });
-                }
-              }
-              {
-                if(response.data.questions[i].question_type != 2){
-                  Data.value.QuestionSet.push({
-                  QuestionID: response.data.questions[i].question_id,
-                  QuestionType: response.data.questions[i].question_type,
-                  Question: {
-                    Question: response.data.questions[i].question,
-                    Answer: ""
-                  }
-                });
-              }
-              }
-            }
-            //Here we set the answer for shortanswer questions (Can also be used to set for longanswer)
-            //But it does not work for multiple choice / true false, therefore we have to check for it
-            for (let i = 0; i < response.data.questions.length; i++) {
-              for (let j = 0; j < response.data.answer.length; j++) {
-                if (
-                  response.data.questions[i].question_id ==
-                    response.data.answer[j].answerset_id &&
-                  response.data.questions[i].question_type == 0
-                ) {
-                  Data.value.QuestionSet[i].Question.Answer =
-                    response.data.answer[j].answer_option;
-                }
-              }
-            }
-
-
-          for(let i = 0; i < Data.value.QuestionSet.length; i++){
-            if(Data.value.QuestionSet[i].Question.CorrectAnswer == 0 || Data.value.QuestionSet[i].Question.CorrectAnswer == 1){
-              sortedAnswers.push(Data.value.QuestionSet[i].Question.CorrectAnswer)
-            } else {
-              sortedAnswers.push(Data.value.QuestionSet[i].Question.Answer)
-            }
-          }
-
-
-            return;
-          } 
-        }).catch((error: AxiosError) => {
-          console.error(error);
-        })
-
-      // if (router.currentRoute.value.query.QSID) {
-      //   const qs: QuestionSet = store.getters.getQuestionSetById(
-      //     Number(router.currentRoute.value.query.QSID)
-      //   );
-      //   console.log(store.getters.getQuestionSetById(0))
-      //   console.log(qs)
-      //   Data.value.QSID = qs.QSID;
-      //   Data.value.Tittle = qs.Tittle;
-      //   Data.value.Description = qs.Description;
-      //   Data.value.QuestionSet = qs.QuestionSet;
-      // }
-
-      // Create these tables
       // initilize test data
       if (TestData.value.TestID === -1) {
         TestData.value.TestID = store.getters.getTestID;
         TestData.value.QSID = Data.value.QSID;
-        TestData.value.userName = "bobby";
+        TestData.value.userID = -1;
 
         store.dispatch("IncrementTestID");
-        console.log("skjerher")
         console.log(TestData)
       }
     };
@@ -355,7 +284,8 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch("loading", true);
       setTimeout(() => {
-        // while fetching all data
+        // TODO
+        // while fetching all data, if not in store
         store.dispatch("loading", false);
         InitilizeTest();
       }, 1000);

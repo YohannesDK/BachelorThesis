@@ -9,8 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate({Question}) {
       // define association here
+      this.belongsTo(Question, {foreignKey: 'question_id'})
     }
   }
   Answers.init({
@@ -19,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    answerset_id: DataTypes.INTEGER,
+    question_id: DataTypes.INTEGER,
     answer_option: DataTypes.STRING
   }, {
     sequelize,
