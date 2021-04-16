@@ -10,9 +10,6 @@
             @rendered="onRender"
             @update="onUpdate"
             @destroy="onDestroy"/>
-        <line-chart :data="{'2017-05-13': 2, '2017-05-14': 5}"></line-chart>
-        <column-chart :data="[['Sun', 32], ['Mon', 46], ['Tue', 28]]"></column-chart>
-        <div :constructor-type="'stockChart'"></div>
 
     </div>
 </template>
@@ -22,10 +19,9 @@ import { defineComponent } from "vue";
 import axios from 'axios';
 import {ref, computed, onMounted, onBeforeMount} from 'vue';
 import VueHighcharts from "vue3-highcharts"
-import { Bar, Line } from 'vue-chartjs'
+
 export default defineComponent({
   name: "chartTest",
-  extends: Bar,
   components: {
       VueHighcharts
   },
@@ -48,16 +44,66 @@ methods: {
 
     const dataList = []
     const chartOptions = {
-                    chart: {
-                        type: 'spline'
-                    },
-                    xAxis: {
-                        categories: ['Time', 'Score']
-                    },
-                    title: {
-                        text: 'Sin chart'
-                    },
-                    series: dataList
+    chart: {
+        type: 'scatter',
+    },
+    title: {
+        text: 'Student Data'
+    },
+    subtitle: {
+        text: 'Course: Web Programming 101'
+    },
+    xAxis: {
+        title: {
+            enabled: true,
+            text: 'Time'
+        },
+        startOnTick: true,
+        endOnTick: true,
+        showLastLabel: true
+    },
+    yAxis: {
+        title: {
+            text: 'Score'
+        }
+    },
+    // legend: {
+    //     layout: 'vertical',
+    //     align: 'left',
+    //     verticalAlign: 'top',
+    //     x: 100,
+    //     y: 70,
+    //     floating: true,
+    //     backgroundColor: "white",
+    //     borderWidth: 1
+    // },
+    plotOptions: {
+        scatter: {
+            marker: {
+                radius: 5,
+                states: {
+                    hover: {
+                        enabled: true,
+                        lineColor: 'rgb(100,100,100)'
+                    }
+                }
+            },
+            states: {
+                hover: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<b>{series.name}</b><br>',
+                pointFormat: '{point.x} Time, {point.y} Score'
+            }
+        }
+    },
+    series: dataList
+
+
                 };
 
 
@@ -93,7 +139,7 @@ methods: {
             for(let i = 0; i < response.data.dataList.length; i++){
                 dataList.push({
                     name: response.data.dataList[i].Name,
-                    data: [response.data.dataList[i].Time, response.data.dataList[i].Score]
+                    data: [[response.data.dataList[i].Time, response.data.dataList[i].Score]]
                     })
             }
             console.log(dataList)
