@@ -6,7 +6,7 @@ import { datify } from "@/utils/calender.utils";
 import { DeltaOperation } from "quill";
 
 // creates new document
-export function CreateDocument(userId: number, body = "", title = "") {
+export function CreateDocument(userId: number, body = "", title = "Edit Title...") {
   //Post request to create an empty document
   axios
     .post("/createDocument", {

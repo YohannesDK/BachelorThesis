@@ -75,6 +75,7 @@ export default defineComponent({
       // document is defined
       if (updatedData.docID !== -1) {
         store.dispatch("UpdateDocumentBody", updatedData);
+        return;
       }
       CreateDocument(updatedData.userId, JSON.stringify(updatedData.body), updatedData.DocumentTittle)
     };
