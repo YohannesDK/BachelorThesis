@@ -84,6 +84,24 @@ export default {
         }
       }
     },
+    publishCourseModule: (state: any, courseModule: CourseModule) => {
+      const courseIndex = (state.courses as courseType[])
+        .map((course: courseType) =>  course.courseId)
+        .indexOf(courseModule.courseId);
+      
+      if (courseIndex !== -1) {
+        const moduleindex = (state.courses[
+          courseIndex
+        ] as courseType).courseModules
+          .map((cm: CourseModule) => cm.courseModuleID)
+          .indexOf(courseModule.courseModuleID);
+
+        if (moduleindex !== -1) {
+          (state.courses[courseIndex] as courseType).courseModules[moduleindex].public = true;
+        }
+      }
+    },
+
     deleteCourseModule: (state: any, courseModule: CourseModule) => {
       const courseIndex = (state.courses as courseType[])
         .map((course: courseType) => course.courseId)
@@ -188,6 +206,9 @@ export default {
     },
     UpdateCourseModule: (context: any, courseModule: CourseModule) => {
       context.commit("UpdateCourseModule", courseModule);
+    },
+    publishCourseModule: (context: any, courseModuleID: number)=> {
+      context.commit("publishCourseModule", courseModuleID)
     },
     deleteCourseModule: (context: any, courseModule: CourseModule) => {
       context.commit("deleteCourseModule", courseModule);

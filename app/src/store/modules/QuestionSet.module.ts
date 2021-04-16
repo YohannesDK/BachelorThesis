@@ -6,20 +6,15 @@ export default {
     QuestionSets: [] as QuestionSet[]
   },
   mutations: {
-    AddNewQuestionSet: (state: any, QuestionSet: QuestionSet) => {
-      let found = false;
-      state.QuestionSets.forEach((QS: QuestionSet) => {
-        if (QS.QSID === QuestionSet.QSID) {
-          found = true;
-          QS.Description = QuestionSet.Description;
-          QS.Tittle = QuestionSet.Tittle;
-          QS.QuestionSet = QuestionSet.QuestionSet;
-          QS.DocumentID = QuestionSet.DocumentID;
-          QS.CourseId = QuestionSet.CourseId;
-        }
-      });
-      if (!found) {
-        state.QuestionSets.push(QuestionSet);
+    UpdateQuestionSets: (state: any, newQuestionSet: QuestionSet) => {
+      const QsIndex: number = state.QuestionSets
+        .map((QS: QuestionSet) => QS.QSID)
+        .indexOf(newQuestionSet.QSID);
+
+      if (QsIndex === -1) {
+        state.QuestionSets.push(newQuestionSet);
+      } else {
+        (state.QuestionSets[QsIndex] as QuestionSet) = newQuestionSet;
       }
     },
     IncrementQuestionId: (state: any) => {
@@ -64,8 +59,8 @@ export default {
     }
   },
   actions: {
-    AddNewQuestionSet: (context: any, QuestionSet: QuestionSet) => {
-      context.commit("AddNewQuestionSet", QuestionSet);
+    UpdateQuestionSets: (context: any, QuestionSet: QuestionSet) => {
+      context.commit("UpdateQuestionSets", QuestionSet);
     },
     IncrementQuestionId: (context: any) => {
       context.commit("IncrementQuestionId");

@@ -8,6 +8,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      question_id:{
+        foreignKey: true,
+        type: Sequelize.INTEGER
+      },
       correct_answer: {
         foreignKey: true,
         type: Sequelize.INTEGER,

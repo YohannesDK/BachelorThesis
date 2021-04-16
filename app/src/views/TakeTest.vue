@@ -7,7 +7,7 @@
       <span
         class="navbar-brand mb-0 h1 test-tittle"
         v-test="{ id: 'TakeTest-test-navbar-tittle' }"
-        >{{ QuestionSet.Tittle }}</span
+        >{{ Data.Tittle }}</span
       >
     </div>
   </div>
@@ -17,7 +17,7 @@
     v-test="{ id: 'TakeTest-test-container' }"
   >
     <question-set-card
-      v-for="(question, index) in QuestionSet.QuestionSet"
+      v-for="(question, index) in Data.QuestionSet"
       :ref="
         el => {
           questionCards[index] = el;
@@ -40,7 +40,7 @@
       v-test="{ id: 'TakeTest-test-question-navigation-sidebar' }"
     >
       <li
-        v-for="(question, index) in QuestionSet.QuestionSet"
+        v-for="(question, index) in Data.QuestionSet"
         :key="question"
         @click="OnfocusChange(index)"
         :class="{ active: focusIndex === index }"
@@ -97,12 +97,14 @@
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import router from "@/router";
 import store from "@/store";
-import { QuestionSet } from "@/store/interfaces/question.type";
+import { Question, QuestionTypeEnum, QuestionSetFlag, QuestionSet } from "@/store/interfaces/question.type";
 import { defineComponent, onMounted, ref, Ref } from "vue";
-import { TestData } from "@/store/interfaces/QuestionTest.types";
+import axios, { AxiosError } from "axios";
+import { SingleTestStat, TestData, TestStat } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import Test from "@/directives/test.directive";
+import { CreateTestStat } from "@/utils/testStats.utils";
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
@@ -113,13 +115,17 @@ export default defineComponent({
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
     const hideInfoBar = ref<boolean>(true);
+    let counting = true;
+    const correct = 0;
+    let timer = 0;
+    const sortedAnswers = [] as any;
 
-    const QuestionSet = ref<QuestionSet>({
+    const Data = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
-      QuestionSet: [],
-      CreateBy: "",
+      QuestionSet: [] as Question[],
+      CreateBy: -1,
       LastEdited: "",
       DocumentID: [],
       CourseId: []
@@ -127,7 +133,7 @@ export default defineComponent({
 
     const TestData: Ref<TestData> = ref<TestData>({
       TestID: -1,
-      userName: "",
+      userID: -1,
       date: date,
       QSID: -1,
       TestData: []
@@ -137,7 +143,7 @@ export default defineComponent({
       focusIndex.value = index;
       try {
         if (questionCards.value[index]) {
-          if (QuestionSet.value.QuestionSet.length > 3) {
+          if (Data.value.QuestionSet.length > 3) {
             questionCards.value[index].$el.scrollIntoView({ block: "center" });
           }
         }
@@ -146,7 +152,71 @@ export default defineComponent({
       }
     };
 
+    const delayReturn = () => {
+      for(let i = 0; i < TestData.value.TestData.length; i++){
+
+          axios
+          .post("/api/storeAttemptData", {
+            headers: { token: localStorage.getItem("token") },
+            QuestionId: TestData.value.TestData[i].QuestionID,
+            Answer: JSON.stringify(TestData.value.TestData[i].Answer),
+            CorrectAnswer: JSON.stringify(sortedAnswers[i])
+          })
+          .then(response => {
+            console.log(response)
+          });
+
+      }
+    };
+
+    //This function is called by the Finished function.
+    const checkAnswer = () => {
+
+      let correct = 0;
+      const testStat: TestStat[] = store.getters.getAllTestStats;
+
+      if (testStat.length > 0) {
+        const latestTestStat: TestStat = testStat[testStat.length - 1];
+        const total = Data.value.QuestionSet.length
+        
+        latestTestStat.TestStats.map((STS: SingleTestStat) => {
+          correct += STS.Correct 
+          return STS 
+        })
+
+        window.alert("You got " + correct + " out of " + total + " correct answers. You spent " + timer + " seconds.");
+      }
+
+      // for(let i = 0; i < TestData.value.TestData.length; i++){
+
+      //   console.log(Data.value.QuestionSet[i].Question)
+
+      //   // if(TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.Answer || 
+      //   //   TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.CorrectAnswer ){
+
+      //   //     correct++;
+      //   //  }
+      // }
+
+      // axios
+      //   .post("/api/saveAttempt", {
+      //     headers: { token: localStorage.getItem("token") },
+      //     // @ts-ignore
+      //     questionsetId: parseInt(router.currentRoute.value.query.QSID),
+      //     Time: timer,
+      //     Score: correct
+      //   })
+      //   .then(response => {
+      //     console.log(response)
+      //   }).catch((error: AxiosError) => {
+      //     console.error(error);
+      //   })
+
+    }
+
+
     const Finished = () => {
+      counting = false;
       questionCards.value.forEach((ele: any) => {
         if (ele) {
           try {
@@ -159,7 +229,10 @@ export default defineComponent({
       });
       store.dispatch("AddTestData", TestData.value);
       store.dispatch("AddNewTestStat", TestData.value);
-      router.push({ name: "QuestionSets" });
+      checkAnswer();
+
+      console.log(TestData.value.TestData.length)
+      // router.push({ name: "QuestionSets" });
     };
 
     const Quit = () => {
@@ -170,44 +243,63 @@ export default defineComponent({
     };
 
     const InitilizeTest = () => {
+
+      //Sorting the answers from backend to a list
+      //Set the counting variable to true upon loading the page.
+      //When it is true, the counter starts
+
+      counting = true;
+      //Starts timer
+      const interval = setInterval(() => {
+        if (counting === true) {
+          timer++
+          console.log(timer)
+        } else {
+          clearInterval(interval)                
+        }             
+      }, 1000)
+
       const user: UserType = store.getters.getActiveUser;
       if (router.currentRoute.value.query.QSID) {
         const qs: QuestionSet = store.getters.getQuestionSetById(
           Number(router.currentRoute.value.query.QSID)
         );
-        QuestionSet.value.QSID = qs.QSID;
-        QuestionSet.value.Tittle = qs.Tittle;
-        QuestionSet.value.Description = qs.Description;
-        QuestionSet.value.QuestionSet = qs.QuestionSet;
+        Data.value.QSID = qs.QSID;
+        Data.value.Tittle = qs.Tittle;
+        Data.value.Description = qs.Description;
+        Data.value.QuestionSet = qs.QuestionSet;
       }
 
       // initilize test data
       if (TestData.value.TestID === -1) {
         TestData.value.TestID = store.getters.getTestID;
-        TestData.value.QSID = QuestionSet.value.QSID;
-        TestData.value.userName = user.UserName;
+        TestData.value.QSID = Data.value.QSID;
+        TestData.value.userID = -1;
 
         store.dispatch("IncrementTestID");
+        console.log(TestData)
       }
     };
 
     onMounted(() => {
       store.dispatch("loading", true);
       setTimeout(() => {
-        // while fetching all data
+        // TODO
+        // while fetching all data, if not in store
         store.dispatch("loading", false);
         InitilizeTest();
       }, 1000);
     });
 
     return {
-      QuestionSet,
+      Data,
       focusIndex,
       OnfocusChange,
       questionCards,
       hideInfoBar,
       Finished,
-      Quit
+      Quit,
+      checkAnswer
     };
   }
 });

@@ -23,6 +23,7 @@ import store from "@/store";
 //components
 import Editor from "@/components/Editor.vue";
 import router from "@/router";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "EditorView",
@@ -41,7 +42,6 @@ export default defineComponent({
       if (docID !== -1) {
         const document = store.getters.getDocmentbyId(docID);
         if (document) {
-          console.log(document.name);
           Title.value = document.name;
           LastEdited.value = document.lastEdited;
         }
@@ -72,8 +72,11 @@ export default defineComponent({
       if (DocumentTittle.value) {
         updatedData["DocumentTittle"] = DocumentTittle.value.innerText;
       }
-      store.dispatch("UpdateDocumentBody", updatedData);
-      console.log(store.getters.getDocmentbyId(updatedData.docID));
+      // document is defined
+      if (updatedData.docID !== -1) {
+        store.dispatch("UpdateDocumentBody", updatedData);
+      }
+      CreateDocument(updatedData.userId, JSON.stringify(updatedData.body), updatedData.DocumentTittle)
     };
 
     onMounted(() => {

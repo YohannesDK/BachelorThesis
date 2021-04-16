@@ -6,16 +6,17 @@ import { datify } from "@/utils/calender.utils";
 import { DeltaOperation } from "quill";
 
 // creates new document
-export function CreateDocument(userId: number) {
+export function CreateDocument(userId: number, body = "", title = "") {
   //Post request to create an empty document
   axios
     .post("/createDocument", {
       userId: userId,
-      body: "",
-      title: "Edit Title..."
+      body: body,
+      title: title
     })
     .then(response => {
       if (response.status && response.status === 200) {
+        console.log(response.data);
         const NewDocument: documentType = response.data.document;
         if (NewDocument.body === "") {
           NewDocument.body = [];
@@ -23,7 +24,7 @@ export function CreateDocument(userId: number) {
         NewDocument.lastEdited = datify(NewDocument.lastEdited);
         store.dispatch("UpdateDocuments", NewDocument);
       }
-    });
+    })
 }
 
 export function DeleteDocument(docID: number) {

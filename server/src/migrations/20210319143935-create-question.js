@@ -9,15 +9,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       questionset_id: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       question: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       question_type: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
-      answerset_id: {
+      correct_answer: {
         type: Sequelize.INTEGER
       },
       createdAt: {

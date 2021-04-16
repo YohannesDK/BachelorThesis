@@ -1,28 +1,71 @@
+import store from "@/store";
 import { QuestionSet, QuestionSetFlag } from "@/store/interfaces/question.type";
+import { datify } from "@/utils/calender.utils";
+import { AxiosResponse } from "axios";
 import axios from "../api";
 
-export function createQuestionSet(newquestionSet: QuestionSet) {
-  //Create question in backend
-  // axios
-  // .post("/api/createQuestion", {
-  //   questionsetId: router.currentRoute.value.query.QSID,
-  //   question: "",
-  //   questionType: 0
-  // })
-  // .then(response => {
-  //   Data.value.QuestionSet.push({
-  //     QuestionID: response.data.question.question_id,
-  //     QuestionType: response.data.question.question_type,
-  //     Question: {
-  //       Question: response.data.question.question,
-  //       Answer: ""
-  //     }
-  //   });
 
-  //   console.log(response.data.question.question_type);
-  // });
-  console.log("CreateQuestionSet");
+
+// creates a new Question Set
+export function createQuestionSet(newquestionSet: QuestionSet) {
+  console.log(newquestionSet)
+  axios
+    .post("/createQuestionSet", {
+      newquestionSet: newquestionSet
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        const QuestionSet = response.data.QuestionSet;
+        if (QuestionSet) {
+          store.dispatch("UpdateQuestionSets", QuestionSet);
+        }
+      }
+    })
 }
+
+
+// updates a question set
+export function UpdateQuestionSet(EditedData: any) {
+  axios
+    .post("/updateQuestionSet", {
+      EditedData: EditedData
+    })
+    .then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        const updatedQuestionSet = response.data.updatedQuestionSet;
+        if (updatedQuestionSet) {
+          store.dispatch("UpdateQuestionSets", updatedQuestionSet);
+        }
+      }
+    })
+}
+
+// deletes a entire Question Set
+export function DeleteQuestionSet(questionset: QuestionSet) {
+  return "Not Implemented"
+}
+
+
+// gets all questions sets
+export function GetAllQuestionSets() {
+  axios
+  .get("/getAllQuestionSets", {
+    headers: {
+      token: localStorage.getItem("token")
+    }
+  }).then((response: AxiosResponse) => {
+    if (response.status && response.status === 200) {
+      const QuestionSets = response.data.QuestionSets;
+      if (QuestionSets) {
+        QuestionSets.forEach((questionset: QuestionSet) => {
+          questionset.LastEdited = datify(questionset.LastEdited as string);
+          store.dispatch("UpdateQuestionSets", questionset) 
+        });
+      }
+    }
+  })
+
+}
+
 
 export function FetchQS(QSID: number) {
   //  axios

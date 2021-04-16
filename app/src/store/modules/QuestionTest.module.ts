@@ -37,10 +37,10 @@ export default {
       });
       return testData;
     },
-    getTestDataByUserName: (state: any, userName: string) => {
+    getTestDataByUserName: (state: any, userID: number) => {
       const testData: TestData[] = [];
       (state.TestData as TestData[]).forEach((test: TestData) => {
-        if (test.userName === userName) {
+        if (test.userID === userID) {
           testData.push(test);
         }
       });

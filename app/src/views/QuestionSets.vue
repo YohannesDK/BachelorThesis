@@ -199,6 +199,7 @@ export default defineComponent({
     const AttachQSID = ref<number>(-1);
     const Modal = ref<any>();
     const DescriptionSubstringLength = 25;
+    const questionsetList = ref<any>([]);
     const allQuestionSets = ref<Array<QuestionSet>>(
       store.getters.getAllQuestionSets
     );
@@ -248,10 +249,12 @@ export default defineComponent({
       sortOptions.value = newoption;
     };
 
+
     // Question set actions
     const AddNewQuestionSet = () => {
       router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
-    };
+    }
+
 
     const OpenQuestionSet = (QSID: number) => {
       router.push({
@@ -259,6 +262,8 @@ export default defineComponent({
         query: { QSID: QSID }
       });
     };
+
+
     const DeleteQuestionSet = (DocumentID: number[], QSID: number) => {
       store.dispatch("DeleteQuestionSet", QSID);
       store.dispatch("DeleteQuestionSetFromAllDocuments", {
@@ -285,7 +290,7 @@ export default defineComponent({
     };
 
     // onMounted(() => {
-    //   console.log(QuestionSets.value);
+    //   console.log(allQuestionSets.value);
     // });
 
     const OpenTest = (QSID: number) => {
@@ -293,12 +298,12 @@ export default defineComponent({
     };
 
     return {
+      questionsetList,
       displaytype,
       Modal,
       QuestionSets,
       ShowDropDown,
       dropdownIndex,
-      OpenQuestionSet,
       sortOptions,
       updateSortOption,
       DeleteQuestionSet,
@@ -306,6 +311,7 @@ export default defineComponent({
       AddNewQuestionSet,
       AttachQSID,
       OpenTest,
+      OpenQuestionSet,
       DescriptionSubstringLength,
       allQuestionSets
     };

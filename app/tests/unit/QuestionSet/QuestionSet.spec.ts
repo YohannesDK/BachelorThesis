@@ -9,17 +9,6 @@ import AddNewQuestionSet from "@/views/AddNewQuestionSet.vue";
 // 3. Questions Set should have a description
 // 4. Questions Set should at least have one card for adding questions
 // 5. Questions Set should have a button for saving questions
-//    save status then change from false to true
-
-// (async () => {
-//   await router.isReady();
-// })();
-
-// const wrapper = shallowMount(AddNewQuestionSet, {
-//   global: {
-//     plugins: [router]
-//   }
-// });
 
 const wrapper = shallowMount(AddNewQuestionSet);
 
@@ -45,17 +34,11 @@ describe("Question Set - Tittle, Description and Save", () => {
     expect(QSSave.exists()).to.equal(true);
   });
 
-  it("Question Set should have saved status as true when save is clicked", () => {
-    const QSSave = wrapper.find("[data-test-id='qs-SaveBtn']");
-    QSSave.trigger("click");
-    expect(wrapper.vm.saved).to.equal(true);
+  describe("Question Set - Card", () => {
+    it("Question Set should at least have one question card displayed", () => {
+      const QSCard = wrapper.findAll("[data-test-id='qs-Card']");
+      expect(QSCard.length).to.be.greaterThan(0);
+    });
   });
 });
 
-// TODO - this test fail somehow, but it work in the browser, fix later
-// describe("Question Set - Card", () => {
-//   it("Question Set should at least have one question card displayed", () => {
-//     const QSCard = wrapper.findAll("[data-test-id='qs-Card']");
-//     expect(QSCard.length).to.be.greaterThan(0);
-//   });
-// });

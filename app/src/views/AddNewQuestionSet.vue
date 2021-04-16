@@ -33,7 +33,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter title"
-                    v-model="Data.Tittle"
+                    v-model="QuestionSetData.Tittle"
                     v-test="{ id: 'qs-Tittle' }"
                     @input="saved = false"
                   />
@@ -49,7 +49,7 @@
                   <input
                     class="question-input"
                     placeholder="Enter description"
-                    v-model="Data.Description"
+                    v-model="QuestionSetData.Description"
                     v-test="{ id: 'qs-Desc' }"
                     @input="saved = false"
                   />
@@ -71,7 +71,7 @@
           }
         "
         v-test="{ id: 'qs-Card' }"
-        v-for="(question, index) in Data.QuestionSet"
+        v-for="(question, index) in QuestionSetData.QuestionSet"
         :key="question"
         :focus="focusIndex === index"
         :index="index"
@@ -79,7 +79,7 @@
         @AddNew="OnAddNew()"
         @delete="OnDelete(index)"
         @focusChange="OnfocusChange(index)"
-        @SaveStatus="saved = false"
+        @questionUpdated="OnUpdated"
       />
     </div>
   </div>
@@ -100,7 +100,6 @@ import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import Test from "@/directives/test.directive";
 import router from "@/router";
 import store from "@/store";
-import axios from "axios";
 import {
   Question,
   QuestionSet,
@@ -113,7 +112,8 @@ import { UserType } from "@/store/interfaces/user.types";
 import {
   createQuestionSet,
   FetchQS,
-  SaveQS
+  SaveQS,
+  UpdateQuestionSet
 } from "@/services/api/questionset.service";
 export default defineComponent({
   name: "AddNewQuestionSet",
@@ -131,17 +131,12 @@ export default defineComponent({
     const Tittle = ref<string>("");
     const Desc = ref<string>("");
     const saved = ref<boolean>(true);
-
-    const questionSetInfo = reactive({
-      title: "",
-      description: ""
-    });
-
-    const Data = ref<QuestionSet>({
+    
+    const QuestionSetData = ref<QuestionSet>({
       QSID: -1,
       Tittle: "",
       Description: "",
-      CreateBy: "",
+      CreateBy: -1,
       QuestionSet: [] as Question[],
       LastEdited: `${day} ${month} ${year}`,
       DocumentID: [],
@@ -151,38 +146,21 @@ export default defineComponent({
     const User: ComputedRef<UserType> = computed(
       () => store.getters.getActiveUser
     );
-    //This function creates a true/false question type
-    const createTFQ = () => {
-      axios
-        .post("/api/createTFQ", {
-          questionsetId: router.currentRoute.value.query.QSID,
-          question: "",
-          questionType: 2,
-          Answers: {
-            TrueOption: "True",
-            FalseOption: "False"
-          },
-          CorrectAnswer: 2
-        })
-        .then(response => {
-          console.log(response);
 
-          Data.value.QuestionSet.push({
-            QuestionID: response.data.question.question_id,
-            QuestionType: response.data.question.question_type,
-            Question: {
-              Question: response.data.question.question,
-              Answer: {
-                TrueOption: "True",
-                FalseOption: "False"
-              },
-              CorrectAnswer: 2
-            }
-          });
+    // to capture updates
+    const updatedQuestions: any = {};
+    const deletedQuestions: any = {};
 
-          console.log(response.data.question.question_type);
-        });
-    };
+    const OnUpdated = (updatedQuestion: Question) => {
+      console.log("updated", updatedQuestion)
+      saved.value = false;
+      if (updatedQuestion.QuestionID !== -1) {
+        if (!(updatedQuestion.QuestionID in updatedQuestions)) {
+          updatedQuestions[updatedQuestion.QuestionID] = updatedQuestion 
+        } 
+      }
+    }
+
 
     // route save guard, if the quesitons are not saved
     const RouteSafeGuards = () => {
@@ -200,7 +178,11 @@ export default defineComponent({
       if (saved.value) {
         next();
       } else {
-        alert("You have unsaved work");
+        const Confirm = confirm("You have unsaved work, are your sure you want to leave? ")
+        if (Confirm) {
+          saved.value = true;
+          next(); 
+        }
       }
     });
 
@@ -208,67 +190,56 @@ export default defineComponent({
       questionCards.value = [];
     });
 
-    const OnAddNew = () => {
-      saved.value = false;
-
-      Data.value.QuestionSet.push({
-        QuestionID: store.getters.getQuestionId,
-        QuestionType: QuestionTypeEnum.ShortText,
-        Question: {
-          Question: "",
-          Answer: ""
-        }
-      });
-      store.dispatch("IncrementQuestionId");
-    };
-
-    // Initilize Question Set if it exists
-    const InitilizeQuestionSet = (QSID: number) => {
-      // her kan vi sette QuestionSetFlag til CREATE eller UPDATE også
-      // kjøre request etter det når vi saver
-
-      if (QSID !== -1) {
-        questionSetFlag.value = QuestionSetFlag.UPDATE;
-        const QuestionSet: QuestionSet = store.getters.getQuestionSetById(QSID);
-        if (QuestionSet === undefined) {
-          // hvis questionSet ikke er i store, fetch fra DB
-          // QuestionSet = FetchQS(QSID);
-          console.log("Fetch From Backend");
-          // while loading question set show loading screeen
-        }
-        Data.value.QSID = QuestionSet.QSID;
-        Data.value.Tittle = QuestionSet.Tittle;
-        Data.value.CreateBy = User.value.UserName;
-        Data.value.Description = QuestionSet.Description;
-        Data.value.QuestionSet = QuestionSet.QuestionSet;
-        return;
-      } else {
-        //if the questionset is empty, initialize it with an empty question
-        console.log("hmm");
-        Data.value.QSID = store.getters.getQuestionSetLength;
-        Data.value.CreateBy = User.value.UserName;
-        OnAddNew();
-      }
-    };
-
     // Change between question cards
     const OnfocusChange = (index: number) => {
       focusIndex.value = index;
     };
 
+
+    // #region mutations
+    const OnAddNew = () => {
+      saved.value = false;
+      //Create question in backend
+      QuestionSetData.value.QuestionSet.push({
+        QuestionID: -1,
+        QuestionType: QuestionTypeEnum.ShortText,
+        Question: {
+          Question: "",
+          Answer: {
+            id: -1,
+            QuestionID: -1, 
+            Answer: ""
+          }
+        }
+      });
+    };
+
     const OnDelete = (index: number) => {
       saved.value = false;
       if (index !== 0) {
-        // TODO - fix visual effect - shaking effect
-
+        // delete from questionCards
         questionCards.value = [
           ...questionCards.value.slice(0, index),
           ...questionCards.value.slice(index + 1)
         ];
 
-        Data.value.QuestionSet = [
-          ...Data.value.QuestionSet.slice(0, index),
-          ...Data.value.QuestionSet.slice(index + 1)
+        const deletedQuestion: Question = QuestionSetData.value.QuestionSet[index];
+        if (deletedQuestion.QuestionID !== -1) {
+          // check that it doesnt exists in deletedquestions object
+          if (!(deletedQuestion.QuestionID in deletedQuestions)) {
+            deletedQuestions[deletedQuestion.QuestionID] = deletedQuestion
+          }
+
+          // remove from updated questions, now that its deleted
+          if (deletedQuestion.QuestionID in updatedQuestions) {
+            delete updatedQuestions[deletedQuestion.QuestionID];
+          }
+        }
+
+        // delete from questionset
+        QuestionSetData.value.QuestionSet = [
+          ...QuestionSetData.value.QuestionSet.slice(0, index),
+          ...QuestionSetData.value.QuestionSet.slice(index + 1)
         ];
         focusIndex.value = index - 1;
       } else {
@@ -276,41 +247,82 @@ export default defineComponent({
       }
     };
 
-    const Save = () => {
-      // Update document QuestionSetId, and questionst documentid, when saving
-      if (router.currentRoute.value.query.did) {
-        console.log("saved to " + router.currentRoute.value.query.did);
-        store.dispatch("SetDocumentQSID", {
-          documentid: Number(router.currentRoute.value.query.did),
-          QSID: Data.value.QSID
-        });
-        Data.value.DocumentID.push(Number(router.currentRoute.value.query.did));
+    // Initilize Question Set if it exists
+    const InitilizeQuestionSet = (QSID: number) => {
+      if (QSID !== -1) {
+        // we are updating
+        questionSetFlag.value = QuestionSetFlag.UPDATE;
+        const QuestionSet: QuestionSet = store.getters.getQuestionSetById(QSID);
+        if (QuestionSet) {
+          QuestionSetData.value.QSID = QuestionSet.QSID;
+          QuestionSetData.value.Tittle = QuestionSet.Tittle;
+          QuestionSetData.value.CreateBy = QuestionSet.CreateBy;
+          QuestionSetData.value.Description = QuestionSet.Description;
+          QuestionSetData.value.QuestionSet = QuestionSet.QuestionSet;
+
+          if (QuestionSet.QuestionSet.length === 0) {
+            OnAddNew(); 
+          }
+        }
+        return;
+      } else {
+        //if the QSID is -1, initialize it with an empty question
+        QuestionSetData.value.QSID = -1;
+        QuestionSetData.value.CreateBy = User.value.UserID;
+        OnAddNew();
       }
+    };
+
+    const Save = () => {
+      // TODO - fix saving doc id later
+      // Update document QuestionSetId, and questionst documentid, when saving
+      // if (router.currentRoute.value.query.did) {
+      //   console.log("saved to " + router.currentRoute.value.query.did);
+      //   store.dispatch("SetDocumentQSID", {
+      //     documentid: Number(router.currentRoute.value.query.did),
+      //     QSID: QuestionSetData.value.QSID
+      //   });
+      //   QuestionSetData.value.DocumentID.push(Number(router.currentRoute.value.query.did));
+      // }
 
       // To avoid duplactes, when updating question set
-      Data.value.QuestionSet.length = 0;
+      QuestionSetData.value.QuestionSet.length = 0;
 
+      // get all questions
       questionCards.value.forEach((ele: any) => {
         if (ele) {
           try {
             const questionData = ele.QuestionDataHandler.call();
-            Data.value.QuestionSet.push(questionData);
+            QuestionSetData.value.QuestionSet.push(questionData);
           } catch (e) {
             // TODO: Error with testing, everything works but when running this in node
             //       it errors out, so i catch for now to avoid nasty output
             return;
-            // console.error("Error: call undefined");
           }
         }
       });
-      // vet ikke om d er best å ha username eller userid, mtp sikkerhet så er d nok bedre med username
-      if (Data.value.CreateBy === "") {
-        Data.value.CreateBy = User.value.UserName;
+
+      // check once again that user is specified
+      if (QuestionSetData.value.CreateBy === -1) {
+        QuestionSetData.value.CreateBy = User.value.UserID;
       }
-      // SaveQS(Data.value, questionSetFlag.value);
-      store.dispatch("AddNewQuestionSet", Data.value);
+
+      // check if we are creating or updating so we can call right api
+      if (questionSetFlag.value === QuestionSetFlag.CREATE) {
+        createQuestionSet(QuestionSetData.value);
+      }
+
+      if (questionSetFlag.value === QuestionSetFlag.UPDATE) {
+        const EditedData = {
+          updatedQuestions: updatedQuestions,
+          deletedQuestions: deletedQuestions,
+          QuestionSetData: QuestionSetData.value
+        }
+        UpdateQuestionSet(EditedData);
+      }
       saved.value = true;
     };
+
 
     onMounted(() => {
       // add window events
@@ -331,10 +343,9 @@ export default defineComponent({
       saved,
       Tittle,
       Desc,
-      Data,
+      QuestionSetData,
       focusIndex,
-      questionSetInfo,
-      createTFQ
+      OnUpdated
     };
   }
 });

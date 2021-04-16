@@ -100,6 +100,18 @@ export function UpdateCourseModule(EditData: any) {
     });
 }
 
+export function PublishCourseModule(courseModule: CourseModule) {
+  axios
+    .post("/publishCourseModule", {
+      courseModule: courseModule
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("publishCourseModule", courseModule);
+      }
+    })
+}
+
+
 export function DeleteCourseModule() {
   return "Not Implemented";
 }

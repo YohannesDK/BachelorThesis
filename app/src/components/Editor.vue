@@ -19,6 +19,8 @@ import Quill, { DeltaOperation } from "quill";
 import Delta from "quill-delta";
 import MyQuill from "@/libs/myQuill/myquill";
 import store from "@/store";
+import axios from "axios";
+import router from "@/router";
 import { documentType } from "@/store/interfaces/document";
 import { UserType } from "@/store/interfaces/user.types";
 
@@ -78,16 +80,53 @@ export default defineComponent({
       }
     };
 
+
+    let usID = 0;
+    // @ts-ignore
+    const docID = router.currentRoute._rawValue.query.did;
+
+    // onBeforeRouteLeave((to, from) => {
+    //   axios
+    //     .post("api/alterDocument", {
+    //       userId: usID,
+    //       docID: docID,
+    //       body: JSON.stringify(Editor.getContents()),
+    //       title: document.getElementsByClassName("documentTitle")[0].innerHTML
+    //     })
+    //     .then(response => {
+    //       console.log("updated");
+    //     });
+    // });
     onBeforeRouteLeave((to, from) => {
-      if (Saved.value === false) {
-        const updatedData = {
-          docID: props.docmentId,
-          body: Editor.getContents(),
-          userId: user.value.UserID
-        };
-        emit("updateDoc", updatedData);
-      }
+      const updatedData = {
+        docID: props.docmentId,
+        body: Editor.getContents(),
+        userId: user.value.UserID
+      };
+      emit("updateDoc", updatedData);
     });
+
+    onBeforeMount(() => {
+      //Get request to get the user id
+      //Probably not the best way to do this, need to find a way to do it better
+      axios
+        .get("/api/studentCourse", {
+          headers: { token: localStorage.getItem("token") }
+        })
+        .then(response => {
+          usID = response.data.id;
+        });
+    });
+    // onBeforeRouteLeave((to, from) => {
+    //   if (Saved.value === false) {
+    //     const updatedData = {
+    //       docID: props.docmentId,
+    //       body: Editor.getContents(),
+    //       userId: user.value.UserID
+    //     };
+    //     emit("updateDoc", updatedData);
+    //   }
+    // });
 
     const showToolBar = () => {
       Editor.theme.tooltip.edit();

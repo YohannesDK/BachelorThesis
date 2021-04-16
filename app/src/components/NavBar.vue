@@ -136,10 +136,11 @@
 <script lang="ts">
 import router from "@/router";
 import store from "@/store";
-import { computed, defineComponent, ref } from "vue";
+import { computed, ComputedRef, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive.ts";
 import { RoleType, UserType } from "@/store/interfaces/user.types";
 import { Logout } from "@/services/api/auth.service";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "NavBar",
@@ -163,7 +164,7 @@ export default defineComponent({
     };
 
     //user handling
-    const user = computed(() => {
+    const user: ComputedRef<UserType> = computed(() => {
       return store.getters.getActiveUser;
     });
 
@@ -184,7 +185,7 @@ export default defineComponent({
     };
 
     // Editor
-    const OpenEditor = () => {
+    const OpenEditor = async () => {
       router.push({ name: "EditorView", query: { did: -1 } });
     };
 

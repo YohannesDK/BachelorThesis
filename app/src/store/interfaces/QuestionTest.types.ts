@@ -30,7 +30,7 @@ export type TestQuestionAndAnswer = {
 export type TestData = {
   TestID: number;
   QSID: number;
-  userName: string;
+  userID: number;
   date: Date;
   TestData: TestQuestionAndAnswer[];
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="QuestionTest-container">
     <div class="header-area container ">
-      <h1>Practise</h1>
+      <h1>Practice</h1>
     </div>
     <div class="container">
       <div class="questionset-settings-container row">
@@ -11,7 +11,7 @@
             <ul class="list-unstyled">
               <li>
                 <div class="li-info">
-                  <span>Tittle</span>
+                  <span>Title</span>
                   <p>{{ QuestionSet.Tittle }}</p>
                 </div>
               </li>
@@ -98,7 +98,8 @@
 <script lang="ts">
 import router from "@/router";
 import store from "@/store";
-import { QuestionSet } from "@/store/interfaces/question.type";
+import { QuestionSet, Question } from "@/store/interfaces/question.type";
+import axios from "axios";
 import { defineComponent, onMounted, ref } from "vue";
 export default defineComponent({
   name: "QuestionTest",
@@ -113,7 +114,7 @@ export default defineComponent({
       Tittle: "",
       Description: "",
       QuestionSet: [],
-      CreateBy: "",
+      CreateBy: -1,
       LastEdited: "",
       DocumentID: [],
       CourseId: []
@@ -122,7 +123,7 @@ export default defineComponent({
     const OpenTest = () => {
       router.push({
         name: "TakeTest",
-        query: { QSID: QuestionSet.value.QSID }
+        query: { QSID: router.currentRoute.value.query.QSID }
       });
     };
 

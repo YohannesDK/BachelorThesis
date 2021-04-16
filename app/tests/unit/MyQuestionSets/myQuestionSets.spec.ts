@@ -98,6 +98,7 @@ describe("MyQuestionSets - add new question set btn", () => {
       expect(MyQuestionSetTableRows.length).to.equal(questionsetList.length);
     });
 
+    // TODO - fix this
     it("MyQuestionSets table row should display, questionset tittle, questionset description, number of questions, and last edited", () => {
       const MyQuestionSetTableRows = wrapper.findAll(
         "[data-test-id='myquestionset-table-rows']"

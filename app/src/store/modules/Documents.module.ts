@@ -92,6 +92,7 @@ export default {
         (doc: documentType) => doc.Documentid === Data.docID
       );
       if (doc) {
+        console.log(Data, doc)
         doc.name = Data.DocumentTittle;
         doc.body = Data.body;
         UpdateDocument(Data.userId, doc);
