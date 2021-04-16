@@ -5,6 +5,7 @@
     v-test="{ id: 'question-card-container' }"
     @click="$emit('focusChange')"
   >
+    <!-- Short Text question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.ShortText"
@@ -15,6 +16,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -30,7 +32,8 @@
                     placeholder="Enter Question"
                     v-model="Question"
                     v-test="{ id: 'question-card-type-Question' }"
-                    @change="$emit('SaveStatus')"
+                    @input="QuestionUpdated()"
+                    :disabled="QuestionCardType === 1"
                   />
                 </div>
               </div>
@@ -43,9 +46,18 @@
                   <input
                     class="question-input"
                     placeholder="Enter Answer"
-                    v-model="ShortAnswer"
+                    v-model="ShortAnswer.Answer"
+                    v-test="{ id: 'question-card-type-Answer' }"
+                    @input="QuestionUpdated()"
+                    v-if="QuestionCardType === 0"
+                  />
+                  <input
+                    class="question-input"
+                    placeholder="Enter Answer"
+                    v-model="TestShortAnswer"
                     v-test="{ id: 'question-card-type-Answer' }"
                     @change="$emit('SaveStatus')"
+                    v-if="QuestionCardType === 1"
                   />
                 </div>
               </div>
@@ -55,6 +67,7 @@
       </div>
     </div>
 
+    <!-- Long Text question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.LongText"
@@ -65,6 +78,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -80,7 +94,8 @@
                   placeholder="Enter Question"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
-                  @change="$emit('SaveStatus')"
+                  @input="QuestionUpdated()"
+                  :disabled="QuestionCardType === 1"
                 />
               </div>
             </div>
@@ -96,9 +111,19 @@
                   class="question-input longText-input longText-textarea"
                   rows="1"
                   placeholder="Enter Answer"
-                  v-model="LongTextAnswer"
+                  v-model="LongTextAnswer.Answer"
+                  v-test="{ id: 'question-card-type-Answer' }"
+                  @input="QuestionUpdated()"
+                  v-if="QuestionCardType === 0"
+                ></textarea>
+                <textarea
+                  class="question-input longText-input longText-textarea"
+                  rows="1"
+                  placeholder="Enter Answer"
+                  v-model="TestLongTextAnswer"
                   v-test="{ id: 'question-card-type-Answer' }"
                   @change="$emit('SaveStatus')"
+                  v-if="QuestionCardType === 1"
                 ></textarea>
               </div>
             </div>
@@ -107,6 +132,7 @@
       </div>
     </div>
 
+    <!-- True / False question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.TrueFalse"
@@ -117,6 +143,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -131,7 +158,8 @@
                   placeholder="Enter Statement"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
-                  @change="$emit('SaveStatus')"
+                  @input="QuestionUpdated()"
+                  :disabled="QuestionCardType === 1 ? true : false"
                 />
               </div>
             </div>
@@ -141,23 +169,30 @@
       <div class="true-false-answer-container">
         <div
           class="true-false-card card"
-          :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1}"
-          @click="TrueFalseHandler(AnswerOptions.Option1), $emit('SaveStatus')"
+          :class="{
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option1
+          }"
+          @click="TrueFalseHandler(AnswerOptions.Option1), QuestionUpdated()"
           v-test="{ id: 'question-card-type-Answer' }"
+          v-bind:CorrectAnswer = TrueOption
         >
-          {{TrueOption}}
+          {{ TrueOption.Answer }}
         </div>
         <div
           class="true-false-card card"
-          :class="{ 'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2}"
-          @click="TrueFalseHandler(AnswerOptions.Option2), $emit('SaveStatus')"
+          :class="{
+            'shadow bg-success': TrueFalseAnswer === AnswerOptions.Option2
+          }"
+          @click="TrueFalseHandler(AnswerOptions.Option2), QuestionUpdated()"
           v-test="{ id: 'question-card-type-Answer' }"
+          v-bind:CorrectAnswer = FalseOption
         >
-          {{FalseOption}}
+          {{ FalseOption.Answer }}
         </div>
       </div>
     </div>
 
+    <!-- Multiple choice question -->
     <div
       class="question-card-inner"
       v-if="QuestionType === QuestionTypeEnum.MultipleChoice"
@@ -168,6 +203,7 @@
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
+          v-if="QuestionCardType === 0"
         >
           <fa icon="times" />
         </div>
@@ -182,7 +218,8 @@
                   placeholder="Enter Statement"
                   v-model="Question"
                   v-test="{ id: 'question-card-type-Question' }"
-                  @change="$emit('SaveStatus')"
+                  @input="QuestionUpdated()"
+                  :disabled="QuestionCardType === 1 ? true : false"
                 />
               </div>
             </div>
@@ -193,46 +230,88 @@
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === AnswerOptions.Option1}"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option1), $emit('SaveStatus')"
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option1
+            }"
+            @click.self="
+              MultipleChoiceHandler(AnswerOptions.Option1), QuestionUpdated()
+            "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option1}}</p>
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option1), QuestionUpdated()"
+            >
+              {{ MultipleChoiceAnswerOptions.Option1.Answer }}
+            </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 1 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option2), $emit('SaveStatus')"
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option2
+            }"
+            @click.self="
+              MultipleChoiceHandler(AnswerOptions.Option2), QuestionUpdated()
+            "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option2}}</p>
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option2), QuestionUpdated()"
+            >
+              {{ MultipleChoiceAnswerOptions.Option2.Answer }}
+            </p>
           </div>
         </div>
         <div class="multiple-choice-tuple">
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 2 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option3), $emit('SaveStatus')"
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option3
+            }"
+            @click.self="
+              MultipleChoiceHandler(AnswerOptions.Option3), QuestionUpdated()
+            "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option3}}</p>
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option3), QuestionUpdated()"
+            >
+              {{ MultipleChoiceAnswerOptions.Option3.Answer }}
+            </p>
           </div>
           <div
             class="true-false-card card"
-            :class="{ 'shadow bg-success': MultipleChoiceAnswerID === 3 }"
-            @click.self="MultipleChoiceHandler(AnswerOptions.Option4), $emit('SaveStatus')"
+            :class="{
+              'shadow bg-success':
+                MultipleChoiceAnswerID === AnswerOptions.Option4
+            }"
+            @click.self="
+              MultipleChoiceHandler(AnswerOptions.Option4), QuestionUpdated()
+            "
             v-test="{ id: 'question-card-type-Answer' }"
           >
-            <p contenteditable="true">{{MultipleChoiceAnswerOptions.Option4}}</p>
+            <p
+              :contenteditable="QuestionCardType === 0 ? true : false"
+              @input="UpdateMultpleChoiceAnswer($event, AnswerOptions.Option4), QuestionUpdated()"
+            >
+              {{ MultipleChoiceAnswerOptions.Option4.Answer }}
+            </p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- QuestionCard SideBar -->
     <div
       class="question-card-sideBar"
       v-test="{ id: 'question-card-sideBar' }"
       :class="{ 'showSideBar shadow': showSideBar }"
+      v-if="QuestionCardType === 0"
     >
       <ul class="list-unstyled mb-0">
         <li
@@ -246,8 +325,13 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.ShortText }"
-          @click="ChangeQuestionType(QuestionTypeEnum.ShortText), $emit('SaveStatus')"
+          :class="{
+            'question-card-questionType':
+              QuestionType === QuestionTypeEnum.ShortText
+          }"
+          @click="
+            ChangeQuestionType(QuestionTypeEnum.ShortText), QuestionUpdated()
+          "
           v-test="{ id: 'question-card-sideBar-option-ShortText' }"
         >
           <fa icon="question" />
@@ -256,8 +340,13 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.LongText }"
-          @click="ChangeQuestionType(QuestionTypeEnum.LongText), $emit('SaveStatus')"
+          :class="{
+            'question-card-questionType':
+              QuestionType === QuestionTypeEnum.LongText
+          }"
+          @click="
+            ChangeQuestionType(QuestionTypeEnum.LongText), QuestionUpdated()
+          "
           v-test="{ id: 'question-card-sideBar-option-LongText' }"
         >
           <fa icon="paragraph" />
@@ -266,8 +355,13 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.TrueFalse }"
-          @click="ChangeQuestionType(QuestionTypeEnum.TrueFalse), $emit('SaveStatus')"
+          :class="{
+            'question-card-questionType':
+              QuestionType === QuestionTypeEnum.TrueFalse
+          }"
+          @click="
+            ChangeQuestionType(QuestionTypeEnum.TrueFalse), QuestionUpdated()
+          "
           v-test="{ id: 'question-card-sideBar-option-TrueFalse' }"
         >
           <fa icon="dot-circle" />
@@ -276,8 +370,14 @@
           </div>
         </li>
         <li
-          :class="{ 'question-card-questionType': QuestionType === QuestionTypeEnum.MultipleChoice }"
-          @click="ChangeQuestionType(QuestionTypeEnum.MultipleChoice), $emit('SaveStatus')"
+          :class="{
+            'question-card-questionType':
+              QuestionType === QuestionTypeEnum.MultipleChoice
+          }"
+          @click="
+            ChangeQuestionType(QuestionTypeEnum.MultipleChoice),
+              QuestionUpdated()
+          "
           v-test="{ id: 'question-card-sideBar-option-MultipleChoice' }"
         >
           <fa icon="check-square" />
@@ -287,21 +387,32 @@
         </li>
       </ul>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onBeforeMount, Ref, ref, watch } from "vue";
+import { TestQuestionAndAnswer } from "@/store/interfaces/QuestionTest.types";
 import Test from "@/directives/test.directive";
-import { QuestionTypeEnum, Question, AnswerOptions, ShortTextQuestionType, LongTextQuestionType, TrueFalseQuestionType, MultipleChoiceQuestionType} from "@/store/interfaces/question.type";
+import {
+  QuestionTypeEnum,
+  Question,
+  AnswerOptions,
+  ShortTextQuestionType,
+  LongTextQuestionType,
+  TrueFalseQuestionType,
+  MultipleChoiceQuestionType,
+  AnswerOption
+} from "@/store/interfaces/question.type";
+import { QuestionCardType } from "@/store/constants/questionCard.const";
 import store from "@/store";
 export default defineComponent({
   name: "QuestionSetCard",
   directives: { Test },
   props: {
     focus: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     QuestionProp: {
       type: Object as () => Question,
@@ -309,39 +420,99 @@ export default defineComponent({
     },
     index: {
       type: Number
+    },
+    QuestionCardType: {
+      type: Number,
+      default: QuestionCardType.EditQuestions
     }
   },
-  setup(props) {
-    const QuestionData = {} as Question;
+  emits: ["focusChange", "questionUpdated", "delete"],
+  setup(props, {emit}) {
+    // focus watcher, for UI
     const showSideBar: Ref<boolean> = ref(props.focus);
-    const QuestionType = ref<number>(0);
-    
-    const Question = ref<string>("");
-    const ShortAnswer = ref<string>("");
-    const LongTextAnswer = ref<string>("");
+    watch(
+      () => props.focus,
+      newValue => {
+        showSideBar.value = newValue;
+      }
+    );
 
-    const TrueOption = ref<string>("True");
-    const FalseOption = ref<string>("False");
+    //#region - Edit / Create logic
+
+    const QuestionData = {} as Question;
+    const QuestionType = ref<number>(0);
+
+    const Question = ref<string>("");
+    const ShortAnswer = ref<AnswerOption>({
+      id: -1,
+      QuestionID: -1,
+      Answer: ""
+    });
+    const LongTextAnswer = ref<AnswerOption>({
+      id: -1,
+      QuestionID: -1,
+      Answer: ""
+    });
+
+    const TrueOption = ref<AnswerOption>({
+      id: -1,
+      QuestionID: -1,
+      Answer: "True"
+    });
+    const FalseOption = ref<AnswerOption>({
+      id: -1,
+      QuestionID: -1,
+      Answer: "False"
+    });
+
     const TrueFalseAnswer = ref<number>(-1);
 
     const MultipleChoiceAnswerOptions = ref({
-      Option1: "Enter Answer",
-      Option2: "Enter Answer",
-      Option3: "Enter Answer",
-      Option4: "Enter Answer",
+      Option1: {
+        id: -1,
+        QuestionID: -1,
+        Answer: "Enter Answer"
+      },
+      Option2: {
+        id: -1,
+        QuestionID: -1,
+        Answer: "Enter Answer"
+      },
+      Option3: {
+        id: -1,
+        QuestionID: -1,
+        Answer: "Enter Answer"
+      },
+      Option4: {
+        id: -1,
+        QuestionID: -1,
+        Answer: "Enter Answer"
+      }
     });
 
-    const MultipleChoiceAnswer = ref<string>("");
     const MultipleChoiceAnswerID = ref<number>(-1);
-    
+
     const TrueFalseHandler = (answer: number) => {
       TrueFalseAnswer.value = answer;
     };
 
-    const MultipleChoiceHandler = (
-      multipleChoiceAnswerID: number
-    ) => {
+    const MultipleChoiceHandler = (multipleChoiceAnswerID: number) => {
       MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
+    };
+
+    const UpdateMultpleChoiceAnswer = (
+      e: any,
+      multiplechoiceoption: number
+    ) => {
+      if (multiplechoiceoption === 0) {
+        MultipleChoiceAnswerOptions.value.Option1.Answer = e.target.innerText;
+      } else if (multiplechoiceoption === 1) {
+        MultipleChoiceAnswerOptions.value.Option2.Answer = e.target.innerText;
+      } else if (multiplechoiceoption === 2) {
+        MultipleChoiceAnswerOptions.value.Option3.Answer = e.target.innerText;
+      } else if (multiplechoiceoption === 3) {
+        MultipleChoiceAnswerOptions.value.Option4.Answer = e.target.innerText;
+      }
     };
 
     const ChangeQuestionType = (newQuestionType: number) => {
@@ -354,121 +525,151 @@ export default defineComponent({
         showSideBar.value = newValue;
       }
     );
-   
-    const QuestionDataHandler = () : Question => {
-      if (!props.QuestionProp) {
-        QuestionData.QuestionID = store.getters.getQuestionId; 
-        store.dispatch("IncrementQuestionId")
-      }
 
+    const QuestionDataHandler = (): Question => {
       if (QuestionType.value === QuestionTypeEnum.ShortText) {
         QuestionData.QuestionType = QuestionTypeEnum.ShortText;
-        const ShortTextQuestion : ShortTextQuestionType = {
+        const ShortTextQuestion: ShortTextQuestionType = {
           Question: Question.value,
           Answer: ShortAnswer.value
-        }
-        QuestionData.Question = ShortTextQuestion
-
+        };
+        QuestionData.Question = ShortTextQuestion;
       } else if (QuestionType.value === QuestionTypeEnum.LongText) {
         QuestionData.QuestionType = QuestionTypeEnum.LongText;
-        const LongTextQuestion : LongTextQuestionType = {
+        const LongTextQuestion: LongTextQuestionType = {
           Question: Question.value,
           Answer: LongTextAnswer.value
-        }
-        QuestionData.Question = LongTextQuestion
-
+        };
+        QuestionData.Question = LongTextQuestion;
       } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
         QuestionData.QuestionType = QuestionTypeEnum.TrueFalse;
-        const TrueFalseQuestion : TrueFalseQuestionType = {
+        const TrueFalseQuestion: TrueFalseQuestionType = {
           Question: Question.value,
           Answer: {
-            TrueOption: TrueOption.value,
-            FalseOption: FalseOption.value
+            Option1: TrueOption.value,
+            Option2: FalseOption.value
           },
           CorrectAnswer: TrueFalseAnswer.value
-        }
-        QuestionData.Question = TrueFalseQuestion
-
+        };
+        QuestionData.Question = TrueFalseQuestion;
       } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
         QuestionData.QuestionType = QuestionTypeEnum.MultipleChoice;
-        const MutipleChoiceQuestion : MultipleChoiceQuestionType = {
+        const MutipleChoiceQuestion: MultipleChoiceQuestionType = {
           Question: Question.value,
           Answer: {
             Option1: MultipleChoiceAnswerOptions.value.Option1,
             Option2: MultipleChoiceAnswerOptions.value.Option2,
             Option3: MultipleChoiceAnswerOptions.value.Option3,
-            Option4: MultipleChoiceAnswerOptions.value.Option4,
+            Option4: MultipleChoiceAnswerOptions.value.Option4
           },
           CorrectAnswer: MultipleChoiceAnswerID.value
-        }
-        QuestionData.Question = MutipleChoiceQuestion
+        };
+        QuestionData.Question = MutipleChoiceQuestion;
       }
-      return QuestionData
-    }
-
-    const getQuestion = () => {
-      // Validate input here by calling a validate function
-
-      const data = {
-        questionType: QuestionType.value,
-        question: Question.value,
-        ShortText: {
-          answer: ShortAnswer.value
-        },
-        LongText: {
-          answer: LongTextAnswer.value
-        },
-        TrueFalse: {
-          answer: TrueFalseAnswer.value
-        },
-        MultipleChoice: {
-          answerID: MultipleChoiceAnswerID.value,
-          answer: MultipleChoiceAnswer.value
-        }
-      };
-      const d = QuestionDataHandler()
-      console.log("Handler:", d);
-      
-      return data;
+      return QuestionData;
     };
 
     const InitilizeQuestion = () => {
-      
       if (props.QuestionProp) {
         // console.log("her");
-        
         const question = props.QuestionProp;
 
-        QuestionData.QuestionID = question.QuestionID
-        Question.value = question.Question.Question
-        QuestionType.value = question.QuestionType
+        QuestionData.QuestionID = question.QuestionID;
+        Question.value = question.Question.Question;
+        QuestionType.value = question.QuestionType;
 
-        if ( QuestionType.value === QuestionTypeEnum.ShortText) {
-          ShortAnswer.value = (question.Question as ShortTextQuestionType).Answer
+        if (QuestionType.value === QuestionTypeEnum.ShortText) {
+          ShortAnswer.value = (question.Question as ShortTextQuestionType).Answer;
+        } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+          LongTextAnswer.value = (question.Question as LongTextQuestionType).Answer;
+        } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+          TrueOption.value = (question.Question as TrueFalseQuestionType).Answer.Option1;
+          FalseOption.value = (question.Question as TrueFalseQuestionType).Answer.Option2;
+          TrueFalseAnswer.value = (question.Question as TrueFalseQuestionType).CorrectAnswer;
+        } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+          MultipleChoiceAnswerOptions.value.Option1 = (question.Question as MultipleChoiceQuestionType).Answer.Option1;
+          MultipleChoiceAnswerOptions.value.Option2 = (question.Question as MultipleChoiceQuestionType).Answer.Option2;
+          MultipleChoiceAnswerOptions.value.Option3 = (question.Question as MultipleChoiceQuestionType).Answer.Option3;
+          MultipleChoiceAnswerOptions.value.Option4 = (question.Question as MultipleChoiceQuestionType).Answer.Option4;
+          MultipleChoiceAnswerID.value = (question.Question as MultipleChoiceQuestionType).CorrectAnswer;
         }
-        else if ( QuestionType.value === QuestionTypeEnum.LongText) {
-          LongTextAnswer.value = (question.Question as LongTextQuestionType).Answer
-        }
-        else if ( QuestionType.value === QuestionTypeEnum.TrueFalse) {
-          TrueOption.value = (question.Question as TrueFalseQuestionType).Answer.TrueOption
-          FalseOption.value = (question.Question as TrueFalseQuestionType).Answer.FalseOption
-          TrueFalseAnswer.value = (question.Question as TrueFalseQuestionType).CorrectAnswer
-        }
-        else if ( QuestionType.value === QuestionTypeEnum.MultipleChoice) {
-          MultipleChoiceAnswerOptions.value.Option1 = (question.Question as MultipleChoiceQuestionType).Answer.Option1
-          MultipleChoiceAnswerOptions.value.Option2 = (question.Question as MultipleChoiceQuestionType).Answer.Option2
-          MultipleChoiceAnswerOptions.value.Option3 = (question.Question as MultipleChoiceQuestionType).Answer.Option3
-          MultipleChoiceAnswerOptions.value.Option4 = (question.Question as MultipleChoiceQuestionType).Answer.Option4
-          MultipleChoiceAnswerID.value = (question.Question as MultipleChoiceQuestionType).CorrectAnswer
+      }
+    };
+    //#endregion
+
+    //#region - question test logic
+    const TestShortAnswer = ref<string>("");
+    const TestLongTextAnswer = ref<string>("");
+
+    const InitilizeTestQuestion = () => {
+      if (props.QuestionCardType === 1) {
+        MultipleChoiceAnswerID.value = -1;
+        TrueFalseAnswer.value = -1;
+        // TODO - kanskje gjøre det samme for shorttext og longtext, sette v-model til "",
+        //        slipper dobbel input i template da...
+      }
+    };
+
+    const getTestData = (): TestQuestionAndAnswer => {
+      let TestQuestionAndAnswer!: TestQuestionAndAnswer;
+
+      if (QuestionType.value === QuestionTypeEnum.ShortText) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.ShortText,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TestShortAnswer.value
+        };
+      } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.LongText,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TestLongTextAnswer.value
+        };
+      } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.TrueFalse,
+          QuestionID: QuestionData.QuestionID,
+          Answer: TrueFalseAnswer.value
+        };
+      } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        TestQuestionAndAnswer = {
+          QuestionType: QuestionTypeEnum.MultipleChoice,
+          QuestionID: QuestionData.QuestionID,
+          Answer: MultipleChoiceAnswerID.value
+        };
+      }
+      return TestQuestionAndAnswer;
+    };
+
+    const Answered = computed(() => {
+      if (QuestionType.value === QuestionTypeEnum.ShortText) {
+        return TestShortAnswer.value === "";
+      } else if (QuestionType.value === QuestionTypeEnum.LongText) {
+        return TestLongTextAnswer.value === "";
+      } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
+        return TrueFalseAnswer.value === -1;
+      } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
+        return MultipleChoiceAnswerID.value === -1;
+      }
+    });
+    //#endregion
+
+
+
+    // notify that question has changed
+    const QuestionUpdated = () => {
+      if (props.QuestionCardType === QuestionCardType.EditQuestions) {
+        if (props.QuestionProp && props.QuestionProp.QuestionID !== -1) { 
+          const updatedQuestion: Question = QuestionDataHandler();
+          emit("questionUpdated", updatedQuestion);
         }
       }
     }
 
-
     onBeforeMount(() => {
-      InitilizeQuestion()
-    })
-
+      InitilizeQuestion();
+      InitilizeTestQuestion();
+    });
 
     return {
       showSideBar,
@@ -483,12 +684,16 @@ export default defineComponent({
       TrueFalseHandler,
       MultipleChoiceAnswerOptions,
       MultipleChoiceHandler,
-      MultipleChoiceAnswer,
+      UpdateMultpleChoiceAnswer,
       MultipleChoiceAnswerID,
-      getQuestion,
       QuestionTypeEnum,
       AnswerOptions,
-      QuestionDataHandler
+      QuestionDataHandler,
+      QuestionUpdated,
+      TestShortAnswer,
+      TestLongTextAnswer,
+      Answered,
+      getTestData
     };
   }
 });
@@ -775,5 +980,9 @@ export default defineComponent({
   display: flex;
   justify-content: space-evenly;
   width: 100%;
+}
+
+input:disabled {
+  background: transparent;
 }
 </style>

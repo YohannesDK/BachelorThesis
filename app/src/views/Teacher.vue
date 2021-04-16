@@ -93,14 +93,14 @@ export default defineComponent({
           console.log(response.data.courses[i].body);
           this.courseBody.push(response.data.courses[i]);
         }
-        console.log(this.courseBody[0].userId);
+        // console.log(this.courseBody[0].userId);
       });
   },
 
   methods: {
     createCourse() {
       axios
-        .post("api/createCourse", {
+        .post("/api/createCourse", {
           userId: this.id,
           course: this.course,
           shorthand: this.shorthand,
@@ -122,8 +122,9 @@ export default defineComponent({
 
     // Opens Single Course
     const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", params: { CourseId: courseId } });
+      router.push({ name: "Course", query: { cid: courseId } });
     };
+
 
     return {
       courses,

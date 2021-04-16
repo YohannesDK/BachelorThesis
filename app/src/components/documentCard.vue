@@ -17,7 +17,7 @@
         {{ document.name }}
       </div>
 
-      <div class="doc-item-time-container">
+      <div class="doc-item-time-container" v-if="minimal === false">
         <span>Åpnet</span>
         <span
           class="doc-item-last-edited"
@@ -38,21 +38,15 @@
                 class="list-unstyled mb-0"
                 v-test="{ id: 'card-options-dropdown' }"
               >
-                <li
-                @click="OpenEditor(document.Documentid)"
-                >Open</li>
+                <li @click="OpenEditor(document.Documentid)">Open</li>
                 <li>Rename</li>
-                <li
-                v-if="document.QuestionSetID === -1"
-                @click="OpenQuestionSet(-1)"
-                >Add Question Set</li>
-                <li
-                v-if="document.QuestionSetID !== -1"
-                @click="OpenQuestionSet(document.QuestionSetID)"
-                >Open Question Set</li>
+                <li @click="OpenQuestionSet(-1)">
+                  Add New Question Set
+                </li>
+                <li @click="addDoc()">Add to course</li>
                 <li>Share</li>
                 <hr />
-                <li>Delete</li>
+                <li @click="deleteDocument(document.Documentid)">Delete</li>
               </ul>
             </div>
           </div>
@@ -66,9 +60,10 @@
 import { defineComponent, ref, onMounted } from "vue";
 import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
+import axios, { AxiosError } from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
+import { DeleteDocument } from "@/services/api/document.service";
 import router from "@/router";
-import store from "@/store";
 export default defineComponent({
   name: "documentCard",
   directives: { Test },
@@ -76,12 +71,22 @@ export default defineComponent({
     document: {
       type: Object as () => documentType,
       default: () => ({})
+    },
+    minimal: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
     const documentText = ref<string>("");
     const documentTextLength = 150;
     const showDropDown = ref<boolean>(false);
+    const documentLastEdited = ref(props.document.lastEdited);
+
+    // let documentParsed = true
+
+    // @ts-ignore
+    const courseID = router.currentRoute._rawValue.query.cid;
 
     const More = () => {
       showDropDown.value = true;
@@ -91,19 +96,61 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
+    const addDoc = () => {
+      console.log("added this one" + props.document.Documentid);
+      axios
+        .post("api/linkDocument", {
+          documentId: props.document.Documentid,
+          courseId: courseID
+        })
+        .then(response => {
+          console.log(response);
+        }).catch((error: AxiosError) => {
+          console.error(error);
+        });
+    };
+
+    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
 
     const OpenQuestionSet = (QSID: number) => {
-      router.push({ name: "AddQuestionSet", query: { QSID: QSID, did: props.document.Documentid} });
-    }
+      router.push({
+        name: "QuestionSets",
+        query: { QSID: QSID, did: props.document.Documentid }
+      });
+    };
+
+    const deleteDocument = (docID: number) => {
+      showDropDown.value = false;
+      DeleteDocument(docID);
+    };
 
     onMounted(() => {
-      if (props.document.delta) {
-        documentText.value = DeltaToPlainText(props.document.delta)
+      //This is the preview text inside document cards
+      if (props.document.body !== undefined) {
+        let parseBody;
+        if (
+          typeof props.document.body === "string" &&
+          props.document.body !== ""
+        ) {
+          parseBody = JSON.parse(props.document.body).ops;
+        } else if (
+          typeof props.document.body === "string" &&
+          props.document.body === ""
+        ) {
+          documentText.value = "Empty Document";
+          return;
+        } else {
+          parseBody = props.document.body;
+        }
+
+        documentText.value = DeltaToPlainText(parseBody)
           .substring(0, documentTextLength)
           .concat("...");
+      } else {
+        documentText.value = "Empty Document";
       }
     });
     return {
@@ -113,7 +160,10 @@ export default defineComponent({
       More,
       RemoveMore,
       OpenEditor,
-      OpenQuestionSet
+      OpenQuestionSet,
+      addDoc,
+      documentLastEdited,
+      deleteDocument
     };
   }
 });
@@ -127,6 +177,7 @@ export default defineComponent({
   cursor: pointer;
   opacity: 1;
   width: fit-content;
+  max-width: 178px;
   height: 208px;
   margin-bottom: 20px;
   margin-right: 20px;

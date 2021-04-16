@@ -9,10 +9,11 @@
           <div class="col-md-7 login-card-form-col">
             <div class="card-body">
               <div class="brand-wrapper">
-                <img src="../assets/brand.svg" alt="logo" class="logo" />
+                <img src="../assets/AppLogo.svg" alt="logo" class="logo" />
+                <h1>ItsCanvas</h1>
               </div>
               <p class="login-card-description">Sign into your account</p>
-              <form @submit.prevent="loginUser()">
+              <form @submit.prevent="LoginUser">
                 <div class="form-group">
                   <input
                     type="text"
@@ -62,83 +63,22 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
-import axios from "axios";
-import { checkLogin } from "@/services/api/login.service";
-import router from "@/router";
+import { Login } from "@/services/api/auth.service";
 export default defineComponent({
   name: "Login",
-  data() {
-    return {
-      input: {
-        username: "",
-        password: "",
-        error: ""
-      }
-    };
-  },
-  methods: {
-    loginUser() {
-      //Make post request to backend api/user which can be found in server/server.js
-      //The request to api/user runs a query and sends back a user
-      axios
-        .post("http://localhost:3000/api/user", {
-          username: this.username,
-          password: this.password
-        })
-        .then(response => {
-          //If the post request is successful
-          if (response.status === 200) {
-            // If the user is a student, redirect him to student page
-            if (response.data.role == "Student") {
-              // this.$store.commit("setAuthentication", "Student");
-              localStorage.setItem("token", response.data.token);
-              router.push("/Student");
-            }
-
-            // If the user is a teacher, redirect him to teacher page
-            if (response.data.role == "Teacher") {
-              // this.$store.commit("setAuthentication", "Student");
-              localStorage.setItem("token", response.data.token);
-              router.push("/Teacher");
-            }
-          }
-
-          // If the post request sends status 401, invalid credentials
-          // if ((response.data.title = "Login failed")) {
-          //   this.error = "invalid credentials";
-          // }
-
-          // if ((response.data.title = "User not found")) {
-          //   this.error = "invalid credentials";
-          // }
-        });
-    }
-  },
-  components: {},
   setup() {
-    const store = useStore();
     const username = ref<string>("");
     const password = ref<string>("");
 
-    // Login function
-    // const login = () => {
-    //   const form = {
-    //     username: username.value,
-    //     password: password.value
-    //   };
-    //   const user = checkLogin(form);
-    //   console.log(user);
-
-    //   if (user.length) {
-    //     store.dispatch("login");
-    //     store.dispatch("setUser", user);
-    //     router.push({ path: "/home" });
-    //   }
-    // };
+    const LoginUser = () => {
+      if (username.value !== "" && password.value !== "") {
+        Login(username.value, password.value);
+      }
+    };
     return {
       username,
-      password
+      password,
+      LoginUser
     };
   }
 });
@@ -205,10 +145,19 @@ export default defineComponent({
 
 .brand-wrapper {
   margin-bottom: 19px;
+  display: flex;
+  align-items: flex-end;
+  height: fit-content;
+}
+
+.brand-wrapper > h1 {
+  margin: 0;
+  padding-left: 1%;
 }
 
 .brand-wrapper .logo {
   height: 37px;
+  margin-bottom: 0.1rem;
 }
 
 .login-card-description {

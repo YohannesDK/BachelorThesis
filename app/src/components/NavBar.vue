@@ -1,8 +1,7 @@
 <template>
   <nav ref="sidebar" id="sidebar" v-test="{ id: 'navbar-container' }">
     <div class="sidebar-header">
-      <h3 v-if="userEmpty">My Sidebar</h3>
-      <h3 v-if="!userEmpty && user[0] !== undefined">{{ user[0].username }}</h3>
+      <img src="../assets/AppLogo.svg" alt="logo" class="logo" />
     </div>
 
     <ul class="list-unstyled components">
@@ -103,7 +102,10 @@
         </router-link>
       </li>
       <li class="sidebar-list">
-        <router-link to="/questionsets" v-test="{ id: 'navbar-routes-courses' }">
+        <router-link
+          to="/questionsets"
+          v-test="{ id: 'navbar-routes-courses' }"
+        >
           <fa icon="clone" class="sidebar-menu-faicons"></fa>
           <span>Question Sets</span>
         </router-link>
@@ -134,8 +136,11 @@
 <script lang="ts">
 import router from "@/router";
 import store from "@/store";
-import { computed, defineComponent, ref } from "vue";
+import { computed, ComputedRef, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive.ts";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
+import { Logout } from "@/services/api/auth.service";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "NavBar",
@@ -159,7 +164,7 @@ export default defineComponent({
     };
 
     //user handling
-    const user = computed(() => {
+    const user: ComputedRef<UserType> = computed(() => {
       return store.getters.getActiveUser;
     });
 
@@ -168,15 +173,20 @@ export default defineComponent({
     });
 
     const signout = () => {
-      store.dispatch("logout");
-      store.dispatch("setUser", {});
-      router.push({ path: "/" });
+      const emptyUser: UserType = {
+        UserID: -1,
+        UserName: "",
+        Role: RoleType.Student,
+        FirstName: "",
+        LastName: ""
+      };
+      store.dispatch("setUser", emptyUser);
+      Logout();
     };
 
     // Editor
-    const OpenEditor = () => {
+    const OpenEditor = async () => {
       router.push({ name: "EditorView", query: { did: -1 } });
-
     };
 
     const smallsidebar = () => {
@@ -186,11 +196,11 @@ export default defineComponent({
           : sidebar.value.classList.remove("small-sidebar");
         showSideBar.value = !showSideBar.value;
       }
-    }
+    };
 
     //QuestionSet
     const AddNewQuestionSet = () => {
-      router.push({ name: "AddQuestionSet", query: { QSID: -1} });
+      router.push({ name: "AddQuestionSet", query: { QSID: -1 } });
     };
 
     return {
@@ -210,6 +220,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.logo {
+  max-width: 30%;
+}
 .sidebar-list {
   -webkit-transition: background-color 0.7s ease-out;
   -moz-transition: background-color 0.7s ease-out;
@@ -240,6 +253,7 @@ export default defineComponent({
   color: #fff;
   transition: all 0.3s;
   position: fixed;
+  z-index: 1;
 }
 
 #sidebar.active {
@@ -478,7 +492,6 @@ a:focus {
   border-bottom-left-radius: 0.8rem;
 }
 
-
 /* When minimizing sidebar */
 
 #sidebar.small-sidebar {
@@ -493,14 +506,16 @@ a:focus {
   display: none;
 }
 
-#sidebar.small-sidebar .addProject, #sidebar.small-sidebar .searchbar {
+#sidebar.small-sidebar .addProject,
+#sidebar.small-sidebar .searchbar {
   width: fit-content;
   height: fit-content;
   padding: 0;
   border-radius: 50%;
 }
 
-#sidebar.small-sidebar .add_project, #sidebar.small-sidebar .search_input {
+#sidebar.small-sidebar .add_project,
+#sidebar.small-sidebar .search_input {
   display: none;
 }
 
@@ -526,7 +541,4 @@ a:focus {
   width: 13em;
   right: -482%;
 }
-
-
-
 </style>

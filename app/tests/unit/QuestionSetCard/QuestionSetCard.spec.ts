@@ -1,6 +1,8 @@
 import { expect } from "chai";
-import { shallowMount } from "@vue/test-utils";
+import { shallowMount, config } from "@vue/test-utils";
 import QuestionSetCard from "@/components/QuestionSetCard.vue";
+import { QuestionCardType } from "@/store/constants/questionCard.const";
+import { FontAwesomeIcon } from "@/plugins/font-awesome";
 
 // 1. Questions Set - card should exists
 // 2. Questions Set - card should have a side bar for adding different
@@ -17,10 +19,15 @@ import QuestionSetCard from "@/components/QuestionSetCard.vue";
 //      - question type is changed to 2 - True / False, and the card should display true / false interface
 //      - question type is changed to 3 - long text, and the card should display multiple choice interface
 
+config.global.components = {
+  fa: FontAwesomeIcon
+};
+
 const wrapper = shallowMount(QuestionSetCard, {
   props: {
     focus: true,
-    index: 0
+    index: 0,
+    QuestionCardType: QuestionCardType.EditQuestions
   }
 });
 describe("Question - Card", () => {

@@ -13,16 +13,17 @@
     </div>
   </div>
 
-  <Editor :docmentId="docID" />
+  <Editor @updateDoc="onUpdateDoc" :docmentId="docID" />
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { useStore } from "vuex";
+import store from "@/store";
 
 //components
 import Editor from "@/components/Editor.vue";
 import router from "@/router";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "EditorView",
@@ -32,7 +33,6 @@ export default defineComponent({
 
   setup() {
     const DocumentTittle = ref<HTMLHeadingElement>();
-    const store = useStore();
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
     const docID = Number(router.currentRoute.value.query.did);
@@ -40,8 +40,11 @@ export default defineComponent({
     const TittleSetup = () => {
       // Set document title and last edited
       if (docID !== -1) {
-        Title.value = store.getters.getDocmentbyId(docID).name;
-        LastEdited.value = store.getters.getDocmentbyId(docID).lastEdited;
+        const document = store.getters.getDocmentbyId(docID);
+        if (document) {
+          Title.value = document.name;
+          LastEdited.value = document.lastEdited;
+        }
       }
 
       if (DocumentTittle.value) {
@@ -53,15 +56,27 @@ export default defineComponent({
               e.preventDefault();
               //TODO: define setters for this
               if (DocumentTittle.value) {
-                store.state.documents.find(
-                  (doc: any) => doc.Documentid === docID
-                ).name = DocumentTittle.value.innerText;
+                store.dispatch("SetDocumentTittle", {
+                  Documentid: docID,
+                  DocumentTittle: DocumentTittle.value.innerText
+                });
                 DocumentTittle.value.blur();
               }
             }
           }
         );
       }
+    };
+
+    const onUpdateDoc = (updatedData: any) => {
+      if (DocumentTittle.value) {
+        updatedData["DocumentTittle"] = DocumentTittle.value.innerText;
+      }
+      // document is defined
+      if (updatedData.docID !== -1) {
+        store.dispatch("UpdateDocumentBody", updatedData);
+      }
+      CreateDocument(updatedData.userId, JSON.stringify(updatedData.body), updatedData.DocumentTittle)
     };
 
     onMounted(() => {
@@ -73,7 +88,8 @@ export default defineComponent({
       DocumentTittle,
       Title,
       LastEdited,
-      docID
+      docID,
+      onUpdateDoc
     };
   }
 });

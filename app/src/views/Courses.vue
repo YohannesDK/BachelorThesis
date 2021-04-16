@@ -1,139 +1,89 @@
 <template>
-  <div class="courses-container container d-flex ">
-    <div class="pb-2 mt-4 mb-2 border-bottom">
-      <h1>
-        My Courses
-      </h1>
-    </div>
+  <div
+    class="courses-container d-flex justify-content-end p-1 align-items-center container"
+    style="margin-top:3%;"
+  >
+    <course-editing-modal ref="Modal">
+      <template v-slot:content>
+        <join-course v-if="coursesAction === 0" />
+        <create-course v-if="coursesAction === 1" />
+      </template>
+    </course-editing-modal>
 
-    <form @submit="createCourse">
-      <label>Create a class </label>
-      <input
-        id="course"
-        v-model="course"
-        type="text"
-        placeholder="Class Name"
-      />
-      <input
-        id="shorthand"
-        v-model="shorthand"
-        type="text"
-        placeholder="Class Shorthand"
-      />
-      <input
-        id="coursePassword"
-        v-model="coursePassword"
-        type="text"
-        placeholder="Course Password"
-      />
+    <div class="courses-navbar p-1">
+      <h1>My Courses</h1>
 
-      <button>Create Class</button>
-    </form>
-
-    <div class="card-container d-flex">
-      <div
-        class="card shadow-sm rounded"
-        v-for="(course, index) in courseBody"
-        :key="index"
-        @click="OpenCourse(course.id)"
-      >
-        <img src="" alt="" class="card-img-top course-image" />
-        <div class="card-body">
-          <h6>{{ course.body }}</h6>
-          <p>{{ course.shorthand }}</p>
-          <br />
+      <div class="icon-container">
+        <div class="join-course" @click="JoinCourse" v-if="!IsTeacher">
+          <fa icon="user-plus" />
+        </div>
+        <div class="join-course" @click="CreateCourse" v-if="IsTeacher">
+          <fa icon="plus" />
         </div>
       </div>
+    </div>
+
+    <div class="course-container-inner p-1">
+      <course-card
+        v-for="(course, index) in courses"
+        :key="index"
+        :course="course"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 // https://codepen.io/umeshagouda/pen/QggMve
-import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
+import { computed, defineComponent, Ref, ref } from "vue";
 import router from "@/router";
-import axios from "axios";
+import axios from "../services/api";
+import store from "@/store";
+import { courseType } from "@/store/interfaces/course";
+import courseCard from "@/components/courseCard.vue";
+import CourseEditingModal from "@/components/CourseEditingModal.vue";
+import JoinCourse from "@/components/JoinCourse.vue";
+import CreateCourse from "@/components/createCourse.vue";
 
 export default defineComponent({
+  components: { courseCard, CourseEditingModal, JoinCourse, CreateCourse },
   name: "Courses",
-  data() {
-    return {
-      name: "",
-      role: "",
-      fullname: "",
-      id: "",
-      courseBody: [] as any,
-      course: "",
-      shorthand: "",
-      coursePassword: ""
-    };
-  },
-
-  beforeCreate() {
-    if (localStorage.getItem("token") === null) {
-      // this.$router.push("/login")
-      console.log("halla");
-    }
-  },
-
-  created() {
-    axios
-      .get("/api/userinfo", {
-        headers: { token: localStorage.getItem("token") }
-      })
-      .then(response => {
-        this.name = response.data.user.username;
-        this.role = response.data.user.role;
-        this.fullname = response.data.user.fullname;
-        this.id = response.data.user.id;
-        for (let i = 0; i < response.data.courses.length; i++) {
-          console.log(response.data.courses[i].body);
-          this.courseBody.push(response.data.courses[i]);
-        }
-        if (this.role == "Teacher") {
-          this.$router.push("/teacher");
-        }
-
-        if (this.role == "Student") {
-          this.$router.push("/student");
-        }
-      });
-  },
-
-  methods: {
-    createCourse() {
-      axios
-        .post("api/createCourse", {
-          userId: this.id,
-          course: this.course,
-          shorthand: this.shorthand,
-          coursePassword: this.coursePassword
-        })
-        .then(response => {
-          this.courseBody.push(response.data.courses.body);
-        });
-    }
-  },
-
   setup() {
-    const store = useStore();
-    const courses = store.getters.getCourses;
-    const showModal = ref<boolean>(false);
-    const ToogleModal = () => {
-      showModal.value = !showModal.value;
+    const courses: Ref<courseType> = ref(store.getters.getCourses);
+    const Modal = ref<any>();
+    const coursesAction = ref(0);
+
+    const JoinCourse = () => {
+      coursesAction.value = 0;
+      if (Modal.value) {
+        try {
+          Modal.value.showModal.call();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     };
 
-    // Opens Single Course
-    const OpenCourse = (courseId: number) => {
-      router.push({ name: "Course", query: { cid: courseId } });
+    const CreateCourse = () => {
+      coursesAction.value = 1;
+      if (Modal.value) {
+        try {
+          Modal.value.showModal.call();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     };
+
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     return {
       courses,
-      OpenCourse,
-      showModal,
-      ToogleModal
+      Modal,
+      JoinCourse,
+      CreateCourse,
+      coursesAction,
+      IsTeacher
     };
   }
 });
@@ -143,27 +93,53 @@ export default defineComponent({
 .courses-container {
   flex-direction: column;
 }
-.card-container {
+
+.course-container-inner {
+  width: 100%;
+  display: flex;
   flex-wrap: wrap;
 }
-.card-container .card {
-  /* z-index: 1; */
-  transition: box-shadow 0.3s;
-  min-height: 25vh;
-  max-height: 25vh;
-  min-width: 15rem;
-  max-width: 15rem;
-  margin: 1% 3rem 0 0;
+
+.join-course {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3a7892;
+  color: white;
+  transition: all 0.3s;
+  margin-top: 1rem;
 }
 
-.card:hover {
+.join-course:hover {
   cursor: pointer;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
 }
 
-.course-image {
-  background: goldenrod;
-  min-height: 10rem;
+.courses-navbar {
+  display: flex;
+  margin: auto auto auto 0px;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: flex-end;
   width: 100%;
+  margin-bottom: 1rem;
+}
+
+.courses-navbar > h1 {
+  color: grey;
+  padding-top: 4%;
+  margin: 0;
+  font-size: 1.8rem;
+  white-space: nowrap;
+}
+
+.icon-container {
+  display: flex;
+}
+
+.course-card-container {
+  margin-bottom: 2rem;
 }
 </style>

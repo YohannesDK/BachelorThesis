@@ -3,6 +3,8 @@ import { shallowMount } from "@vue/test-utils";
 import documentCard from "@/components/documentCard.vue";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import { dummyDocument } from "./documentCard.utils";
+import { datify } from "@/utils/calender.utils";
+import { DeltaOperation } from "quill";
 
 // documentCard spec
 // 1. document card should have a thumbnail,
@@ -13,7 +15,7 @@ import { dummyDocument } from "./documentCard.utils";
 
 // wrapper around our component
 const wrapper = shallowMount(documentCard, {
-  props: { document: dummyDocument }
+  props: { document: dummyDocument, minimal: false }
 });
 
 describe("document card - container", () => {
@@ -35,7 +37,7 @@ describe("document card - thumbnail", () => {
 
   it(`thumbnail should contain the first ${wrapper.vm.documentTextLength} chars of a document (if there are enough char)`, () => {
     expect(thumbnail.text()).to.equal(
-      DeltaToPlainText(dummyDocument.delta)
+      DeltaToPlainText(dummyDocument.body as DeltaOperation[])
         .substring(0, wrapper.vm.documentTextLength)
         .concat("...")
     );
@@ -65,8 +67,12 @@ describe("document card - tittle and last edited", () => {
     expect(doclastEdited.text()).to.not.equal("");
   });
 
-  it(`Document last edited should be: ${dummyDocument.lastEdited}`, () => {
-    expect(doclastEdited.text()).to.include(dummyDocument.lastEdited);
+  it(`Document last edited should be: ${datify(
+    dummyDocument.lastEdited
+  )}`, () => {
+    expect(datify(doclastEdited.text())).to.include(
+      datify(dummyDocument.lastEdited)
+    );
   });
 });
 
@@ -88,8 +94,13 @@ describe("document card - more option", () => {
   });
 
   it("More handler should be called when user clicks on it, and showDropDown equals true", async () => {
-    await docMoreButton.trigger("click").then(() => {
-      expect(wrapper.vm.showDropDown).to.equal(true);
-    });
+    await docMoreButton
+      .trigger("click")
+      .then(() => {
+        expect(wrapper.vm.showDropDown).to.equal(true);
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
   });
 });

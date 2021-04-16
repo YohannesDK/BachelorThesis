@@ -48,10 +48,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, onBeforeMount, Ref } from "vue";
 import { useStore } from "vuex";
 import { documentType } from "@/store/interfaces/document";
 import DocumentCard from "@/components/documentCard.vue";
+import axios from "axios";
+import { UserType } from "@/store/interfaces/user.types";
+import { CreateDocument } from "@/services/api/document.service";
 
 export default defineComponent({
   name: "Documents",
@@ -63,9 +66,14 @@ export default defineComponent({
     const searchValue = ref<string>("");
     const documents = ref<Array<documentType>>(store.getters.getDocuments);
 
+    const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
+
     // Create New Document
     const NewDocument = () => {
-      store.dispatch("AddNewDocument");
+      if (user.value.UserID === -1) {
+        return;
+      }
+      CreateDocument(user.value.UserID);
     };
 
     //for searching through document - name, tag, etc.
@@ -74,6 +82,7 @@ export default defineComponent({
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: documentType) => {
+          console.log(doc.name, doc.QuestionSetID);
           return (
             doc.name
               .replace(/ /g, "")

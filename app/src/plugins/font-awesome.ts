@@ -23,7 +23,17 @@ import {
   faCheckSquare,
   faDotCircle,
   faParagraph,
-  faClone
+  faClone,
+  faEllipsisV,
+  faCaretDown,
+  faCaretUp,
+  faCheck,
+  faCog,
+  faInfo,
+  faFlag,
+  faPaperPlane,
+  faExternalLinkAlt,
+  faUserPlus
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -52,6 +62,16 @@ library.add(
   faDotCircle,
   faParagraph,
   faClone,
+  faEllipsisV,
+  faCaretDown,
+  faCaretUp,
+  faCheck,
+  faCog,
+  faInfo,
+  faFlag,
+  faPaperPlane,
+  faExternalLinkAlt,
+  faUserPlus
 );
 
 export { FontAwesomeIcon };

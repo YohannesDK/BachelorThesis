@@ -1,9 +1,10 @@
 import { documentType } from "@/store/interfaces/document";
+import { date } from "@/utils/calender.utils";
 
 export const dummyDocument: documentType = {
   Documentid: 0,
   name: "Dummy",
-  delta: [
+  body: [
     { insert: "Hei Tittle" },
     { attributes: { header: 2 }, insert: "\n" },
     {
@@ -30,6 +31,6 @@ export const dummyDocument: documentType = {
     }
   ],
   tags: ["Test 1"],
-  lastEdited: "5 Feb 2021",
-  QuestionSetID: -1
+  lastEdited: date.toString(),
+  QuestionSetID: []
 };

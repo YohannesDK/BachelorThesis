@@ -6,7 +6,7 @@
 import router from "@/router";
 import { OnSubmitEvent } from "@typeform/embed";
 import { defineComponent, onMounted, ref } from "vue";
-import axios from "axios";
+import axios from "@/services/api";
 
 export default defineComponent({
   name: "Register",
@@ -22,7 +22,7 @@ export default defineComponent({
           {
             size: 100,
             onSubmit: function(event: OnSubmitEvent) {
-              axios.get("/api/register", {}).then(res => {
+              axios.get("/register", {}).then(res => {
                 console.log(res);
               });
 

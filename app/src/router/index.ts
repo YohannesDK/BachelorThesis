@@ -1,9 +1,20 @@
+import store from "@/store";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Welcome from "../views/welcome.vue";
+import { IsAuthenticated } from "@/services/api/auth.service";
+import { LoadStore } from "@/store/helpers/load.store";
 
 const routes: Array<RouteRecordRaw> = [
   {
+    beforeEnter(to, from, next) {
+      if (IsAuthenticated()) {
+        LoadStore();
+        next({ name: "Home" });
+      } else {
+        next();
+      }
+    },
     path: "/",
     name: "Welcome",
     meta: { showSideBar: false },
@@ -74,9 +85,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/questionsets",
     name: "QuestionSets",
     component: () =>
-      import(
-        /* webpackChunkName: "QuestionSets" */ "../views/QuestionSets.vue"
-      )
+      import(/* webpackChunkName: "QuestionSets" */ "../views/QuestionSets.vue")
   },
   {
     path: "/AddQuestionSet",
@@ -85,12 +94,47 @@ const routes: Array<RouteRecordRaw> = [
       import(
         /* webpackChunkName: "AddNewQuestionSet" */ "../views/AddNewQuestionSet.vue"
       )
+  },
+  {
+    path: "/questiontest",
+    name: "questiontest",
+    component: () =>
+      import(/* webpackChunkName: "questiontest" */ "../views/QuestionTest.vue")
+  },
+  {
+    path: "/TakeTest",
+    name: "TakeTest",
+    meta: { showSideBar: false },
+    component: () =>
+      import(/* webpackChunkName: "TakeTest" */ "../views/TakeTest.vue")
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "PageNotFound",
+    component: () =>
+      import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")
+  },
+  {
+    path: "/chartTest",
+    name: "chartTest",
+    component: () =>
+      import(/* webpackChunkName: "chartDemo" */ "../views/chartTest.vue")
   }
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  const publicRoutes = ["Login", "Welcome", "Register"];
+  const authRequired = !publicRoutes.includes(to.name as string);
+
+  if (authRequired && !IsAuthenticated()) {
+    localStorage.removeItem("token");
+    next({ name: "Login" });
+  } else next();
 });
 
 export default router;
