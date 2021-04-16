@@ -2,6 +2,7 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 const session = require("express-session");
+const path = require("path");
 
 const dotenv = require("dotenv");
 dotenv.config({
@@ -58,7 +59,7 @@ app.use(userRoutes)
 // app.use("/api", MainRouter);
 
 
-var port = 3000;
+var port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log("listening on port 3000");
+    console.log(`listening on port ${port}`);
 });
