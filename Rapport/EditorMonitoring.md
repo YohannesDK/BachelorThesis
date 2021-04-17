@@ -36,6 +36,11 @@ Research and ideas on how we should go about monitoring editor interactions
     - <a href=""> Awesome Quill</a>
     - <a href="https://www.javaer101.com/en/article/19669004.html" target="_blank"> Implement Custom editor for Quill Blot </a>
     - <a href="https://github.com/reedsy/quill-cursors" target="_blank">quill-cursor module example</a>
+    - <a href="https://codepen.io/scottfr/pen/LKLLpJ" target="_blank">Greate Example on how to create a module</a>
+    - <a href="https://stackoverflow.com/questions/43978105/how-do-you-retain-the-custom-attributes-for-a-paragraph-in-quilljs" target="_blank">
+        This one as well</a>
+
+
   - Reactivity
     - 
 
