@@ -48,6 +48,7 @@ Research and ideas on how we should go about monitoring editor interactions
   - Quill Customization
     - Need to combine quill events with blot customization
       > f.eks. if cursor is at a header blot show button for adding question sets 
+      > if header blot is deleted remove that id from our object ({ id: [1, 2, 3...]} <- question sets) 
   - Reactivity 
     - Quill has some events for when the text changes, we need to create \\
       a module that does what we want and attach that module to quills **text-change** event.
