@@ -41,6 +41,7 @@ Research and ideas on how we should go about monitoring editor interactions
     - <a href="https://codepen.io/scottfr/pen/LKLLpJ" target="_blank">Greate Example on how to create a module</a>
     - <a href="https://stackoverflow.com/questions/43978105/how-do-you-retain-the-custom-attributes-for-a-paragraph-in-quilljs" target="_blank">
         This one as well</a>
+    - <a href="https://codepen.io/anon/pen/YJPrxq?editors=0010" target="_blank">Great example</a>
 
 
   - Reactivity
