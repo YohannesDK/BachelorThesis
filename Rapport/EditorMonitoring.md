@@ -36,6 +36,8 @@ Research and ideas on how we should go about monitoring editor interactions
     - <a href=""> Awesome Quill</a>
     - <a href="https://www.javaer101.com/en/article/19669004.html" target="_blank"> Implement Custom editor for Quill Blot </a>
     - <a href="https://github.com/reedsy/quill-cursors" target="_blank">quill-cursor module example</a>
+    - <a href="https://codepen.io/gustaveco/pen/NWNQjyo" target="_blank">Very Very Nice Link</a>
+    
   - Reactivity
     - 
 
