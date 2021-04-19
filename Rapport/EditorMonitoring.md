@@ -38,6 +38,11 @@ Research and ideas on how we should go about monitoring editor interactions
     - <a href="https://github.com/reedsy/quill-cursors" target="_blank">quill-cursor module example</a>
     - <a href="https://codepen.io/gustaveco/pen/NWNQjyo" target="_blank">Very Very Nice Link</a>
     
+    - <a href="https://codepen.io/scottfr/pen/LKLLpJ" target="_blank">Greate Example on how to create a module</a>
+    - <a href="https://stackoverflow.com/questions/43978105/how-do-you-retain-the-custom-attributes-for-a-paragraph-in-quilljs" target="_blank">
+        This one as well</a>
+
+
   - Reactivity
     - 
 
@@ -45,6 +50,7 @@ Research and ideas on how we should go about monitoring editor interactions
   - Quill Customization
     - Need to combine quill events with blot customization
       > f.eks. if cursor is at a header blot show button for adding question sets 
+      > if header blot is deleted remove that id from our object ({ id: [1, 2, 3...]} <- question sets) 
   - Reactivity 
     - Quill has some events for when the text changes, we need to create \\
       a module that does what we want and attach that module to quills **text-change** event.
