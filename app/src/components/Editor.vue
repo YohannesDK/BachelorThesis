@@ -7,6 +7,30 @@
       id="editor"
       spellcheck="false"
     ></div>
+
+    <!-- readzone refrences -->
+    <div class="topic-readzones">
+      <div id="topic-non-readzone-1"></div>
+      <div id="topic-readzone"></div>
+      <div id="topic-non-readzone-2"></div>
+    </div>
+
+
+    <div class="monitoring-data card shadow-sm">
+      <div class="selected-topic">
+        <h5>Selected TopicID</h5>
+        <span>{{ SelectedTopicID || "null" }}</span>
+      </div>
+      <div class="topic-monitoring-data"
+      v-for="(value, topic) in TopicData"
+      :key="topic"
+      :class="{'in-readzone': value.InReadZone}"
+      >
+        <span>Topic: {{value.Topic}}</span>
+        <span>Time: {{value.Time}}</span>
+        <span>InReadZone: {{value.InReadZone}}</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,7 +43,6 @@ import Quill, { DeltaOperation } from "quill";
 import Delta from "quill-delta";
 import MyQuill from "@/libs/myQuill/myquill";
 import store from "@/store";
-import axios from "axios";
 import router from "@/router";
 import { documentType } from "@/store/interfaces/document";
 import { UserType } from "@/store/interfaces/user.types";
@@ -42,10 +65,14 @@ export default defineComponent({
   },
   emits: ["updateDoc"],
   setup(props, { emit }) {
-    //Store
+
     const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
     const InitialLoad = ref<boolean>(false);
     const Saved = ref<boolean>(true);
+
+    const SelectedTopicID = ref(null);
+    const TopicData = ref({});
+    const Time = ref(0);
 
     // Editor container element
     const root = ref<HTMLElement | string>("");
@@ -56,7 +83,6 @@ export default defineComponent({
       ["bold", "italic", "underline", "strike"], // toggled buttons
       ["blockquote", "code-block", "link"],
 
-      ["image"], // custom button values
       [{ list: "ordered" }, { list: "bullet" }],
       ["formula", { script: "sub" }, { script: "super" }], // superscript/subscript
       [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
@@ -80,11 +106,6 @@ export default defineComponent({
       }
     };
 
-
-    let usID = 0;
-    // @ts-ignore
-    const docID = router.currentRoute._rawValue.query.did;
-
     // onBeforeRouteLeave((to, from) => {
     //   axios
     //     .post("api/alterDocument", {
@@ -103,30 +124,22 @@ export default defineComponent({
         body: Editor.getContents(),
         userId: user.value.UserID
       };
-      emit("updateDoc", updatedData);
+      // TODO - uncomment this later
+      // emit("updateDoc", updatedData);
     });
 
-    onBeforeMount(() => {
-      //Get request to get the user id
-      //Probably not the best way to do this, need to find a way to do it better
-      axios
-        .get("/api/studentCourse", {
-          headers: { token: localStorage.getItem("token") }
-        })
-        .then(response => {
-          usID = response.data.id;
-        });
+    onBeforeRouteLeave((to, from) => {
+      const delta = Editor.getContents();
+      Editor.UpdateTopicIds(delta);
+      if (Saved.value === false) {
+        const updatedData = {
+          docID: props.docmentId,
+          body: delta,
+          userId: user.value.UserID
+        };
+        emit("updateDoc", updatedData);
+      }
     });
-    // onBeforeRouteLeave((to, from) => {
-    //   if (Saved.value === false) {
-    //     const updatedData = {
-    //       docID: props.docmentId,
-    //       body: Editor.getContents(),
-    //       userId: user.value.UserID
-    //     };
-    //     emit("updateDoc", updatedData);
-    //   }
-    // });
 
     const showToolBar = () => {
       Editor.theme.tooltip.edit();
@@ -143,8 +156,12 @@ export default defineComponent({
           toolbar: toolbarOptions,
           syntax: {
             highlight: (text: string) => hljs.highlightAuto(text).value
-          }
+          },
+          TopicSelectionModule: {}
         },
+        SelectedTopicID: SelectedTopicID.value,
+        TopicData: TopicData.value,
+        Time: Time.value
         // readOnly: true
       });
 
@@ -177,7 +194,10 @@ export default defineComponent({
 
     return {
       root,
-      showToolBar
+      showToolBar,
+      TopicData,
+      SelectedTopicID,
+      Time
     };
   }
 });
@@ -208,5 +228,78 @@ export default defineComponent({
 .container .ql-container .ql-editor {
   font-size: 18px;
   overflow-x: hidden;
+}
+
+.topic-readzones{
+  position: fixed;
+  left: 4%;
+  top: 0;
+  height: 100vh;
+  width: 100px;
+}
+
+#topic-non-readzone-1, #topic-non-readzone-2{
+  height: 20vh;
+  background: #fd6f6f;
+  width: 100%;
+}
+
+#topic-readzone {
+  height: 60vh;
+  background: #68ce68;
+  width: 100%;
+}
+
+
+.monitoring-data {
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  /* background: whitesmoke; */
+  width: 15%;
+  padding: 0 1%;
+  height: 100vh;
+  padding-top: 1%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 3%;
+  overflow-y: scroll;
+}
+
+.monitoring-data::-webkit-scrollbar {
+  display: none;
+}
+
+.topic-monitoring-data {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid;
+  padding-bottom: 4%;
+  padding-top: 3%;
+  transition: all 0.3s;
+  margin-top: 5%;
+}
+
+.topic-monitoring-data span {
+  width: 100%;
+  padding: 0 1%;
+}
+
+.topic-monitoring-data.in-readzone {
+  background: rgb(205, 225, 243);
+  border: none;
+}
+
+.selected-topic {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 </style>
