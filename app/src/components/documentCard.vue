@@ -206,6 +206,7 @@ export default defineComponent({
   padding: 6%;
   font-size: 0.77em;
   padding-top: 13%;
+  overflow-x: hidden;
 }
 
 .doc-item-data-container {

@@ -1,8 +1,8 @@
 <template>
+  <!-- <div class="container"> -->
   <div class="container" @contextmenu.prevent="showToolBar()">
     <!-- <button @click.prevent="updateDoc">SAVE</button> -->
     <div
-      style="overflow-x: hidden;"
       ref="root"
       id="editor"
       spellcheck="false"
@@ -16,10 +16,12 @@
     </div>
 
 
-    <div class="monitoring-data card shadow-sm">
+    <div class="monitoring-data card shadow-sm"
+    :class="{'show' : visualize}"
+    @click="visualize = !visualize"
+    >
       <div class="selected-topic">
-        <h5>Selected TopicID</h5>
-        <span>{{ SelectedTopicID || "null" }}</span>
+        <h5>Topics Data</h5>
       </div>
       <div class="topic-monitoring-data"
       v-for="(value, topic) in TopicData"
@@ -63,12 +65,13 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ["updateDoc"],
+  emits: ["updateDoc", "updateTopicTime"],
   setup(props, { emit }) {
 
     const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
     const InitialLoad = ref<boolean>(false);
     const Saved = ref<boolean>(true);
+    const visualize = ref(false);
 
     const SelectedTopicID = ref(null);
     const TopicData = ref({});
@@ -85,7 +88,7 @@ export default defineComponent({
 
       [{ list: "ordered" }, { list: "bullet" }],
       ["formula", { script: "sub" }, { script: "super" }], // superscript/subscript
-      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+      // [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
       [{ direction: "rtl" }], // text direction
 
       [{ size: ["small", false, "large", "huge"] }], // custom dropdown
@@ -106,32 +109,11 @@ export default defineComponent({
       }
     };
 
-    // onBeforeRouteLeave((to, from) => {
-    //   axios
-    //     .post("api/alterDocument", {
-    //       userId: usID,
-    //       docID: docID,
-    //       body: JSON.stringify(Editor.getContents()),
-    //       title: document.getElementsByClassName("documentTitle")[0].innerHTML
-    //     })
-    //     .then(response => {
-    //       console.log("updated");
-    //     });
-    // });
     onBeforeRouteLeave((to, from) => {
-      const updatedData = {
-        docID: props.docmentId,
-        body: Editor.getContents(),
-        userId: user.value.UserID
-      };
-      // TODO - uncomment this later
-      // emit("updateDoc", updatedData);
-    });
-
-    onBeforeRouteLeave((to, from) => {
-      const delta = Editor.getContents();
-      Editor.UpdateTopicIds(delta);
       if (Saved.value === false) {
+        const delta = Editor.getContents();
+        Editor.UpdateTopicIds(delta);
+
         const updatedData = {
           docID: props.docmentId,
           body: delta,
@@ -139,6 +121,8 @@ export default defineComponent({
         };
         emit("updateDoc", updatedData);
       }
+
+      emit("updateTopicTime", TopicData.value)
     });
 
     const showToolBar = () => {
@@ -197,7 +181,8 @@ export default defineComponent({
       showToolBar,
       TopicData,
       SelectedTopicID,
-      Time
+      Time,
+      visualize
     };
   }
 });
@@ -208,7 +193,6 @@ export default defineComponent({
 /* @import "~quill/dist/quill.snow.css"; */
 @import "~katex/dist/katex.min.css";
 @import "~highlight.js/styles/hybrid.css";
-@import "../assets/css/editor.css";
 
 .container {
   /* width: 70%; */
@@ -219,7 +203,8 @@ export default defineComponent({
 #editor {
   min-height: 40vh;
   border: none;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
+  margin-bottom: 20vh;
 }
 .ql-container {
   font-size: 0.97rem;
@@ -227,8 +212,10 @@ export default defineComponent({
 
 .container .ql-container .ql-editor {
   font-size: 18px;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
+
+
 
 .topic-readzones{
   position: fixed;
@@ -236,6 +223,7 @@ export default defineComponent({
   top: 0;
   height: 100vh;
   width: 100px;
+  opacity: 0;
 }
 
 #topic-non-readzone-1, #topic-non-readzone-2{
@@ -254,21 +242,25 @@ export default defineComponent({
 .monitoring-data {
   position: fixed;
   right: 0;
-  top: 0;
   z-index: 2;
   /* background: whitesmoke; */
   width: 15%;
   padding: 0 1%;
-  height: 100vh;
+  height: 5vh;
   padding-top: 1%;
   display: flex;
   flex-direction: column;
   margin-top: 3%;
   overflow-y: scroll;
+  bottom: 0;
 }
 
 .monitoring-data::-webkit-scrollbar {
   display: none;
+}
+
+.monitoring-data.card.shadow-sm.show {
+  height: 65vh;
 }
 
 .topic-monitoring-data {

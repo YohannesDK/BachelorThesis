@@ -80,6 +80,7 @@ export default defineComponent({
 </script>
 
 <style>
+@import "./assets/css/editor.css";
 .wrapper {
   display: flex;
   width: 100%;

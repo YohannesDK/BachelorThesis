@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <Editor @updateDoc="onUpdateDoc" :docmentId="docID" />
+  <Editor @updateDoc="onUpdateDoc" @updateTopicTime="onUpdateTopicTime" :docmentId="docID" />
 </template>
 
 <script lang="ts">
@@ -80,6 +80,11 @@ export default defineComponent({
       CreateDocument(updatedData.userId, JSON.stringify(updatedData.body), updatedData.DocumentTittle)
     };
 
+
+    const onUpdateTopicTime = (TopicData: any) => {
+      console.log(TopicData);
+    }
+
     onMounted(() => {
       // Document Tittle events and setup
       TittleSetup();
@@ -90,7 +95,8 @@ export default defineComponent({
       Title,
       LastEdited,
       docID,
-      onUpdateDoc
+      onUpdateDoc,
+      onUpdateTopicTime
     };
   }
 });
