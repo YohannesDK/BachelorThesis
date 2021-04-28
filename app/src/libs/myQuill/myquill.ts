@@ -129,14 +129,15 @@ class MyQuill extends Quill {
       }
       if (("attributes" in op) && !("header" in op["attributes"]!) ) {
         // console.log(op);
-        
-        if (
-            (op["attributes"]!["block"]["ref"] === null) || 
-            (op["attributes"]!["block"]["ref"] !== HeaderTopicID && HeaderTopicID !== "document")
-        ) {
-          console.log(index)
-          op["attributes"]!["block"]["ref"] = HeaderTopicID
-        }
+        if ("block" in op["attributes"]!) {
+          if (
+              (op["attributes"]!["block"]["ref"] === null) || 
+              (op["attributes"]!["block"]["ref"] !== HeaderTopicID && HeaderTopicID !== "document")
+          ) {
+            console.log(index)
+            op["attributes"]!["block"]["ref"] = HeaderTopicID
+          }
+        } 
       }
       return op
     });

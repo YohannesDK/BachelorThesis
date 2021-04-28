@@ -11,10 +11,12 @@ import {
   AssignmentReading,
   AssignmentTest
 } from "../interfaces/assignments.types";
+import { documentType } from "../interfaces/document";
 
 export default {
   state: {
-    courses: [] as courseType[]
+    courses: [] as courseType[],
+    courseDocuments: [] as documentType[]
   },
   mutations: {
     AddCourse: (state: any, course: courseType) => {
@@ -86,9 +88,9 @@ export default {
     },
     publishCourseModule: (state: any, courseModule: CourseModule) => {
       const courseIndex = (state.courses as courseType[])
-        .map((course: courseType) =>  course.courseId)
+        .map((course: courseType) => course.courseId)
         .indexOf(courseModule.courseId);
-      
+
       if (courseIndex !== -1) {
         const moduleindex = (state.courses[
           courseIndex
@@ -97,7 +99,9 @@ export default {
           .indexOf(courseModule.courseModuleID);
 
         if (moduleindex !== -1) {
-          (state.courses[courseIndex] as courseType).courseModules[moduleindex].public = true;
+          (state.courses[courseIndex] as courseType).courseModules[
+            moduleindex
+          ].public = true;
         }
       }
     },
@@ -207,8 +211,8 @@ export default {
     UpdateCourseModule: (context: any, courseModule: CourseModule) => {
       context.commit("UpdateCourseModule", courseModule);
     },
-    publishCourseModule: (context: any, courseModuleID: number)=> {
-      context.commit("publishCourseModule", courseModuleID)
+    publishCourseModule: (context: any, courseModuleID: number) => {
+      context.commit("publishCourseModule", courseModuleID);
     },
     deleteCourseModule: (context: any, courseModule: CourseModule) => {
       context.commit("deleteCourseModule", courseModule);
@@ -237,6 +241,19 @@ export default {
   getters: {
     getCourses: (state: any) => {
       return state.courses;
+    },
+    getCourseDocuments: (state: any) => (documentIDs: number[]) => {
+      const courseDocuments: documentType[] = [];
+      documentIDs.forEach((did: number) => {
+        (state.courseDocuments as documentType[]).forEach(
+          (doc: documentType) => {
+            if (did === doc.Documentid) {
+              courseDocuments.push(doc);
+            }
+          }
+        );
+      });
+      return courseDocuments;
     },
     getCoursebyId: (state: any) => (CourseId: number) => {
       return state.courses.find(

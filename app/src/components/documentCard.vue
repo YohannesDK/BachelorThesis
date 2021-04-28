@@ -110,7 +110,6 @@ export default defineComponent({
         });
     };
 
-    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };

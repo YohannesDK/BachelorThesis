@@ -240,7 +240,7 @@ export default defineComponent({
       TestList: []
     });
 
-    const documents: Ref<documentType> = ref(store.getters.getDocuments);
+    const documents: Ref<documentType> = ref(store.getters.getCourseDocuments);
 
     const AddingType = ref(0);
 
