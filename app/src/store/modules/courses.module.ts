@@ -310,6 +310,14 @@ export default {
       });
       return courseDocuments;
     },
+
+    getCourseDocumentById: (state: any) => (documentID: number) => {
+      console.log(state.courseDocuments, documentID)
+      return state.courseDocuments.find(
+        (doc: documentType) => doc.Documentid === documentID
+      );
+    },
+
     getCoursebyId: (state: any) => (CourseId: number) => {
       return state.courses.find(
         (course: courseType) => course.courseId === CourseId

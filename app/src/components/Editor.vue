@@ -63,6 +63,10 @@ export default defineComponent({
     docmentId: {
       type: Number,
       required: true
+    },
+    courseDocument: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["updateDoc", "updateTopicTime"],
@@ -132,6 +136,8 @@ export default defineComponent({
     };
 
     const InitilizeDocment = () => {
+      console.log(typeof props.courseDocument, props.courseDocument);
+
       // initialize editor instance
       Editor = new MyQuill(root.value, {
         placeholder: "Write something cool...",
@@ -145,17 +151,26 @@ export default defineComponent({
         },
         SelectedTopicID: SelectedTopicID.value,
         TopicData: TopicData.value,
-        Time: Time.value
-        // readOnly: true
+        Time: Time.value,
+        Monitor: props.courseDocument === true
       });
 
       //Send Get request to fetch the document that has been clicked on
       if (props.docmentId !== -1) {
-        const Document: documentType = store.getters.getDocmentbyId(
-          props.docmentId
-        );
+        let Document: documentType;
+
+        if (props.courseDocument === true) {
+          Document = store.getters.getCourseDocumentById(props.docmentId)
+        } else {
+          Document = store.getters.getDocmentbyId(props.docmentId);
+        }
+
         if (Document) {
           SetEditorContent(Document.body as DeltaOperation[]);
+          if (props.courseDocument === true) {
+            console.log("her")
+            // Editor.enable(false); 
+          }
         }
         InitialLoad.value = true;
       }

@@ -44,8 +44,17 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "documents" */ "../views/Documents.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (from.name === "Course") {
+        to.meta.courseDocument = true;
+      } else {
+        to.meta.courseDocuments = false;
+      }
+      next()
+    },
     path: "/editor",
     name: "EditorView",
+    // meta: { courseDocument: false },
     component: () =>
       import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue")
   },

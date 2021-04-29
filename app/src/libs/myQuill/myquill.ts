@@ -23,6 +23,7 @@ class MyQuill extends Quill {
   public Timer: any;
   public Time: number;
 
+  public Monitor: boolean;
   public readZone: Element | null;
   public readZoneClientRect: DOMRect;
 
@@ -35,6 +36,7 @@ class MyQuill extends Quill {
     this.TopicData = options.TopicData || {}
     this.Time = options.Time || 0
 
+    this.Monitor = options.Monitor || false
     this.readZone = document.getElementById("topic-readzone");
     this.readZoneClientRect = this.readZone!.getBoundingClientRect();
 
@@ -45,7 +47,9 @@ class MyQuill extends Quill {
   //#region Events
 
   private AddEventListeners() {
-    window.addEventListener("scroll", this.ScrollEventHandler.bind(this))
+    if (this.Monitor) {
+      window.addEventListener("scroll", this.ScrollEventHandler.bind(this))
+    }
     this.HeaderAddedEventHandler();
   }
 

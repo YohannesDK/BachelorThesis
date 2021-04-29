@@ -6,14 +6,19 @@
     }"
   >
     <div class="container d-flex justify-content-between">
-      <h2 class="documentTitle" ref="DocumentTittle" contenteditable="true">
+      <h2 class="documentTitle" ref="DocumentTittle" :contenteditable="!courseDocument">
         {{ Title }}
       </h2>
       <p>{{ LastEdited }}</p>
     </div>
   </div>
 
-  <Editor @updateDoc="onUpdateDoc" @updateTopicTime="onUpdateTopicTime" :docmentId="docID" />
+  <Editor 
+    @updateDoc="onUpdateDoc" 
+    @updateTopicTime="onUpdateTopicTime" 
+    :docmentId="docID" 
+    :courseDocument="courseDocument"
+  />
 </template>
 
 <script lang="ts">
@@ -36,6 +41,7 @@ export default defineComponent({
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
     const docID = Number(router.currentRoute.value.query.did);
+    const courseDocument = ref(router.currentRoute.value.meta.courseDocument);
 
     const TittleSetup = () => {
       // Set document title and last edited
@@ -96,7 +102,8 @@ export default defineComponent({
       LastEdited,
       docID,
       onUpdateDoc,
-      onUpdateTopicTime
+      onUpdateTopicTime,
+      courseDocument
     };
   }
 });
