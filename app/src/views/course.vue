@@ -68,7 +68,12 @@
         :courseModule="courseModule"
       />
 
-      <div v-if="AddingType === 1">documents</div>
+      <add-document-to-course 
+      v-if="AddingType === 1"
+      :courseID="course.courseId"
+      :courseDocuments="course.documents"
+      @documentsUpdated="ondocumentsUpdated"
+      />
 
       <add-assignment-module
         v-if="AddingType === 2 && AssigmentModuleAction === 0"
@@ -208,6 +213,7 @@ import {
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
 import AddCourseModule from "@/components/AddCourseModule.vue";
 import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
+import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
 
 export default defineComponent({
   components: {
@@ -216,12 +222,14 @@ export default defineComponent({
     Assignments,
     CourseEditingModal,
     AddCourseModule,
-    AddAssignmentModule
+    AddAssignmentModule,
+    AddDocumentToCourse
   },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
     const course: Ref<courseType> = ref(store.getters.getCoursebyId(CourseId));
+
     const courseModule: Ref<CourseModule> = ref({
       courseModuleID: -1,
       courseId: -1,
@@ -240,7 +248,8 @@ export default defineComponent({
       TestList: []
     });
 
-    const documents: Ref<documentType> = ref(store.getters.getCourseDocuments);
+    const documents: Ref<documentType> = ref(store.getters.getCourseDocuments(course.value.documents));
+    // const documents: Ref<documentType> = ref(store.getters.getDocuments);
 
     const AddingType = ref(0);
 
@@ -305,6 +314,10 @@ export default defineComponent({
       store.dispatch("deleteAssignmentModule", assigmentmodule);
     };
 
+    const ondocumentsUpdated = () => {
+      documents.value = store.getters.getCourseDocuments(course.value.documents);
+    }
+
     const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     return {
@@ -324,7 +337,8 @@ export default defineComponent({
       OnAssingmentEdit,
       OnAssignmentDelete,
       AssigmentModuleAction,
-      IsTeacher
+      IsTeacher,
+      ondocumentsUpdated
     };
   }
 });

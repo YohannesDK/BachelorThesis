@@ -3,6 +3,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { CourseModule, courseType } from "@/store/interfaces/course";
 import store from "@/store";
 import { AssignmentModule } from "@/store/interfaces/assignments.types";
+import { documentType } from "@/store/interfaces/document";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -45,11 +46,17 @@ export function getAllCourses() {
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         const courses: courseType[] = response.data.courses;
+        const courseDocuments: documentType[] = response.data.allCourseDocument;
+
         if (courses) {
-          console.log(response.data.courses);
           courses.forEach((course: courseType) => {
             store.dispatch("AddCourse", course);
           });
+        }
+        if (courseDocuments) {
+          courseDocuments.forEach((doc: documentType) => {
+            store.dispatch("AddCourseDocuments", doc);
+          }) 
         }
       }
     })

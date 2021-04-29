@@ -85,3 +85,35 @@ export function UpdateDocument(userId: number, document: documentType) {
       }
     });
 }
+
+
+
+export function LinkDocumentToCourse(courseID: number, documentID: number) {
+  axios
+  .post("/linkDocumentToCourse", {
+    documentId: documentID,
+    courseId: courseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
+}
+
+export function RemoveDocumentFromCourse(courseID: number, documentID: number) {
+  axios
+  .post("/RemoveDocumentFromCourse", {
+    documentId: documentID,
+    courseId: courseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
+}

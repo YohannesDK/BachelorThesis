@@ -12,6 +12,7 @@ import {
   AssignmentTest
 } from "../interfaces/assignments.types";
 import { documentType } from "../interfaces/document";
+import { LinkDocumentToCourse, RemoveDocumentFromCourse } from "@/services/api/document.service";
 
 export default {
   state: {
@@ -199,6 +200,50 @@ export default {
           );
         }
       }
+    },
+
+    AddCourseDocuments: (state: any, document: documentType) => {
+      const docIndex = (state.courseDocuments as documentType[])
+        .map((doc: documentType) => doc.Documentid)
+        .indexOf(document.Documentid)
+      
+      if (docIndex === -1) {
+        state.courseDocuments.push(document);
+      } else {
+        state.courseDocuments[docIndex] = document;
+      }
+    },
+
+    LinkDocumentToCourse: (state: any, data: any) => {
+      const courseID = data.courseID;
+      const documentID = data.did;
+
+      const course = (state.courses as courseType[]).find((course: courseType) => course.courseId === courseID)
+
+      if (course) {
+        const courseDocIndex  = course.documents.map((docID: number) => docID).indexOf(documentID);
+        if (courseDocIndex === -1) {
+          course.documents.push(documentID); 
+          LinkDocumentToCourse(courseID, documentID);
+        }
+      }
+
+    },
+
+    RemoveDocumentFromCourse: (state: any, data: any) => {
+      const courseID = data.courseID;
+      const documentID = data.did;
+
+      const course = (state.courses as courseType[]).find((course: courseType) => course.courseId === courseID)
+
+      if (course) {
+        const courseDocIndex  = course.documents.map((docID: number) => docID).indexOf(documentID);
+        if (courseDocIndex !== -1) {
+          course.documents.splice(courseDocIndex, 1);
+          RemoveDocumentFromCourse(courseID, documentID);
+        }
+      }
+            
     }
   },
   actions: {
@@ -236,7 +281,17 @@ export default {
       assignmentmodule: AssignmentModule
     ) => {
       context.commit("deleteAssignmentModule", assignmentmodule);
-    }
+    },
+
+    AddCourseDocuments: (context: any, document: documentType) => {
+      context.commit("AddCourseDocuments", document);
+    },
+    LinkDocumentToCourse: (context: any, data: any) => {
+      context.commit("LinkDocumentToCourse", data)
+    },
+    RemoveDocumentFromCourse: (context: any, data: any) => {
+      context.commit("RemoveDocumentFromCourse", data);
+    },
   },
   getters: {
     getCourses: (state: any) => {

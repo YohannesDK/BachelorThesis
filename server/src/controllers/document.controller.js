@@ -13,13 +13,43 @@ const get_all_documents = (request, response) => {
   
 }
 
-const link_document = (request, response) => {
+const link_document_to_course = async (request, response) => {
+  const courseID = request.body.courseId;
+  const documentID = request.body.documentId;
 
-    models.CourseDocumentRelation.create({
-      course_id: request.body.courseId,
-      document_id: request.body.documentId,
-  });
+  await models.CourseDocumentRelation.findOrCreate({
+    where: {
+      course_id: courseID,
+      document_id: documentID,
+    },
+    defaults: {
+      course_id: courseID,
+      document_id: documentID
+    }
+  }).then((result) => {
+    return response.sendStatus(200);
+  }).catch((e) => {
+    console.error(e)
+    return response.sendStatus(400);
+  })
+}
 
+
+const remove_document_from_course = async (request, response) => {
+  const courseID = request.body.courseId;
+  const documentID = request.body.documentId;
+
+  await models.CourseDocumentRelation.destroy({
+    where: {
+      course_id: courseID,
+      document_id: documentID
+    }
+  }).then((result) => {
+    console.log(result);
+    return response.sendStatus(200)
+  }).catch((e) => {
+    return response.sendStatus(400)
+  })
 }
 
 const create_document = async (request, response) => {
@@ -104,7 +134,8 @@ const delete_document = async (request, response) => {
 
 module.exports = {
   get_all_documents,
-  link_document,
+  link_document_to_course,
+  remove_document_from_course,
   create_document,
   alter_document,
   document_info,
