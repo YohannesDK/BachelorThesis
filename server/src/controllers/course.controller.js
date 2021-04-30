@@ -299,6 +299,7 @@ const getCourses = (request, response) => {
                 });
 
 
+                let allCourseDocuments = [];
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
 
@@ -372,10 +373,32 @@ const getCourses = (request, response) => {
                         assingmentModule.TestList = [...assingmentTests];
                     }));
                     course.AssignmentModules = [...assingment_modules_right_format];
+
+                    // fetch all course documents
+                    let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
+
+                    await Promise.all(courseDocRelations.map( async (courseDoc) => {
+                        let doc = await models.document.findOne({where: {id: courseDoc.document_id}});
+
+                        if (doc) {
+                            course.documents.push(doc.id);
+
+                            let document_right_format = {
+                                "Documentid": doc.id,
+                                "body": doc.body,
+                                "tags": [],
+                                "name": doc.title,
+                                "lastEdited": `${doc.updatedAt}`,
+                                "QuestionSetID": []
+                            }
+                            allCourseDocuments.push(document_right_format);
+                        }
+                    }))
                 }));
 
                 return response.status(200).json({
-                    courses: courses_right_format
+                    courses: courses_right_format,
+                    allCourseDocument: allCourseDocuments
                 })
             } else {
                 return response.send(400)

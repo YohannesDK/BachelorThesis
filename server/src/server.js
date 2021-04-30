@@ -17,7 +17,7 @@ const questionsRoutes = require("./routes/questions.routes")
 const documentRoutes = require("./routes/document.routes")
 const courseRoutes = require("./routes/course.routes.js")
 const userRoutes = require("./routes/user.routes")
-
+const topicMonitoringRoutes = require("./routes/topicMonitoring.routes");
 
 
 var cors = require("cors");
@@ -48,6 +48,7 @@ app.use(questionsRoutes)
 app.use(documentRoutes)
 app.use(courseRoutes)
 app.use(userRoutes)
+app.use(topicMonitoringRoutes);
 
 // main router will delegate request to correct route handlers
 // having problems with sequelize. 

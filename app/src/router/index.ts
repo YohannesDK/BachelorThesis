@@ -47,6 +47,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter(to, from, next) {
       if (from.name === "Course") {
         to.meta.courseDocument = true;
+        to.meta.courseID = from.query.cid
       } else {
         to.meta.courseDocuments = false;
       }

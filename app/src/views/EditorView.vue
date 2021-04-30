@@ -28,7 +28,12 @@ import store from "@/store";
 //components
 import Editor from "@/components/Editor.vue";
 import router from "@/router";
+
+// services
 import { CreateDocument } from "@/services/api/document.service";
+import { UpdateTopicMonitoring } from "@/services/api/topicMonitoring.service";
+
+import { DocumentTopicData, TopicData } from "@/store/interfaces/topic.types";
 
 export default defineComponent({
   name: "EditorView",
@@ -88,7 +93,26 @@ export default defineComponent({
 
 
     const onUpdateTopicTime = (TopicData: any) => {
-      console.log(TopicData);
+      const documentTopicData: DocumentTopicData  = {
+        DocumentID: docID,
+        TopicTimes: []
+      }
+      let courseID = router.currentRoute.value.meta.courseID;
+
+      const TopicIDs = Object.keys(TopicData);
+      TopicIDs.map((TopicId: string) => {
+        const topicData: TopicData = {
+          TopicID: TopicId,
+          TopicName: TopicData[TopicId].Topic,
+          Time: TopicData[TopicId].Time
+        }
+        documentTopicData.TopicTimes.push(topicData);
+      });
+
+      if (courseID !== undefined) {
+        courseID = Number(courseID) 
+        UpdateTopicMonitoring(documentTopicData, courseID);
+      }
     }
 
     onMounted(() => {

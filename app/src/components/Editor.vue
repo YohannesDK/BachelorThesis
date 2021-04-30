@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted, Ref, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, onMounted, Ref, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 import katex from "katex";
 import hljs, { highlight } from "highlight.js";
@@ -76,6 +76,8 @@ export default defineComponent({
     const InitialLoad = ref<boolean>(false);
     const Saved = ref<boolean>(true);
     const visualize = ref(false);
+
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     const SelectedTopicID = ref(null);
     const TopicData = ref({});
@@ -126,7 +128,10 @@ export default defineComponent({
         emit("updateDoc", updatedData);
       }
 
-      emit("updateTopicTime", TopicData.value)
+      if (props.courseDocument === true) {
+        emit("updateTopicTime", TopicData.value)
+      }
+
     });
 
     const showToolBar = () => {
@@ -152,7 +157,8 @@ export default defineComponent({
         SelectedTopicID: SelectedTopicID.value,
         TopicData: TopicData.value,
         Time: Time.value,
-        Monitor: props.courseDocument === true
+        Monitor: props.courseDocument === true // TODO - for testing purposes, remove this later
+        // Monitor: props.courseDocument === true && !IsTeacher.value
       });
 
       //Send Get request to fetch the document that has been clicked on
@@ -165,11 +171,9 @@ export default defineComponent({
           Document = store.getters.getDocmentbyId(props.docmentId);
         }
 
-          console.log(Document)
         if (Document) {
           SetEditorContent(Document.body as DeltaOperation[]);
           if (props.courseDocument === true) {
-            console.log("her")
             Editor.enable(false); 
           }
         }
@@ -269,6 +273,10 @@ export default defineComponent({
   margin-top: 3%;
   overflow-y: scroll;
   bottom: 0;
+}
+
+.monitoring-data:hover {
+  cursor: pointer;
 }
 
 .monitoring-data::-webkit-scrollbar {
