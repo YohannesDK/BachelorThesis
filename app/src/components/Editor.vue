@@ -165,11 +165,12 @@ export default defineComponent({
           Document = store.getters.getDocmentbyId(props.docmentId);
         }
 
+          console.log(Document)
         if (Document) {
           SetEditorContent(Document.body as DeltaOperation[]);
           if (props.courseDocument === true) {
             console.log("her")
-            // Editor.enable(false); 
+            Editor.enable(false); 
           }
         }
         InitialLoad.value = true;

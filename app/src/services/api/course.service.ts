@@ -4,6 +4,7 @@ import { CourseModule, courseType } from "@/store/interfaces/course";
 import store from "@/store";
 import { AssignmentModule } from "@/store/interfaces/assignments.types";
 import { documentType } from "@/store/interfaces/document";
+import { datify } from "@/utils/calender.utils";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -55,6 +56,12 @@ export function getAllCourses() {
         }
         if (courseDocuments) {
           courseDocuments.forEach((doc: documentType) => {
+              if (doc.body !== "") {
+              doc.body = JSON.parse(doc.body as string).ops;
+            } else {
+              doc.body = [];
+            }
+            doc.lastEdited = datify(doc.lastEdited);
             store.dispatch("AddCourseDocuments", doc);
           }) 
         }

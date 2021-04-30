@@ -81,6 +81,7 @@
           v-for="(questionset, index) in QuestionSets"
           :key="index"
           v-test="{ id: 'myquestionset-table-rows' }"
+          @click="OpenQuestionSet(questionset.QSID)"
         >
           <th scope="row">{{ index + 1 }}</th>
           <td v-test="{ id: 'myquestionset-table-rows-data' }">
@@ -101,7 +102,7 @@
           <td class="d-flex justify-content-end">
             <div
               class="actions-button"
-              @click="ShowDropDown(index)"
+              @click.stop="ShowDropDown(index)"
               @mouseleave="dropdownIndex = -1"
               v-test="{ id: 'myquestionset-dropdown-button' }"
             >

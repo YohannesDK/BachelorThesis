@@ -7,6 +7,7 @@ import { DeltaOperation } from "quill";
 
 // creates new document
 export function CreateDocument(userId: number, body = "", title = "Edit Title...") {
+  console.log("create document")
   //Post request to create an empty document
   axios
     .post("/createDocument", {
