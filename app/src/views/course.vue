@@ -157,7 +157,7 @@
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 3">
           <div class="course-page-view-inner-header">
-            <h1>Tests</h1>
+            <h1>Question Sets</h1>
             <div class="icon-container" @click="AddNew(3)" v-if="IsTeacher">
               <div class="icon">
                 <fa icon="plus" />
@@ -260,7 +260,7 @@ export default defineComponent({
 
     const courseEditingModal = ref<any>();
 
-    const menuChoices = ["Home", "Documents", "Assignments", "Tests", "Grades"];
+    const menuChoices = ["Home", "Documents", "Assignments", "Question Sets", "Grades"];
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;

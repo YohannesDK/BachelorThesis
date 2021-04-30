@@ -160,7 +160,8 @@ import {
   CourseModule,
   CourseModuleSection,
   CourseModuleSectionItems,
-  CourseModuleItemEnum
+  CourseModuleItemEnum,
+  courseType
 } from "@/store/interfaces/course";
 import store from "@/store";
 import { documentType } from "@/store/interfaces/document";
@@ -209,7 +210,10 @@ export default defineComponent({
     const SelectedDocID = ref(-1);
     const SelectedQSID = ref(-1);
 
-    const documents: Ref<documentType[]> = ref(store.getters.getDocuments);
+    const Course: Ref<courseType> = ref(store.getters.getCoursebyId(props.courseID));
+
+    const documents: Ref<documentType[]> = ref(store.getters.getCourseDocuments(Course.value.documents));
+
     const questionsets: Ref<QuestionSet[]> = ref(
       store.getters.getAllQuestionSets
     );

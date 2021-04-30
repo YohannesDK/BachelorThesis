@@ -13,11 +13,15 @@ import {
 } from "../interfaces/assignments.types";
 import { documentType } from "../interfaces/document";
 import { LinkDocumentToCourse, RemoveDocumentFromCourse } from "@/services/api/document.service";
+import { QuestionSet } from "../interfaces/question.type";
+import { UserType } from "../interfaces/user.types";
 
 export default {
   state: {
     courses: [] as courseType[],
-    courseDocuments: [] as documentType[]
+    courseDocuments: [] as documentType[],
+    courseQuestionSets: [] as QuestionSet[],
+    courseTeachers: [] as UserType[]
   },
   mutations: {
     AddCourse: (state: any, course: courseType) => {

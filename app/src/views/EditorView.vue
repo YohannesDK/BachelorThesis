@@ -34,6 +34,7 @@ import { CreateDocument } from "@/services/api/document.service";
 import { UpdateTopicMonitoring } from "@/services/api/topicMonitoring.service";
 
 import { DocumentTopicData, TopicData } from "@/store/interfaces/topic.types";
+import { documentType } from "@/store/interfaces/document";
 
 export default defineComponent({
   name: "EditorView",
@@ -50,12 +51,24 @@ export default defineComponent({
 
     const TittleSetup = () => {
       // Set document title and last edited
-      if (docID !== -1) {
-        const document = store.getters.getDocmentbyId(docID);
-        if (document) {
-          Title.value = document.name;
-          LastEdited.value = document.lastEdited;
-        }
+      let document: documentType = {
+        Documentid: -1,
+        name: "",
+        body: "",
+        tags: [],
+        lastEdited: "",
+        QuestionSetID: []
+      }
+
+      if (docID !== -1 && !courseDocument.value) {
+        document = store.getters.getDocmentbyId(docID);
+      } else if (docID !== -1 && courseDocument.value) {
+        document = store.getters.getCourseDocumentById(docID);
+      }
+
+      if (document) {
+        Title.value = document.name;
+        LastEdited.value = document.lastEdited;
       }
 
       if (DocumentTittle.value) {
