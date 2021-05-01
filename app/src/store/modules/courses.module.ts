@@ -248,6 +248,17 @@ export default {
         }
       }
             
+    },
+    AddCourseTeacher: (state: any, teacher: UserType) => {
+      const teacherIndex = (state.courseTeachers as UserType[])
+        .map((teach: UserType) => teach.UserID)
+        .indexOf(teacher.UserID)
+
+      if (teacherIndex === -1) {
+        state.courseTeachers.push(teacher);
+      } else {
+        state.courseTeachers[teacherIndex] = teacher;
+      }
     }
   },
   actions: {
@@ -296,6 +307,9 @@ export default {
     RemoveDocumentFromCourse: (context: any, data: any) => {
       context.commit("RemoveDocumentFromCourse", data);
     },
+    AddCourseTeacher: (context: any, teacher: UserType) => {
+      context.commit("AddCourseTeacher", teacher) 
+    }
   },
   getters: {
     getCourses: (state: any) => {
@@ -326,6 +340,10 @@ export default {
       return state.courses.find(
         (course: courseType) => course.courseId === CourseId
       );
+    },
+
+    getCourseTeacher: (state: any) => (teacherID: number) => {
+      return state.courseTeachers.find((teacher: UserType) => teacher.UserID === teacherID);
     }
   }
 };

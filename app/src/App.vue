@@ -11,6 +11,16 @@
     >
       <router-view />
       <loading-screen v-if="showLoading" />
+      <div class="app-alert-container">
+        <alert-component 
+        v-for="alert in alertMessages"
+        :key="alert"
+        :AlertMessage="alert.message" 
+        :ShowAlert="!alert.shown"
+        :AlertType="alert.type"
+        :AlertID="alert.id"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -21,12 +31,14 @@ import NavBar from "@/components/NavBar.vue";
 import router from "@/router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
 import store from "./store";
+import AlertComponent from "./components/alertComponent.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     NavBar,
-    LoadingScreen
+    LoadingScreen,
+    AlertComponent
   },
   setup() {
     const appContainer = ref<HTMLDivElement>();
@@ -61,6 +73,10 @@ export default defineComponent({
       }
     };
 
+    const alertMessages = computed(() => {
+      return store.getters.getAlertMessages;
+    })
+
     // TODO - fix this navbar shit
     computed(() => {
       if (appContainer.value) {
@@ -73,7 +89,8 @@ export default defineComponent({
       appContainer,
       showSideBar,
       OnMoveBody,
-      showLoading
+      showLoading,
+      alertMessages
     };
   }
 });
@@ -102,5 +119,14 @@ export default defineComponent({
 .appFullWidth {
   margin-left: 250px;
   max-width: calc(100% - 250px);
+}
+
+.app-alert-container {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  top: 0;
+  padding-top: 1%
 }
 </style>

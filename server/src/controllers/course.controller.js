@@ -272,7 +272,6 @@ const getCourses = (request, response) => {
         }
         
         if (role.toLowerCase() === "student") {
-            console.log("student courses");
             let studentCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id}});
             if (!studentCourses) { 
                 return response.status(204).json({
@@ -401,7 +400,15 @@ const getCourses = (request, response) => {
                     let teacher = await models.users.findOne({where: {
                       id: course.Teacher,
                     }});
-                    allTeachers.push(teacher);
+
+                    if (teacher) {
+                        const teacher_right_format = {
+                            UserID: teacher.id,
+                            UserName: teacher.username,
+                            Role: teacher.Role
+                        } 
+                        allTeachers.push(teacher_right_format);
+                    }
                 }));
 
                 return response.status(200).json({

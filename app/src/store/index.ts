@@ -19,7 +19,8 @@ const store = createStore({
     } as UserType,
 
     activeUser: {},
-    loading: false
+    loading: false,
+    alertMessages: [] as any[]
   },
   mutations: {
     login: state => {
@@ -37,6 +38,27 @@ const store = createStore({
     },
     loading: (state, loadingstatus) => {
       state.loading = loadingstatus;
+    },
+    AddNewAlert: (state, alertData) => {
+      let alertID = 0
+      console.log(alertData);
+
+      if (state.alertMessages.length > 0) {
+        alertID = state.alertMessages[state.alertMessages.length - 1].id + 1; 
+      }
+      const alert = {
+        id: alertID,
+        message: alertData.message,
+        shown: false,
+        type: alertData.type
+      }
+      state.alertMessages.push(alert)
+    },
+    RemoveAlert: (state, alertID) => {
+      const alert = state.alertMessages.find((alert) => alert.id === alertID);
+      if (alert) {
+        alert.shown = true; 
+      }
     }
   },
   actions: {
@@ -51,6 +73,12 @@ const store = createStore({
     },
     setUser: (context, user: UserType) => {
       context.commit("setUser", user);
+    },
+    AddNewAlert: (context, alertData) => {
+      context.commit("AddNewAlert", alertData)
+    },
+    RemoveAlert: (context, alertID: number) => {
+      context.commit("RemoveAlert", alertID)
     }
   },
   getters: {
@@ -68,6 +96,13 @@ const store = createStore({
         return state.user.Role.toLocaleLowerCase() === "teacher";
       }
       return -1;
+    },
+    getAlertMessages: state => {
+      return state.alertMessages.filter((alert: any) => {
+        if (alert.shown === false) {
+          return alert
+        }
+      })
     }
   },
   modules: {

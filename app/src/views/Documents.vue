@@ -74,6 +74,14 @@ export default defineComponent({
         return;
       }
       CreateDocument(user.value.UserID);
+      store.dispatch("AddNewAlert", {
+        message: "Document Created!",
+        type: 1
+      });
+      store.dispatch("AddNewAlert", {
+        message: "Document Created! 2",
+        type: 2
+      });
     };
 
     //for searching through document - name, tag, etc.

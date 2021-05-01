@@ -25,7 +25,7 @@
 
                 <div class="media_content media-body">
                   <p>Teacher</p>
-                  <h6 class="title">Kiara alva ruba</h6>
+                  <h6 class="title">{{ courseTeacher.UserName }}</h6>
                 </div>
                 <div @click="showDoc()" class="contact-teacher">
                   <a href="mailto:kassaye85@gmail.com">
@@ -192,7 +192,8 @@ import {
   ref,
   computed,
   reactive,
-  Ref
+  Ref,
+  ComputedRef
 } from "vue";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
@@ -214,6 +215,7 @@ import CourseEditingModal from "@/components/CourseEditingModal.vue";
 import AddCourseModule from "@/components/AddCourseModule.vue";
 import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
+import { UserType } from "@/store/interfaces/user.types";
 
 export default defineComponent({
   components: {
@@ -318,7 +320,16 @@ export default defineComponent({
       documents.value = store.getters.getCourseDocuments(course.value.documents);
     }
 
+    
     const IsTeacher = computed(() => store.getters.getIsTeacher);
+
+    const courseTeacher: ComputedRef<UserType> = computed(() => {
+      if (IsTeacher.value) {
+        return store.getters.getActiveUser;
+      } else {
+        return store.getters.getCourseTeacher(course.value.Teacher);
+      }
+    });
 
     return {
       course,
@@ -338,7 +349,8 @@ export default defineComponent({
       OnAssignmentDelete,
       AssigmentModuleAction,
       IsTeacher,
-      ondocumentsUpdated
+      ondocumentsUpdated,
+      courseTeacher
     };
   }
 });
