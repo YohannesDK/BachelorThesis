@@ -48,6 +48,9 @@ export function getAllCourses() {
       if (response.status && response.status === 200) {
         const courses: courseType[] = response.data.courses;
         const courseDocuments: documentType[] = response.data.allCourseDocument;
+        const courseTeachers = response.data.allTeachers;
+
+        console.log(courseTeachers);
 
         if (courses) {
           courses.forEach((course: courseType) => {

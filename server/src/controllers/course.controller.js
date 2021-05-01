@@ -34,7 +34,7 @@ const JoinCourse = (request, response) => {
                         title: "Course Not Found",
                         error: "No course found"
                     });
-                };
+                }
         
                 let alreadyJoined = await models.StudentCourseJunction.findOne({
                     where: {userId: decoded.id, courseId: course.id }
@@ -71,8 +71,8 @@ const JoinCourse = (request, response) => {
                     title: "Already Joined",
                 });
             });
-        })
-}
+        });
+};
 
 const create_course = (request, response) => {
     let token = request.headers.token;
@@ -89,7 +89,7 @@ const create_course = (request, response) => {
             });
         }
 
-    })
+    });
 
     models.users.findOne({where: {id: request.body.userId}}).then( async (users) => {
         let course = await models.courses.create({
@@ -109,10 +109,10 @@ const create_course = (request, response) => {
             QuestionSets: []
         };
 
-        return response.status(200).json({course: course_right_format})
+        return response.status(200).json({course: course_right_format});
     });
     return response.status(400);
-}
+};
 
 const fetch_course_doc = (request, response) => {
 
@@ -135,7 +135,7 @@ const fetch_course_doc = (request, response) => {
         setTimeout(delayReturn, 100);
 
         });
-}
+};
 
 
 const getCourses = (request, response) => {
@@ -148,7 +148,7 @@ const getCourses = (request, response) => {
 
         let { role } = decoded;
         if (role.toLowerCase() === "teacher") {
-            const courses = await models.courses.findAll({where: {userId: decoded.id}}) 
+            const courses = await models.courses.findAll({where: {userId: decoded.id}}); 
 
             if (courses) {
                 let courses_right_format = courses.map(course => {
@@ -160,7 +160,7 @@ const getCourses = (request, response) => {
                         courseModules: [],
                         AssignmentModules: [],
                         QuestionSets: []
-                    } 
+                    }; 
                 });
 
                 let allCourseDocuments = [];
@@ -179,13 +179,13 @@ const getCourses = (request, response) => {
                             public: courseModule.public,
                             moduleName: courseModule.moduleName,
                             moduleSections: []
-                        }
+                        };
                     });
 
                     await Promise.all(course_modules_right_format.map(async (coursemodule) => {
                         let courseModuleSections = await models.CourseModuleSection.findAll({where: {
                             courseModuleID: coursemodule.courseModuleID 
-                        }})
+                        }});
 
                         let course_module_section_right_format = courseModuleSections.map(section => {
                             return {
@@ -193,7 +193,7 @@ const getCourses = (request, response) => {
                                 courseModuleID: section.courseModuleID,
                                 SectionName: section.SectionName,
                                 SectionItems: [] 
-                            }
+                            };
                         });
 
                         await Promise.all(course_module_section_right_format.map(async (section) => {
@@ -201,10 +201,10 @@ const getCourses = (request, response) => {
                                 SectionID: section.SectionID 
                             }});
                             section.SectionItems = [...coursemodulesectionitems];
-                        }))
+                        }));
 
                         coursemodule.moduleSections = [...course_module_section_right_format];
-                    }))
+                    }));
                     course.courseModules = [...course_modules_right_format];
 
                     // fetch all assignment modules
@@ -254,17 +254,17 @@ const getCourses = (request, response) => {
                                 "name": doc.title,
                                 "lastEdited": `${doc.updatedAt}`,
                                 "QuestionSetID": []
-                            }
+                            };
                             allCourseDocuments.push(document_right_format);
                         }
-                    }))
+                    }));
                 }));
 
                 
                 return response.status(200).json({
                     courses: courses_right_format,
                     allCourseDocument: allCourseDocuments
-                })
+                });
             }
             else {
                 return response.send(400);
@@ -272,12 +272,12 @@ const getCourses = (request, response) => {
         }
         
         if (role.toLowerCase() === "student") {
-            console.log("student courses")
+            console.log("student courses");
             let studentCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id}});
             if (!studentCourses) { 
                 return response.status(204).json({
                     tittle: "No Courses"
-                })
+                });
             }
             studentCourses = studentCourses.map(scourse => scourse.courseId);
 
@@ -291,15 +291,17 @@ const getCourses = (request, response) => {
                         courseId: course.id,
                         courseName: course.courseName,
                         courseShorthand: course.shorthand,
+                        Teacher: course.userId,
                         documents: [],
                         courseModules: [],
                         AssignmentModules: [],
                         QuestionSets: []
-                    } 
+                    }; 
                 });
 
 
                 let allCourseDocuments = [];
+                let allTeachers = [];
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
 
@@ -316,13 +318,13 @@ const getCourses = (request, response) => {
                             public: courseModule.public,
                             moduleName: courseModule.moduleName,
                             moduleSections: []
-                        }
+                        };
                     });
 
                     await Promise.all(course_modules_right_format.map(async (coursemodule) => {
                         let courseModuleSections = await models.CourseModuleSection.findAll({where: {
                             courseModuleID: coursemodule.courseModuleID 
-                        }})
+                        }});
 
                         let course_module_section_right_format = courseModuleSections.map(section => {
                             return {
@@ -330,7 +332,7 @@ const getCourses = (request, response) => {
                                 courseModuleID: section.courseModuleID,
                                 SectionName: section.SectionName,
                                 SectionItems: [] 
-                            }
+                            };
                         });
 
                         await Promise.all(course_module_section_right_format.map(async (section) => {
@@ -338,9 +340,9 @@ const getCourses = (request, response) => {
                                 SectionID: section.SectionID 
                             }});
                             section.SectionItems = [...coursemodulesectionitems];
-                        }))
+                        }));
                         coursemodule.moduleSections = [...course_module_section_right_format];
-                    }))
+                    }));
                     course.courseModules = [...course_modules_right_format];
 
                     // fetch all assignment modules
@@ -390,23 +392,30 @@ const getCourses = (request, response) => {
                                 "name": doc.title,
                                 "lastEdited": `${doc.updatedAt}`,
                                 "QuestionSetID": []
-                            }
+                            };
                             allCourseDocuments.push(document_right_format);
                         }
-                    }))
+                    }));
+
+                    // fetch course teacher and add it to our list
+                    let teacher = await models.users.findOne({where: {
+                      id: course.Teacher,
+                    }});
+                    allTeachers.push(teacher);
                 }));
 
                 return response.status(200).json({
                     courses: courses_right_format,
-                    allCourseDocument: allCourseDocuments
-                })
+                    allCourseDocument: allCourseDocuments,
+                    allTeachers: allTeachers
+                });
             } else {
-                return response.send(400)
+                return response.send(400);
             }
 
         }
-    })
-}
+    });
+};
 
 
 const getAvailableCourses = (request, response) => {
@@ -421,10 +430,10 @@ const getAvailableCourses = (request, response) => {
 
             // find all joined courses
             let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id} });
-            let courses = await models.courses.findAll()
+            let courses = await models.courses.findAll();
 
             if (joinedCourses.length === 0) {
-                availableCourses = courses
+                availableCourses = courses;
             } else {
                 joinedCourses.forEach(junction => {
                     courses.forEach(course => {
@@ -437,10 +446,10 @@ const getAvailableCourses = (request, response) => {
 
             return response.status(200).json({
                 availableCourses: availableCourses,
-            })
+            });
 
         });
-}
+};
 
 
 const CreateCourseModule = (request, response) => {
@@ -512,7 +521,7 @@ const CreateCourseModule = (request, response) => {
                     });
                 }
                 sectionItems.push(createdCourseModuleSectionItem);
-            }))
+            }));
             let section_with_sectionItems = {
                 SectionID: createdCourseModuleSection.SectionID,
                 courseModuleID: createdCourseModule.courseModuleID,
@@ -520,7 +529,7 @@ const CreateCourseModule = (request, response) => {
                 SectionItems: sectionItems
             };
             NewcourseModule.moduleSections.push(section_with_sectionItems);
-        }))
+        }));
 
         return response.status(200).json({
             newcourseModule: NewcourseModule
@@ -528,17 +537,17 @@ const CreateCourseModule = (request, response) => {
 
     }).catch(() => {
         return response.sendStatus(400);
-    })
-}
+    });
+};
 
 
 const updateCourseModule = async (request, response) => {
 
-    const courseModule = request.body.EditData.courseModule
-    const updatedsections = request.body.EditData.updatedsections
-    const updatedsectionitems = request.body.EditData.updatedsectionitems
-    const deletedsections = request.body.EditData.deletedsections
-    const deletedsectionitems = request.body.EditData.deletedsectionitems
+    const courseModule = request.body.EditData.courseModule;
+    const updatedsections = request.body.EditData.updatedsections;
+    const updatedsectionitems = request.body.EditData.updatedsectionitems;
+    const deletedsections = request.body.EditData.deletedsections;
+    const deletedsectionitems = request.body.EditData.deletedsectionitems;
 
     
     let token = request.headers.token;
@@ -570,7 +579,7 @@ const updateCourseModule = async (request, response) => {
                 SectionName: section.SectionName
             });
             // assingn created section id
-            courseModule.moduleSections[section_index].SectionID = createdCourseModuleSection.SectionID
+            courseModule.moduleSections[section_index].SectionID = createdCourseModuleSection.SectionID;
 
             // create each item in section
             await Promise.all( section.SectionItems.map(async(sectionitem, section_item_index) => {
@@ -595,20 +604,20 @@ const updateCourseModule = async (request, response) => {
                 courseModule.moduleSections[section_index].SectionItems[section_item_index] = {
                     ItemID: createdCourseModuleSectionItem.ItemID,
                     SectionID: createdCourseModuleSectionItem.SectionID,
-                }
-            }))
+                };
+            }));
 
         }
 
         // update section name
         if (String(section.SectionID) in updatedsections) {
-            await models.CourseModuleSection.update({SectionName: section.SectionName}, {where: {SectionID: section.SectionID}})
+            await models.CourseModuleSection.update({SectionName: section.SectionName}, {where: {SectionID: section.SectionID}});
         }
     }));
 
     // delete entire sections
     await Promise.all(Object.keys(deletedsections).map(async (sectionID) => {
-        await models.CourseModuleSection.destroy({where: {SectionID: Number(sectionID)}})
+        await models.CourseModuleSection.destroy({where: {SectionID: Number(sectionID)}});
 
         // TODO - this should be done automatically using foreign keys
         await Promise.all( deletedsections[sectionID].SectionItems.map(async(sectionItem) => {
@@ -638,7 +647,7 @@ const updateCourseModule = async (request, response) => {
     return response.status(200).json({
         courseModule: courseModule
     });
-}
+};
 
 
 const publishCourseModule = async (request, response)  => {
@@ -647,12 +656,12 @@ const publishCourseModule = async (request, response)  => {
     await models.CourseModule.update({public: 1},
         {where: {courseModuleID: courseModule.courseModuleID}});
     return response.sendStatus(200);
-}
+};
 
 // TODO - need to fix this
 const deleteCourseModule = (request, response) => {
     return response.sendStatus(200);
-}
+};
 
 
 const createAssignmentModule = (request, response) => {
@@ -681,7 +690,7 @@ const createAssignmentModule = (request, response) => {
         Date: "",
         ReadingList: [],
         TestList: []
-    }
+    };
 
     models.AssignmentModule.create({
         courseID: assingmentModule.courseID,
@@ -689,9 +698,9 @@ const createAssignmentModule = (request, response) => {
         Date: assingmentModule.Date
     }).then(async (createdAssignmentModule) => {
         newAssingmentModule.AssignmentID = createdAssignmentModule.AssignmentID;
-        newAssingmentModule.courseID = createdAssignmentModule.courseID
+        newAssingmentModule.courseID = createdAssignmentModule.courseID;
         newAssingmentModule.AssignmentName = createdAssignmentModule.AssignmentName;
-        newAssingmentModule.Date = createdAssignmentModule.Date
+        newAssingmentModule.Date = createdAssignmentModule.Date;
 
         await Promise.all(assingmentModule.ReadingList.map(async (reading) => {
             // create reading assingment
@@ -716,13 +725,13 @@ const createAssignmentModule = (request, response) => {
         });
     }).catch(() => {
         return response.sendStatus(400);
-    })
-}
+    });
+};
 
 
 const updateAssignmentModule = async (request, response) => {
     const assignmentModule = request.body.EditData.assignmentModule;
-    console.log()
+    console.log();
     const deletedReadings = request.body.EditData.deletedAssignmentReadings;
     const deletedTests = request.body.EditData.deletedAssignmentTests;
 
@@ -761,7 +770,7 @@ const updateAssignmentModule = async (request, response) => {
                 ReadingID: createdReadingAssingment.ReadingID,
                 AssignmentID: createdReadingAssingment.AssignmentID,
                 ReadingDesc: createdReadingAssingment.ReadingDesc
-            }
+            };
         }
     }));
 
@@ -776,29 +785,29 @@ const updateAssignmentModule = async (request, response) => {
                 TestID: createdTestAssingment.TestID,
                 AssignmentID: createdTestAssingment.AssignmentID,
                 TestDesc: createdTestAssingment.TestDesc
-            }
+            };
         }
     }));
 
     // delete, deleted reading assignments
     await Promise.all(Object.keys(deletedReadings).map(async (ReadingID) => {
-        await models.AssignmentReading.destroy({where: {ReadingID: Number(ReadingID)}})
+        await models.AssignmentReading.destroy({where: {ReadingID: Number(ReadingID)}});
     }));
 
     // delete, deleted test assignments
     await Promise.all(Object.keys(deletedTests).map(async (TestID) => {
-        await models.AssignmentTest.destroy({where: {TestID: Number(TestID)}})
+        await models.AssignmentTest.destroy({where: {TestID: Number(TestID)}});
     }));
 
     return response.status(200).json({
         updatedAssignmentModule: assignmentModule
-    })
-}
+    });
+};
 
 // TODO - need to fix this
 const deleteAssignmentModule = (request, response) => {
     return response.sendStatus(200);
-}
+};
 
 
 module.exports = {
@@ -814,4 +823,4 @@ module.exports = {
     createAssignmentModule,
     updateAssignmentModule,
     deleteAssignmentModule
-}
+};
