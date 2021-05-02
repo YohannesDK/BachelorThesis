@@ -318,6 +318,24 @@ const getQuestionSets = (request, response) => {
 }
 
 
+const AssignQuestionSetToDocument = (request, response) => {
+    const QSID = request.body.QSID;
+    const DocumentID = request.body.did;
+
+    console.log(QSID, DocumentID)
+
+    response.sendStatus(200);
+}
+
+const RemoveQuestionSetFromDocument = (request, response) => {
+    const QSID = request.body.QSID;
+    const DocumentID = request.body.did;
+
+    console.log(QSID, DocumentID)
+
+    response.sendStatus(200);
+}
+
 // TODO -fix this
 // deletes questionset
 const deleteQuestionSet = (request, response) => {
@@ -328,5 +346,7 @@ module.exports = {
     createQuestionSet,
     updateQuestionSet,
     getQuestionSets,
-    deleteQuestionSet
+    deleteQuestionSet,
+    AssignQuestionSetToDocument,
+    RemoveQuestionSetFromDocument
 }

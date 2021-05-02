@@ -67,6 +67,49 @@ export function GetAllQuestionSets() {
 }
 
 
+// assigns a questionset to a document
+export function AssignQSToDocument(QSID: number, DocumentID: number) {
+  axios
+    .post("/AssignQSToDocument", {
+      QSID: QSID,
+      did: DocumentID
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("SetDocumentQSID", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        store.dispatch("AttachDocumentToQuestionSet", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        console.log("assigned");
+      }
+    })
+}
+
+// removes a questionset from a document
+export function RemoveQSFromDocument(QSID: number, DocumentID: number) {
+  axios
+    .post("/RemoveQSFromDocument", {
+      QSID: QSID,
+      did: DocumentID
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("DeleteQuestionSetFromDocument", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        store.dispatch("RemoveDocumentFromQuestionSet", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        console.log("Removed");
+      }
+    })
+}
+
+
 export function FetchQS(QSID: number) {
   //  axios
   //     .get("/api/fetchQS", {
