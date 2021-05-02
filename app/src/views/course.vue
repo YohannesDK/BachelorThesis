@@ -68,11 +68,11 @@
         :courseModule="courseModule"
       />
 
-      <add-document-to-course 
-      v-if="AddingType === 1"
-      :courseID="course.courseId"
-      :courseDocuments="course.documents"
-      @documentsUpdated="ondocumentsUpdated"
+      <add-document-to-course
+        v-if="AddingType === 1"
+        :courseID="course.courseId"
+        :courseDocuments="course.documents"
+        @documentsUpdated="ondocumentsUpdated"
       />
 
       <add-assignment-module
@@ -164,6 +164,99 @@
               </div>
             </div>
           </div>
+          <div class="course-page-view-inner-body">
+            <table class="table questionsettable">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">
+                    <div class="th-container" @click="updateSortOption(0)">
+                      <span>Tittle</span>
+                    </div>
+                  </th>
+                  <th scope="col">
+                    <div class="th-container" @click="updateSortOption(0)">
+                      <span>Description</span>
+                    </div>
+                  </th>
+                  <th scope="col">
+                    <div class="th-container" @click="updateSortOption(1)">
+                      <span>Questions</span>
+                    </div>
+                  </th>
+                  <th scope="col">
+                    <div class="th-container" @click="updateSortOption(2)">
+                      <span>Last Edited</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-questionsets-row qs-splitter">
+                  <th scope="row"></th>
+                  <td colspan="4">
+                    Course Question sets
+                  </td>
+                </tr>
+                <tr
+                  class="table-questionsets-row"
+                  v-for="(questionset, index) in QuestionSets"
+                  :key="index"
+                  @click="OpenQuestionSet(questionset.QSID)"
+                >
+                  <th scope="row">{{ index + 1 }}</th>
+                  <td>
+                    {{ questionset.Tittle }}
+                  </td>
+                  <td>
+                    {{
+                      questionset.Description.substring(
+                        0,
+                        DescriptionSubstringLength
+                      ) + "..."
+                    }}
+                  </td>
+                  <td>
+                    {{ questionset.QuestionSet.length }}
+                  </td>
+                  <td>
+                    {{ questionset.LastEdited }}
+                  </td>
+                </tr>
+                <tr class="table-questionsets-row qs-splitter">
+                  <th scope="row"></th>
+                  <td colspan="4">
+                    Document Question sets
+                  </td>
+                </tr>
+                <tr
+                  class="table-questionsets-row"
+                  v-for="(questionset, index) in QuestionSets"
+                  :key="index"
+                  @click="OpenQuestionSet(questionset.QSID)"
+                >
+                  <th scope="row">{{ index + 1 }}</th>
+                  <td>
+                    {{ questionset.Tittle }}
+                  </td>
+                  <td>
+                    {{
+                      questionset.Description.substring(
+                        0,
+                        DescriptionSubstringLength
+                      ) + "..."
+                    }}
+                  </td>
+                  <td>
+                    {{ questionset.QuestionSet.length }}
+                  </td>
+                  <td>
+                    {{ questionset.LastEdited }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 4">
@@ -216,6 +309,7 @@ import AddCourseModule from "@/components/AddCourseModule.vue";
 import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
 import { UserType } from "@/store/interfaces/user.types";
+import { QuestionSet } from "@/store/interfaces/question.type";
 
 export default defineComponent({
   components: {
@@ -250,7 +344,9 @@ export default defineComponent({
       TestList: []
     });
 
-    const documents: Ref<documentType> = ref(store.getters.getCourseDocuments(course.value.documents));
+    const documents: Ref<documentType> = ref(
+      store.getters.getCourseDocuments(course.value.documents)
+    );
     // const documents: Ref<documentType> = ref(store.getters.getDocuments);
 
     const AddingType = ref(0);
@@ -262,11 +358,19 @@ export default defineComponent({
 
     const courseEditingModal = ref<any>();
 
-    const menuChoices = ["Home", "Documents", "Assignments", "Question Sets", "Grades"];
+    const menuChoices = [
+      "Home",
+      "Documents",
+      "Assignments",
+      "Question Sets",
+      "Grades"
+    ];
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
     };
+
+    const QuestionSetsMenuIndex = ref(0);
 
     const AddNew = (addingType: number) => {
       CourseModuleAction.value = 0;
@@ -317,10 +421,11 @@ export default defineComponent({
     };
 
     const ondocumentsUpdated = () => {
-      documents.value = store.getters.getCourseDocuments(course.value.documents);
-    }
+      documents.value = store.getters.getCourseDocuments(
+        course.value.documents
+      );
+    };
 
-    
     const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     const courseTeacher: ComputedRef<UserType> = computed(() => {
@@ -329,6 +434,10 @@ export default defineComponent({
       } else {
         return store.getters.getCourseTeacher(course.value.Teacher);
       }
+    });
+
+    const QuestionSets: ComputedRef<QuestionSet> = computed(() => {
+      return store.getters.getAllQuestionSets;
     });
 
     return {
@@ -350,7 +459,9 @@ export default defineComponent({
       AssigmentModuleAction,
       IsTeacher,
       ondocumentsUpdated,
-      courseTeacher
+      courseTeacher,
+      QuestionSetsMenuIndex,
+      QuestionSets
     };
   }
 });
@@ -584,5 +695,87 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   /* padding: 0 1%; */
+}
+
+.questionsettable {
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: baseline;
+  vertical-align: -moz-baseline;
+}
+
+/* .questionsettable th:not(:first-child, :last-child) {
+} */
+.th-container {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2%;
+  padding-left: unset;
+}
+
+.th-container span {
+  white-space: nowrap;
+  margin-right: 1.2rem;
+}
+
+.th-icon-container {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.th-icon-container:hover {
+  background-color: rgba(229, 231, 238, 0.514);
+  cursor: pointer;
+}
+
+.table-questionsets-row {
+  transition: all 0.3s;
+}
+
+.table-questionsets-row:hover {
+  background-color: rgba(229, 231, 238, 0.514);
+  cursor: pointer;
+}
+
+tr.table-questionsets-row.qs-splitter {
+  height: 4rem;
+  font-weight: 700;
+}
+
+.qs-splitter td {
+  vertical-align: middle;
+}
+
+.qs-splitter:hover {
+  background-color: rgba(229, 231, 238, 0);
+}
+.course-questionset-menu-btn {
+  width: 49.9%;
+  display: flex;
+  justify-content: center;
+  min-height: 3rem;
+  align-items: center;
+  border-radius: 3px;
+  transition: all 0.3s;
+  border-bottom: 4px solid transparent;
+}
+
+.course-questionset-menu-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.course-questionset-menu-btn.active {
+  border-bottom: 4px solid #3b7991;
+  background: rgba(245, 245, 245, 0.493);
+}
+
+.course-questionset-menu-btn:hover {
+  background: rgba(245, 245, 245, 0.493);
+  cursor: pointer;
+  border-bottom: 4px solid #3b7991a6;
 }
 </style>

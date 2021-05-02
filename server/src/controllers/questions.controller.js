@@ -25,7 +25,7 @@ const createQuestionSet = (request, response) => {
         createdBy: QuestionSet.CreateBy
     }).then(async (createdQuestionSet) => {
         // assign questionset_id
-        QuestionSet.QSID = createdQuestionSet.questionset_id
+        QuestionSet.QSID = createdQuestionSet.questionset_id;
 
         // create questions
         await Promise.all(QuestionSet.QuestionSet.map(async (question, index) => {
@@ -37,7 +37,7 @@ const createQuestionSet = (request, response) => {
 
             // if question is type of true/false or multiple choice, get correct_answer
             if (question.QuestionType === 2 || question.QuestionType === 3) {
-                correct_answer = question.Question.CorrectAnswer
+                correct_answer = question.Question.CorrectAnswer;
             }
 
 
@@ -83,20 +83,20 @@ const createQuestionSet = (request, response) => {
             }
 
 
-        }))
+        }));
 
         return response.status(200).json({
             QuestionSet: QuestionSet
         });
 
-    })
-}
+    });
+};
 
 // updates a questionset
 const updateQuestionSet = async (request, response) => {
-    const QuestionSet = request.body.EditedData.QuestionSetData
-    const updatedQuestions = request.body.EditedData.updatedQuestions
-    const deletedQuestions = request.body.EditedData.deletedQuestions
+    const QuestionSet = request.body.EditedData.QuestionSetData;
+    const updatedQuestions = request.body.EditedData.updatedQuestions;
+    const deletedQuestions = request.body.EditedData.deletedQuestions;
 
     let token = request.headers.token;
     jwt.verify(token, "secretkey", (err, decoded) => {
@@ -123,7 +123,7 @@ const updateQuestionSet = async (request, response) => {
 
             // if question is type of true/false or multiple choice, get correct_answer
             if (question.QuestionType === 2 || question.QuestionType === 3) {
-                correct_answer = question.Question.CorrectAnswer
+                correct_answer = question.Question.CorrectAnswer;
             }
 
             // create Question
@@ -174,10 +174,9 @@ const updateQuestionSet = async (request, response) => {
 
             // if question is type of true/false or multiple choice, get correct_answer
             if (question.QuestionType === 2 || question.QuestionType === 3) {
-                correct_answer = question.Question.CorrectAnswer
+                correct_answer = question.Question.CorrectAnswer;
             }
 
-            let updatedQS = updatedQuestions[String(question.QuestionID)];
 
             // update question data
             await models.Question.update({
@@ -197,7 +196,7 @@ const updateQuestionSet = async (request, response) => {
                     where: {
                         answer_id: question.Question.Answer.id
                     }
-                })
+                });
             }
 
             if (question.QuestionType === 2 || question.QuestionType === 3) {
@@ -209,7 +208,7 @@ const updateQuestionSet = async (request, response) => {
                         where: {
                             answer_id: answer.id
                         }
-                    })
+                    });
                 }));
             }
         }
@@ -217,7 +216,7 @@ const updateQuestionSet = async (request, response) => {
         // user has deleted this question
         if (String(question.QuestionID) in deletedQuestions) {
             // delete all answers that belong to a question 
-            await models.Answer.destroy({where: {question_id: question.QuestionID}})
+            await models.Answer.destroy({where: {question_id: question.QuestionID}});
             // await Promise.all(Object.keys(deletedsections).map(async (sectionID) => {
             // }));
         }
@@ -226,8 +225,8 @@ const updateQuestionSet = async (request, response) => {
 
     return response.status(200).json({
         updatedQuestionSet: QuestionSet
-    })
-}
+    });
+};
 
 // Gets a users QuestionSets
 const getQuestionSets = (request, response) => {
@@ -239,7 +238,7 @@ const getQuestionSets = (request, response) => {
         });
 
         // find all questionSets
-        const QuestionSets = await models.QuestionSet.findAll({where: {createdBy: decoded.id}})
+        const QuestionSets = await models.QuestionSet.findAll({where: {createdBy: decoded.id}});
         if (QuestionSets) { 
             let questionSets_right_format = QuestionSets.map(questionset => {
                 // TODO - this should not be necessary, just because some QS title and desc are empty
@@ -253,7 +252,7 @@ const getQuestionSets = (request, response) => {
                         LastEdited: `${questionset.updatedAt}`,
                         DocumentID: [],
                         CourseId: []
-                    }
+                    };
                 }
             }).filter(qs => qs);
 
@@ -261,7 +260,7 @@ const getQuestionSets = (request, response) => {
                 // find all questions
                 let questions = await models.Question.findAll({
                     where: { questionset_id: questionset.QSID },
-                    order: [['createdAt', 'ASC']], 
+                    order: [["createdAt", "ASC"]], 
                 });
 
                 await Promise.all(questions.map(async (question) => {
@@ -272,12 +271,12 @@ const getQuestionSets = (request, response) => {
                             Question: question.question,
                             Answer: {}
                         }
-                    }
+                    };
 
                     // find all answers
                     let answers = await models.Answers.findAll({ 
                         where: { question_id: question.question_id },
-                        order: [['answer_id', 'ASC']], // order by id to keep track of correct answer index
+                        order: [["answer_id", "ASC"]], // order by id to keep track of correct answer index
                     });
 
                     // add answers to question
@@ -288,59 +287,80 @@ const getQuestionSets = (request, response) => {
                                 id: answer.answer_id,
                                 QuestionID: question.question_id,
                                 Answer: answer.answer_option
-                            }
+                            };
                         } else if (question.question_type === 2 || question.question_type === 3) { // true/false or multiple choice
-                            let optionName = `Option${index+1}`
+                            let optionName = `Option${index+1}`;
                             question_right_format.Question.Answer[optionName] = {
                                 id: answer.answer_id,
                                 QuestionID: question.question_id,
                                 Answer: answer.answer_option
-                            }
-                            question_right_format.Question.CorrectAnswer = question.correct_answer 
+                            };
+                            question_right_format.Question.CorrectAnswer = question.correct_answer; 
                         }
                         
                     });
 
                     // add question to questionset list
-                    questionSets_right_format[question_set_index].QuestionSet.push(question_right_format)
-                }))
+                    questionSets_right_format[question_set_index].QuestionSet.push(question_right_format);
+                }));
 
             }));
 
             return response.status(200).json({
                 QuestionSets: questionSets_right_format
-            })
+            });
 
         } else {
             return response.send(400);
         }
     });
-}
+};
 
 
-const AssignQuestionSetToDocument = (request, response) => {
+const AssignQuestionSetToDocument = async (request, response) => {
     const QSID = request.body.QSID;
     const DocumentID = request.body.did;
 
-    console.log(QSID, DocumentID)
+    await models.QuestionsetDocumentRelation.findOrCreate({
+      where:{
+        questionset_id: QSID,
+        document_id: DocumentID
+      },
+      defaults: {
+        questionset_id: QSID,
+        document_id: DocumentID
+      }
+    }).then(() => {
+      return response.sendStatus(200);
+    }).catch((e) => {
+      console.error(e);
+      return response.sendStatus(400);
+    });
+};
 
-    response.sendStatus(200);
-}
-
-const RemoveQuestionSetFromDocument = (request, response) => {
+const RemoveQuestionSetFromDocument = async (request, response) => {
     const QSID = request.body.QSID;
     const DocumentID = request.body.did;
 
-    console.log(QSID, DocumentID)
-
-    response.sendStatus(200);
-}
+    await models.QuestionsetDocumentRelation.destroy({
+      where: {
+        questionset_id: QSID,
+        document_id: DocumentID
+      }
+    }).then((result) => {
+      console.log(result);
+      return response.sendStatus(200);
+    }).catch((e) => {
+      console.error(e);
+      return response.sendStatus(400);
+    });
+};
 
 // TODO -fix this
 // deletes questionset
 const deleteQuestionSet = (request, response) => {
-    return "not implemented"
-}
+    return "not implemented";
+};
 
 module.exports = {
     createQuestionSet,
@@ -349,4 +369,4 @@ module.exports = {
     deleteQuestionSet,
     AssignQuestionSetToDocument,
     RemoveQuestionSetFromDocument
-}
+};

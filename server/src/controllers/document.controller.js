@@ -94,8 +94,22 @@ const document_info = (request, response) => {
                 "name": doc.title,
                 "lastEdited": `${doc.updatedAt}`,
                 "QuestionSetID": []
-            }
+            };
         });
+
+        // fetch questionsets related to a document
+        // const documentQuestionSets = [];
+
+        await Promise.all(document_right_format.map( async (doc) => {
+          const documentQuestionSetRelations = await models.QuestionsetDocumentRelation.findAll({where: {
+            document_id: doc.Documentid
+          }});
+          if (documentQuestionSetRelations) {
+            documentQuestionSetRelations.forEach(DocQSRelation => {
+              doc.QuestionSetID.push(DocQSRelation.questionset_id);
+            });
+          }
+        }));
     
         if (documents) {
             return response.status(200).json({

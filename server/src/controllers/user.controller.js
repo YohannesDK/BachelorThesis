@@ -3,8 +3,6 @@ const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
-const { response } = require("express");
-const { report } = require("../routes/attempts.routes.js");
 
 const user = (request, response) => {
     models.users.findOne({where: {username: request.body.username} }).then(function (users){
@@ -44,7 +42,7 @@ const user = (request, response) => {
   }).catch(function(err){
       console.log(err);
   });
-}
+};
 
 const register = (request, response) => {
     axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
@@ -85,7 +83,7 @@ const register = (request, response) => {
   }).catch((error) => {
       console.error(error);
   });
-}
+};
 
 const users = (request, response) => {
       // User enters desired username, we look that username up in the database
@@ -110,9 +108,9 @@ const users = (request, response) => {
         }
 
     });
-}
+};
 
-const user_info = (request, response, next) => {
+const user_info = (request, response) => {
   let token = request.headers.token;
   jwt.verify(token, "secretkey", (err, decoded )=> {
       
@@ -125,7 +123,7 @@ const user_info = (request, response, next) => {
       models.users.findOne({where: {id: decoded.id} }).then(function (user){
           models.courses.findAll({where: {userId: decoded.id}}).then(function (courses){
 
-              console.log(decoded.id)
+              console.log(decoded.id);
 
               return response.json({
                   title: "Fetch user info",
@@ -138,7 +136,7 @@ const user_info = (request, response, next) => {
           console.log(err);
       });
   });
-}
+};
 
 const student_course = (request, response) => {
   let courseList = [];
@@ -181,7 +179,7 @@ const student_course = (request, response) => {
           console.log(err);
       });
   });
-}
+};
 
 module.exports = {
   user,
@@ -189,5 +187,5 @@ module.exports = {
   users,
   user_info,
   student_course
-}
+};
 

@@ -406,7 +406,7 @@ const getCourses = (request, response) => {
                             UserID: teacher.id,
                             UserName: teacher.username,
                             Role: teacher.Role
-                        } 
+                        };
                         allTeachers.push(teacher_right_format);
                     }
                 }));
