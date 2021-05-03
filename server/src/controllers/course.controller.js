@@ -406,6 +406,9 @@ const getCourses = (request, response) => {
                             if (documentQuestionSetRelations) {
                                 await Promise.all(documentQuestionSetRelations.map(async (DocQSRelation) => {
                                     document_right_format.QuestionSetID.push(DocQSRelation.questionset_id);
+
+                                    console.log(((DocQSRelation.questionset_id) in docQSAlreadyAdded), DocQSRelation.questionset_id )
+
                                     if (!(String(DocQSRelation.questionset_id) in docQSAlreadyAdded)) {
                                         // get that questionset
                                         const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
@@ -413,7 +416,7 @@ const getCourses = (request, response) => {
                                             allCourseDocumentQuestionSets.push(questionset[0]);
                                             docQSAlreadyAdded[String(DocQSRelation.questionset_id)] = true;
                                         } 
-                                        console.log(docQSAlreadyAdded);
+                                        // console.log(docQSAlreadyAdded);
                                     }
                                 }));
 
