@@ -21,6 +21,8 @@
 const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 
+const questionset_helpers = require("./helpers/questionsets.helper");
+
 const JoinCourse = (request, response) => {
         let token = request.headers.token;
         jwt.verify(token, "secretkey", async (err, decoded) => {
@@ -300,7 +302,10 @@ const getCourses = (request, response) => {
 
 
                 let allCourseDocuments = [];
+                let allCourseDocumentQuestionSets = [];
+                let docQSAlreadyAdded = {};
                 let allTeachers = [];
+
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
 
@@ -392,9 +397,31 @@ const getCourses = (request, response) => {
                                 "lastEdited": `${doc.updatedAt}`,
                                 "QuestionSetID": []
                             };
+
+                            const documentQuestionSetRelations = await models.QuestionsetDocumentRelation.findAll({where: {
+                                document_id: doc.id
+                            }});
+                            
+
+                            if (documentQuestionSetRelations) {
+                                await Promise.all(documentQuestionSetRelations.map(async (DocQSRelation) => {
+                                    document_right_format.QuestionSetID.push(DocQSRelation.questionset_id);
+                                    if (!(String(DocQSRelation.questionset_id) in docQSAlreadyAdded)) {
+                                        // get that questionset
+                                        const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
+                                        if (questionset !== null) {
+                                            allCourseDocumentQuestionSets.push(questionset[0]);
+                                            docQSAlreadyAdded[String(DocQSRelation.questionset_id)] = true;
+                                        } 
+                                        console.log(docQSAlreadyAdded);
+                                    }
+                                }));
+
+                            }
                             allCourseDocuments.push(document_right_format);
                         }
                     }));
+                    console.log("heeerr ", allCourseDocumentQuestionSets, docQSAlreadyAdded);
 
                     // fetch course teacher and add it to our list
                     let teacher = await models.users.findOne({where: {
@@ -411,9 +438,11 @@ const getCourses = (request, response) => {
                     }
                 }));
 
+
                 return response.status(200).json({
                     courses: courses_right_format,
                     allCourseDocument: allCourseDocuments,
+                    allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
                     allTeachers: allTeachers
                 });
             } else {

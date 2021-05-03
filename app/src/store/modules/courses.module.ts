@@ -21,6 +21,7 @@ export default {
     courses: [] as courseType[],
     courseDocuments: [] as documentType[],
     courseQuestionSets: [] as QuestionSet[],
+    courseDocumentQuestionSets: [] as QuestionSet[],
     courseTeachers: [] as UserType[]
   },
   mutations: {
@@ -259,6 +260,13 @@ export default {
       } else {
         state.courseTeachers[teacherIndex] = teacher;
       }
+    },
+    AddCourseDocumentQuestionSets: (state: any, QS: QuestionSet) => {
+        const QSIndex: number = (state.courseDocumentQuestionSets as QuestionSet[]).map(
+          (questionset: QuestionSet) => questionset.QSID)
+          .indexOf(QS.QSID);
+        if (QSIndex === -1) state.courseDocumentQuestionSets.push(QS);
+        else state.courseDocumentQuestionSets[QSIndex] = QS
     }
   },
   actions: {
@@ -309,6 +317,10 @@ export default {
     },
     AddCourseTeacher: (context: any, teacher: UserType) => {
       context.commit("AddCourseTeacher", teacher) 
+    },
+
+    AddCourseDocumentQuestionSets: (context: any, QS: QuestionSet) => {
+      context.commit("AddCourseDocumentQuestionSets", QS) 
     }
   },
   getters: {
@@ -329,6 +341,21 @@ export default {
       return courseDocuments;
     },
 
+    getCourseDocumentQuestionSets: (state: any) => (questionsetIds: number[]) => {
+      const documentQuestionSets:  QuestionSet[] = [];
+
+      questionsetIds.forEach((QSID: number) => {
+        (state.courseDocumentQuestionSets as QuestionSet[]).forEach(
+          (QS: QuestionSet) => {
+            if (QSID === QS.QSID) {
+              documentQuestionSets.push(QS);
+            }
+          }
+        );
+      });
+      return documentQuestionSets
+    },
+    
     getCourseDocumentById: (state: any) => (documentID: number) => {
       console.log(state.courseDocuments, documentID)
       return state.courseDocuments.find(

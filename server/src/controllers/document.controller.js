@@ -104,6 +104,7 @@ const document_info = (request, response) => {
           const documentQuestionSetRelations = await models.QuestionsetDocumentRelation.findAll({where: {
             document_id: doc.Documentid
           }});
+
           if (documentQuestionSetRelations) {
             documentQuestionSetRelations.forEach(DocQSRelation => {
               doc.QuestionSetID.push(DocQSRelation.questionset_id);

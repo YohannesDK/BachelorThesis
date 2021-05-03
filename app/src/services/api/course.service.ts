@@ -6,6 +6,7 @@ import { AssignmentModule } from "@/store/interfaces/assignments.types";
 import { documentType } from "@/store/interfaces/document";
 import { datify } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
+import { QuestionSet } from "@/store/interfaces/question.type";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -50,8 +51,10 @@ export function getAllCourses() {
         const courses: courseType[] = response.data.courses;
         const courseDocuments: documentType[] = response.data.allCourseDocument;
         const courseTeachers = response.data.allTeachers;
+        const CourseDocumentQuestionSets : QuestionSet[] = response.data.allCourseDocumentQuestionSets;
 
-        console.log(courseTeachers);
+        console.log(CourseDocumentQuestionSets)
+
 
         if (courses) {
           courses.forEach((course: courseType) => {
@@ -73,6 +76,14 @@ export function getAllCourses() {
           courseTeachers.forEach((teacher: UserType) => {
             store.dispatch("AddCourseTeacher", teacher)
           }); 
+        }
+        if (CourseDocumentQuestionSets) {
+          CourseDocumentQuestionSets.forEach((QS: QuestionSet) => {
+            console.log(QS.LastEdited);
+
+            QS.LastEdited = datify(QS.LastEdited as string);
+            store.dispatch("AddCourseDocumentQuestionSets", QS);
+          })
         }
       }
     })

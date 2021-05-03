@@ -231,7 +231,7 @@
                 </tr>
                 <tr
                   class="table-questionsets-row"
-                  v-for="(questionset, index) in QuestionSets"
+                  v-for="(questionset, index) in documentQuestionSets"
                   :key="index"
                   @click="OpenQuestionSet(questionset.QSID)"
                 >
@@ -344,20 +344,24 @@ export default defineComponent({
       TestList: []
     });
 
-    const documents: Ref<documentType> = ref(
+    const documents: Ref<Array<documentType>> = ref(
       store.getters.getCourseDocuments(course.value.documents)
     );
-    // const documents: Ref<documentType> = ref(store.getters.getDocuments);
 
-    const AddingType = ref(0);
-
-    const CourseModuleAction = ref(0);
-    const AssigmentModuleAction = ref(0);
+    const documentQuestionSets: ComputedRef<Array<QuestionSet>> = computed(() => {
+      let questionsetIDs: number[] = []
+      documents.value.forEach((doc: documentType) => {
+        questionsetIDs = [...questionsetIDs, ...doc.QuestionSetID]
+      })
+      return store.getters.getCourseDocumentQuestionSets(questionsetIDs)
+    });
 
     const menuIndex = ref<number>(0);
-
-    const courseEditingModal = ref<any>();
-
+    const DescriptionSubstringLength = 25;
+    const AddingType = ref(0);
+    const CourseModuleAction = ref(0);
+    const AssigmentModuleAction = ref(0);
+    const QuestionSetsMenuIndex = ref(0);
     const menuChoices = [
       "Home",
       "Documents",
@@ -366,11 +370,21 @@ export default defineComponent({
       "Grades"
     ];
 
+    const courseEditingModal = ref<any>();
+
+
+
+
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
     };
 
-    const QuestionSetsMenuIndex = ref(0);
+    const OpenQuestionSet = (QSID: number) => {
+      router.push({
+        name: "AddQuestionSet",
+        query: { QSID: QSID }
+      });
+    };
 
     const AddNew = (addingType: number) => {
       CourseModuleAction.value = 0;
@@ -461,7 +475,10 @@ export default defineComponent({
       ondocumentsUpdated,
       courseTeacher,
       QuestionSetsMenuIndex,
-      QuestionSets
+      QuestionSets,
+      documentQuestionSets,
+      DescriptionSubstringLength,
+      OpenQuestionSet
     };
   }
 });

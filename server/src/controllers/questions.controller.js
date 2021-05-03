@@ -1,5 +1,7 @@
 //Create functions here
 const models = require("../models/index.js");
+const questionset_helpers = require("./helpers/questionsets.helper");
+
 const jwt = require("jsonwebtoken");
 
 //Creates a questionset
@@ -237,81 +239,14 @@ const getQuestionSets = (request, response) => {
             error: err
         });
 
-        // find all questionSets
-        const QuestionSets = await models.QuestionSet.findAll({where: {createdBy: decoded.id}});
-        if (QuestionSets) { 
-            let questionSets_right_format = QuestionSets.map(questionset => {
-                // TODO - this should not be necessary, just because some QS title and desc are empty
-                if (questionset.title && questionset.description) { 
-                    return {
-                        QSID: questionset.questionset_id,
-                        Tittle: questionset.title,
-                        Description: questionset.description || "",
-                        QuestionSet: [],
-                        CreateBy: questionset.createdBy,
-                        LastEdited: `${questionset.updatedAt}`,
-                        DocumentID: [],
-                        CourseId: []
-                    };
-                }
-            }).filter(qs => qs);
+        const questiosets = await questionset_helpers.select_questionsets_helper({createdBy: decoded.id})
 
-            await Promise.all(questionSets_right_format.map(async (questionset, question_set_index) => {
-                // find all questions
-                let questions = await models.Question.findAll({
-                    where: { questionset_id: questionset.QSID },
-                    order: [["createdAt", "ASC"]], 
-                });
-
-                await Promise.all(questions.map(async (question) => {
-                    let question_right_format = {
-                        QuestionID: question.question_id,
-                        QuestionType: question.question_type,
-                        Question: {
-                            Question: question.question,
-                            Answer: {}
-                        }
-                    };
-
-                    // find all answers
-                    let answers = await models.Answers.findAll({ 
-                        where: { question_id: question.question_id },
-                        order: [["answer_id", "ASC"]], // order by id to keep track of correct answer index
-                    });
-
-                    // add answers to question
-                    answers.forEach((answer, index) => {
-                        // short or long text question
-                        if (question.question_type === 0 || question.question_type === 1) {
-                            question_right_format.Question.Answer = {
-                                id: answer.answer_id,
-                                QuestionID: question.question_id,
-                                Answer: answer.answer_option
-                            };
-                        } else if (question.question_type === 2 || question.question_type === 3) { // true/false or multiple choice
-                            let optionName = `Option${index+1}`;
-                            question_right_format.Question.Answer[optionName] = {
-                                id: answer.answer_id,
-                                QuestionID: question.question_id,
-                                Answer: answer.answer_option
-                            };
-                            question_right_format.Question.CorrectAnswer = question.correct_answer; 
-                        }
-                        
-                    });
-
-                    // add question to questionset list
-                    questionSets_right_format[question_set_index].QuestionSet.push(question_right_format);
-                }));
-
-            }));
-
+        if (questiosets !== null) {
             return response.status(200).json({
-                QuestionSets: questionSets_right_format
+                QuestionSets: questiosets
             });
-
         } else {
-            return response.send(400);
+            return response.sendStatus(400);
         }
     });
 };
