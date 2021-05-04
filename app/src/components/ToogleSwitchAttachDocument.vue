@@ -6,8 +6,11 @@
       :class="{ checked: checked }"
       @click="updateClick"
     ></span>
-    <span class="label" v-test="{ id: 'ToogleSwitch-label' }">{{
+    <span class="label" v-if="toogleSwitchType === 0" v-test="{ id: 'ToogleSwitch-label' }">{{
       documentName
+    }}</span>
+    <span class="label" v-if="toogleSwitchType === 1" v-test="{ id: 'ToogleSwitch-label' }">{{
+      QuestionSetName
     }}</span>
   </label>
 </template>
@@ -25,6 +28,19 @@ export default defineComponent({
       type: String,
       default: ""
     },
+    QSID: {
+      type: Number,
+      default: -1
+    },
+    QuestionSetName: {
+      type: String,
+      default: ""
+    },
+    toogleSwitchType: {
+      type: Number,
+      default: 0,
+      required: false
+    },
     attached: {
       type: Boolean,
       default: false
@@ -39,7 +55,11 @@ export default defineComponent({
 
     const updateClick = () => {
       checked.value = !checked.value;
-      emit("update", { did: props.documentId, status: checked.value });
+      if (props.toogleSwitchType === 0) {
+        emit("update", { did: props.documentId, status: checked.value });
+      } else if (props.toogleSwitchType === 1) {
+        emit("update", { QSID: props.QSID, status: checked.value });
+      }
     };
     return {
       checked,

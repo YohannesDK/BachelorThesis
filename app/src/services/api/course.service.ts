@@ -52,8 +52,8 @@ export function getAllCourses() {
         const courseDocuments: documentType[] = response.data.allCourseDocument;
         const courseTeachers = response.data.allTeachers;
         const CourseDocumentQuestionSets : QuestionSet[] = response.data.allCourseDocumentQuestionSets;
+        const CourseQuestionSets: QuestionSet[] = response.data.allCourseQuestionSets;
 
-        console.log(CourseDocumentQuestionSets)
 
 
         if (courses) {
@@ -79,11 +79,15 @@ export function getAllCourses() {
         }
         if (CourseDocumentQuestionSets) {
           CourseDocumentQuestionSets.forEach((QS: QuestionSet) => {
-            console.log(QS.LastEdited);
-
             QS.LastEdited = datify(QS.LastEdited as string);
             store.dispatch("AddCourseDocumentQuestionSets", QS);
           })
+        }
+        if (CourseQuestionSets) {
+          CourseQuestionSets.forEach((QS: QuestionSet) => {
+            QS.LastEdited = datify(QS.LastEdited as string);
+            store.dispatch("AddCourseQuestionSets", QS);
+          }) 
         }
       }
     })

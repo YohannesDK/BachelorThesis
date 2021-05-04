@@ -149,6 +149,11 @@ const getCourses = (request, response) => {
         });
 
         let { role } = decoded;
+        let allCourseDocuments = [];
+        let allCourseQuestionSets = [];
+        let allCourseDocumentQuestionSets = [];
+        let allTeachers = [];
+
         if (role.toLowerCase() === "teacher") {
             const courses = await models.courses.findAll({where: {userId: decoded.id}}); 
 
@@ -240,7 +245,7 @@ const getCourses = (request, response) => {
                     }));
                     course.AssignmentModules = [...assingment_modules_right_format];
 
-                    // fetch all course documents
+                    // fetch all course documents and their question sets
                     let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
 
                     await Promise.all(courseDocRelations.map( async (courseDoc) => {
@@ -257,7 +262,39 @@ const getCourses = (request, response) => {
                                 "lastEdited": `${doc.updatedAt}`,
                                 "QuestionSetID": []
                             };
+
+                            const documentQuestionSetRelations = await models.QuestionsetDocumentRelation.findAll({where: {
+                                document_id: doc.id
+                            }});
+                            
+
+                            if (documentQuestionSetRelations) {
+                                await Promise.all(documentQuestionSetRelations.map(async (DocQSRelation) => {
+                                    document_right_format.QuestionSetID.push(DocQSRelation.questionset_id);
+
+                                    const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
+                                    if (questionset !== null) {
+                                        const questionsetExists = allCourseDocumentQuestionSets.map((qs) => qs.QSID).indexOf(DocQSRelation.questionset_id)
+                                        if (questionsetExists === -1) {
+                                            allCourseDocumentQuestionSets.push(questionset[0]);
+                                        }
+                                    } 
+                                }));
+
+                            }
                             allCourseDocuments.push(document_right_format);
+                        }
+                    }));
+
+
+                    // fetch all course questionSets
+                    let courseQsRelations = await models.CourseQuestionSetRelation.findAll({where: {CourseID: course.courseId}})
+
+                    await Promise.all(courseQsRelations.map(async (courseQS) => {
+                        const courseQuestionSet = await questionset_helpers.select_questionsets_helper({questionset_id: courseQS.QuestionSetID});
+                        if (courseQuestionSet !== null) {
+                            course.QuestionSets.push(courseQS.QuestionSetID);
+                            allCourseQuestionSets.push(courseQuestionSet[0]);
                         }
                     }));
                 }));
@@ -265,7 +302,10 @@ const getCourses = (request, response) => {
                 
                 return response.status(200).json({
                     courses: courses_right_format,
-                    allCourseDocument: allCourseDocuments
+                    allCourseDocument: allCourseDocuments,
+                    allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                    allCourseQuestionSets: allCourseQuestionSets,
+                    allTeachers: allTeachers
                 });
             }
             else {
@@ -298,13 +338,7 @@ const getCourses = (request, response) => {
                         AssignmentModules: [],
                         QuestionSets: []
                     }; 
-                });
-
-
-                let allCourseDocuments = [];
-                let allCourseDocumentQuestionSets = [];
-                let docQSAlreadyAdded = {};
-                let allTeachers = [];
+                }); 
 
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
@@ -380,7 +414,7 @@ const getCourses = (request, response) => {
                     }));
                     course.AssignmentModules = [...assingment_modules_right_format];
 
-                    // fetch all course documents
+                    // fetch all course documents and their question sets
                     let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
 
                     await Promise.all(courseDocRelations.map( async (courseDoc) => {
@@ -407,24 +441,31 @@ const getCourses = (request, response) => {
                                 await Promise.all(documentQuestionSetRelations.map(async (DocQSRelation) => {
                                     document_right_format.QuestionSetID.push(DocQSRelation.questionset_id);
 
-                                    console.log(((DocQSRelation.questionset_id) in docQSAlreadyAdded), DocQSRelation.questionset_id )
-
-                                    if (!(String(DocQSRelation.questionset_id) in docQSAlreadyAdded)) {
-                                        // get that questionset
-                                        const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
-                                        if (questionset !== null) {
+                                    const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
+                                    if (questionset !== null) {
+                                        const questionsetExists = allCourseDocumentQuestionSets.map((qs) => qs.QSID).indexOf(DocQSRelation.questionset_id)
+                                        if (questionsetExists === -1) {
                                             allCourseDocumentQuestionSets.push(questionset[0]);
-                                            docQSAlreadyAdded[String(DocQSRelation.questionset_id)] = true;
-                                        } 
-                                        // console.log(docQSAlreadyAdded);
-                                    }
+                                        }
+                                    } 
                                 }));
 
                             }
                             allCourseDocuments.push(document_right_format);
                         }
                     }));
-                    console.log("heeerr ", allCourseDocumentQuestionSets, docQSAlreadyAdded);
+
+
+                    // fetch all course questionSets
+                    let courseQsRelations = await models.CourseQuestionSetRelation.findAll({where: {CourseID: course.courseId}})
+
+                    await Promise.all(courseQsRelations.map(async (courseQS) => {
+                        const courseQuestionSet = await questionset_helpers.select_questionsets_helper({questionset_id: courseQS.QuestionSetID});
+                        if (courseQuestionSet !== null) {
+                            course.QuestionSets.push(courseQS.QuestionSetID);
+                            allCourseQuestionSets.push(courseQuestionSet[0]);
+                        }
+                    }));
 
                     // fetch course teacher and add it to our list
                     let teacher = await models.users.findOne({where: {
@@ -446,6 +487,7 @@ const getCourses = (request, response) => {
                     courses: courses_right_format,
                     allCourseDocument: allCourseDocuments,
                     allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                    allCourseQuestionSets: allCourseQuestionSets,
                     allTeachers: allTeachers
                 });
             } else {

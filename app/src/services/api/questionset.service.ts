@@ -1,7 +1,7 @@
 import store from "@/store";
 import { QuestionSet, QuestionSetFlag } from "@/store/interfaces/question.type";
 import { datify } from "@/utils/calender.utils";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import axios from "../api";
 
 
@@ -107,6 +107,36 @@ export function RemoveQSFromDocument(QSID: number, DocumentID: number) {
         console.log("Removed");
       }
     })
+}
+
+export function LinkQuestionSetToCourse(QSID: number, CourseID: number) {
+  axios
+  .post("/AssignQSToCourse", {
+    QSID: QSID,
+    CourseID: CourseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
+}
+
+export function RemoveQSFromCourse(QSID: number, CourseID: number) {
+  axios
+  .post("/RemoveQSFromCourse", {
+    QSID: QSID,
+    CourseID: CourseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("removed");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
 }
 
 

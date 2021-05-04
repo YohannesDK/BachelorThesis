@@ -251,6 +251,11 @@ const getQuestionSets = (request, response) => {
     });
 };
 
+// TODO -fix this
+// deletes questionset
+const deleteQuestionSet = (request, response) => {
+    return "not implemented";
+};
 
 const AssignQuestionSetToDocument = async (request, response) => {
     const QSID = request.body.QSID;
@@ -291,11 +296,45 @@ const RemoveQuestionSetFromDocument = async (request, response) => {
     });
 };
 
-// TODO -fix this
-// deletes questionset
-const deleteQuestionSet = (request, response) => {
-    return "not implemented";
-};
+
+const AssignQuestionSetToCourse = async (request, response) => {
+    const QSID = request.body.QSID;
+    const CourseID = request.body.CourseID;
+
+    await models.CourseQuestionSetRelation.findOrCreate({
+        where: {
+            CourseID: CourseID,
+            QuestionSetID: QSID
+        },
+        defaults: {
+            CourseID: CourseID,
+            QuestionSetID: QSID
+        }
+    }).then(() => {
+        return response.sendStatus(200);
+    }).catch((e) => {
+        console.error(e);
+        return response.sendStatus(400);
+    })
+}
+
+const RemoveQuestionSetFromCourse = async (request, response) => {
+    const QSID = request.body.QSID;
+    const CourseID = request.body.CourseID;
+
+    await models.CourseQuestionSetRelation.destroy({
+        where: {
+            CourseID: CourseID,
+            QuestionSetID: QSID
+        },
+    }).then(() => {
+        return response.sendStatus(200);
+    }).catch((e) => {
+        console.error(e);
+        return response.sendStatus(400);
+    })
+}
+
 
 module.exports = {
     createQuestionSet,
@@ -303,5 +342,7 @@ module.exports = {
     getQuestionSets,
     deleteQuestionSet,
     AssignQuestionSetToDocument,
-    RemoveQuestionSetFromDocument
+    RemoveQuestionSetFromDocument,
+    AssignQuestionSetToCourse,
+    RemoveQuestionSetFromCourse
 };

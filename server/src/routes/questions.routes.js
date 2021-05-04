@@ -16,13 +16,20 @@ router.post("/api/updateQuestionSet", questionsController.updateQuestionSet)
 router.get("/api/getAllQuestionSets", questionsController.getQuestionSets)
 
 
+// This api call deletes a questionSet and all its related information
+router.delete("/deleteQuestionSet", questionsController.deleteQuestionSet)
+
 // This api call links a questionSet to a document
 router.post("/api/AssignQSToDocument", questionsController.AssignQuestionSetToDocument)
 
 // This api call un-links a questionSet from a document
 router.post("/api/RemoveQSFromDocument", questionsController.RemoveQuestionSetFromDocument)
 
-// This api call deletes a questionSet and all its related information
-router.delete("/deleteQuestionSet", questionsController.deleteQuestionSet)
+
+// This api call links a questionSet to a course
+router.post("/api/AssignQSToCourse", questionsController.AssignQuestionSetToCourse)
+
+// This api call un-links a questionSet from a course
+router.post("/api/RemoveQSFromCourse", questionsController.RemoveQuestionSetFromCourse)
 
 module.exports = router;

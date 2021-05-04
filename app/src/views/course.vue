@@ -86,7 +86,12 @@
         :AssignmentModule="assignmentModule"
       />
 
-      <div v-if="AddingType === 3">tests</div>
+      <div j>
+        <add-question-set-to-course 
+        :courseID="course.courseId"
+        :courseQuestionSets="course.QuestionSets"
+        />
+      </div>
     </template>
   </course-editing-modal>
 
@@ -310,6 +315,7 @@ import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
 import { UserType } from "@/store/interfaces/user.types";
 import { QuestionSet } from "@/store/interfaces/question.type";
+import AddQuestionSetToCourse from "@/components/AddQuestionSetToCourse.vue";
 
 export default defineComponent({
   components: {
@@ -319,12 +325,23 @@ export default defineComponent({
     CourseEditingModal,
     AddCourseModule,
     AddAssignmentModule,
-    AddDocumentToCourse
+    AddDocumentToCourse,
+    AddQuestionSetToCourse
   },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
     const course: Ref<courseType> = ref(store.getters.getCoursebyId(CourseId));
+
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
+
+    const courseTeacher: ComputedRef<UserType> = computed(() => {
+      if (IsTeacher.value) {
+        return store.getters.getActiveUser;
+      } else {
+        return store.getters.getCourseTeacher(course.value.Teacher);
+      }
+    });
 
     const courseModule: Ref<CourseModule> = ref({
       courseModuleID: -1,
@@ -347,6 +364,10 @@ export default defineComponent({
     const documents: Ref<Array<documentType>> = ref(
       store.getters.getCourseDocuments(course.value.documents)
     );
+
+    const QuestionSets: ComputedRef<QuestionSet> = computed(() => {
+      return store.getters.getCourseQuestionSets(course.value.QuestionSets);
+    });
 
     const documentQuestionSets: ComputedRef<Array<QuestionSet>> = computed(() => {
       let questionsetIDs: number[] = []
@@ -440,19 +461,11 @@ export default defineComponent({
       );
     };
 
-    const IsTeacher = computed(() => store.getters.getIsTeacher);
-
-    const courseTeacher: ComputedRef<UserType> = computed(() => {
-      if (IsTeacher.value) {
-        return store.getters.getActiveUser;
-      } else {
-        return store.getters.getCourseTeacher(course.value.Teacher);
-      }
-    });
-
-    const QuestionSets: ComputedRef<QuestionSet> = computed(() => {
-      return store.getters.getAllQuestionSets;
-    });
+    // const onCourseQuestionSetsUpdated = () => {
+    //   QuestionSets.value = store.getters.getCourseQuestionSets(
+    //     course.value.QuestionSets
+    //   );
+    // };
 
     return {
       course,

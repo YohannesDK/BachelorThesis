@@ -15,6 +15,7 @@ import { documentType } from "../interfaces/document";
 import { LinkDocumentToCourse, RemoveDocumentFromCourse } from "@/services/api/document.service";
 import { QuestionSet } from "../interfaces/question.type";
 import { UserType } from "../interfaces/user.types";
+import { LinkQuestionSetToCourse, RemoveQSFromCourse } from "@/services/api/questionset.service";
 
 export default {
   state: {
@@ -267,6 +268,48 @@ export default {
           .indexOf(QS.QSID);
         if (QSIndex === -1) state.courseDocumentQuestionSets.push(QS);
         else state.courseDocumentQuestionSets[QSIndex] = QS
+    },
+
+    AddCourseQuestionSets: (state: any, questionset: QuestionSet) => {
+      const qsIndex = (state.courseQuestionSets as QuestionSet[])
+        .map((qs: QuestionSet) => qs.QSID)
+        .indexOf(questionset.QSID)
+      
+      if (qsIndex === -1) {
+        state.courseQuestionSets.push(questionset);
+      } else {
+        state.courseQuestionSets[qsIndex] = questionset;
+      }
+    },
+    LinkQuestionSetToCourse: (state: any, data: any) => {
+      const courseID = data.courseID;
+      const QSID = data.QSID;
+
+      const course = (state.courses as courseType[]).find((course: courseType) => course.courseId === courseID)
+
+      if (course) {
+        const courseQSIndex = course.QuestionSets.map((qsid: number) => qsid).indexOf(QSID);
+        if (courseQSIndex === -1) {
+          course.QuestionSets.push(QSID);
+          LinkQuestionSetToCourse(QSID, courseID);
+        }
+      }
+
+    },
+    RemoveQuestionSetFromCourse: (state: any, data: any) => {
+      const courseID = data.courseID;
+      const QSID = data.QSID;
+
+      const course = (state.courses as courseType[]).find((course: courseType) => course.courseId === courseID)
+
+      if (course) {
+        const courseQSIndex  = course.QuestionSets.map((qsid: number) => qsid).indexOf(QSID);
+        if (courseQSIndex !== -1) {
+          course.QuestionSets.splice(courseQSIndex, 1);
+          RemoveQSFromCourse(QSID, courseID);
+        }
+      }
+            
     }
   },
   actions: {
@@ -318,9 +361,18 @@ export default {
     AddCourseTeacher: (context: any, teacher: UserType) => {
       context.commit("AddCourseTeacher", teacher) 
     },
-
     AddCourseDocumentQuestionSets: (context: any, QS: QuestionSet) => {
       context.commit("AddCourseDocumentQuestionSets", QS) 
+    },
+    AddCourseQuestionSets: (context: any, questionset: QuestionSet) => {
+      context.commit("AddCourseQuestionSets", questionset);
+    },
+
+    LinkQuestionSetToCourse: (context: any, data: any) => {
+      context.commit("LinkQuestionSetToCourse", data)
+    },
+    RemoveQuestionSetFromCourse: (context: any, data: any) => {
+      context.commit("RemoveQuestionSetFromCourse", data)
     }
   },
   getters: {
@@ -354,6 +406,21 @@ export default {
         );
       });
       return documentQuestionSets
+    },
+
+    getCourseQuestionSets: (state: any) => (questionsetIds: number[]) => {
+      const courseQuestionSets: QuestionSet[] = [];
+
+      questionsetIds.forEach((QSID: number) => {
+        (state.courseQuestionSets as QuestionSet[]).forEach(
+          (QS: QuestionSet) => {
+            if (QSID === QS.QSID) {
+              courseQuestionSets.push(QS);
+            }
+          }
+        );
+      });
+      return courseQuestionSets
     },
     
     getCourseDocumentById: (state: any) => (documentID: number) => {
