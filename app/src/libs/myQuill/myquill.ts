@@ -1,4 +1,4 @@
-import Quill from "quill";
+import Quill, { DeltaOperation, Sources } from "quill";
 import { Delta, Op } from "types-quill-delta";
 import HeaderBlot from "./blots/headerBlot";
 import ParagraphBlot from "./blots/paragraphBlot";
@@ -43,6 +43,19 @@ class MyQuill extends Quill {
     this.AddEventListeners()
   }
 
+  /**
+   * Override the built setContents method, so we can start the timer, once the content is loaded
+   */
+  public setContents(delta: Delta, source: Sources | undefined ) {
+    const editorContent = super.setContents(delta, source);
+
+    // start timer at once, even before first scroll event is captured
+    if (this.Monitor) {
+      this.StartTimer();
+      this.root.dispatchEvent(new CustomEvent("scroll-stopped"));
+    }
+    return editorContent;
+  }
 
   //#region Events
 
@@ -62,7 +75,6 @@ class MyQuill extends Quill {
       this.StartTimer()
     }, 500)
   }
-  //#endregion
 
   private HeaderAddedEventHandler() {
     this.container.addEventListener("header-added", (e: CustomEvent) => {
@@ -80,6 +92,8 @@ class MyQuill extends Quill {
       }
     })
   }
+
+  //#endregion 
 
   //#region Time
   public StartTimer() {
@@ -117,7 +131,7 @@ class MyQuill extends Quill {
   }
   //#endregion
 
-
+  //#region Topic Handling
   public BlotInReadZone(blotRect: DOMRect) : boolean { 
     return (
       blotRect.top >= this.readZoneClientRect.top &&
@@ -168,6 +182,7 @@ class MyQuill extends Quill {
     this.SelectedTopicID = topicID
   }
 
+  //#endregion
 
 }
 

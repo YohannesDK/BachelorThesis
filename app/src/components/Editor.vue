@@ -128,7 +128,8 @@ export default defineComponent({
         emit("updateDoc", updatedData);
       }
 
-      if (props.courseDocument === true) {
+
+      if (props.courseDocument === true && !IsTeacher.value) {
         emit("updateTopicTime", TopicData.value)
       }
 

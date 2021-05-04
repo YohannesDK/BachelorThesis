@@ -32,6 +32,7 @@ import router from "@/router";
 // services
 import { CreateDocument } from "@/services/api/document.service";
 import { UpdateTopicMonitoring } from "@/services/api/topicMonitoring.service";
+import { UpdateSingleUserTopicMonitoring } from "@/services/api/SingleUserTopicMonitoring.service";
 
 import { DocumentTopicData, TopicData } from "@/store/interfaces/topic.types";
 import { documentType } from "@/store/interfaces/document";
@@ -125,6 +126,7 @@ export default defineComponent({
       if (courseID !== undefined) {
         courseID = Number(courseID) 
         UpdateTopicMonitoring(documentTopicData, courseID);
+        UpdateSingleUserTopicMonitoring(documentTopicData);
       }
     }
 

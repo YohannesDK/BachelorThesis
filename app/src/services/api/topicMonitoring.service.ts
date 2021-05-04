@@ -9,7 +9,7 @@ export function UpdateTopicMonitoring(DocumentTopicData: DocumentTopicData, cour
       DocumentTopicData: DocumentTopicData 
     }).then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
-        console.log("saved");
+        console.log("topic updated saved");
       }
     })
 }
