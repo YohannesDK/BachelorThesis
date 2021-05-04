@@ -29,10 +29,8 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import { ref, computed, onMounted, onBeforeMount } from "vue";
 import VueHighcharts from "vue3-highcharts";
-import { Bar, Line } from "vue-chartjs";
 export default defineComponent({
   name: "chartTest",
-  extends: Bar,
   components: {
     VueHighcharts
   },

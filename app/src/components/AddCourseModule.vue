@@ -215,7 +215,7 @@ export default defineComponent({
     const documents: Ref<documentType[]> = ref(store.getters.getCourseDocuments(Course.value.documents));
 
     const questionsets: Ref<QuestionSet[]> = ref(
-      store.getters.getAllQuestionSets
+      store.getters.getCourseQuestionSets(Course.value.QuestionSets)
     );
 
     const courseModuleData: Ref<CourseModule> = ref({

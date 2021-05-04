@@ -25,7 +25,9 @@
 
                 <div class="media_content media-body">
                   <p>Teacher</p>
-                  <h6 class="title">{{ courseTeacher.UserName }}</h6>
+                  <h6 class="title"
+                  v-if="courseTeacher" 
+                  >{{ courseTeacher.UserName }}</h6>
                 </div>
                 <div @click="showDoc()" class="contact-teacher">
                   <a href="mailto:kassaye85@gmail.com">
@@ -86,12 +88,11 @@
         :AssignmentModule="assignmentModule"
       />
 
-      <div j>
-        <add-question-set-to-course 
-        :courseID="course.courseId"
-        :courseQuestionSets="course.QuestionSets"
-        />
-      </div>
+      <add-question-set-to-course 
+      v-if="AddingType === 3"
+      :courseID="course.courseId"
+      :courseQuestionSets="course.QuestionSets"
+      />
     </template>
   </course-editing-modal>
 
@@ -174,22 +175,22 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">
+                  <th scope="col" class="questionsettable-header">
                     <div class="th-container" @click="updateSortOption(0)">
                       <span>Tittle</span>
                     </div>
                   </th>
-                  <th scope="col">
+                  <th scope="col" class="questionsettable-header">
                     <div class="th-container" @click="updateSortOption(0)">
                       <span>Description</span>
                     </div>
                   </th>
-                  <th scope="col">
+                  <th scope="col" class="questionsettable-header">
                     <div class="th-container" @click="updateSortOption(1)">
                       <span>Questions</span>
                     </div>
                   </th>
-                  <th scope="col">
+                  <th scope="col" class="questionsettable-header">
                     <div class="th-container" @click="updateSortOption(2)">
                       <span>Last Edited</span>
                     </div>
@@ -266,7 +267,51 @@
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 4">
           <div class="course-page-view-inner-header">
-            <h1>Grades</h1>
+            <h1>Stats</h1>
+          </div>
+          <div class="course-page-view-inner-body">
+            <div class="stat-type-menu-container">
+              <div class="stat-type-button card"
+              :class="{'stat-active': StatsMenuIndex === 0}"
+              @click="StatsMenuUpdate(0)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="object-group" class="icon" />
+                </div>
+                <span>Class Stats</span>
+              </div>
+              <div class="stat-type-button card"
+              :class="{'stat-active': StatsMenuIndex === 1}"
+              @click="StatsMenuUpdate(1)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="object-ungroup" class="icon" />
+                </div>
+                <span>Topic Stats</span>
+              </div>
+              <div class="stat-type-button card"
+              :class="{'stat-active': StatsMenuIndex === 2}"
+              @click="StatsMenuUpdate(2)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="network-wired" class="icon" />
+                  </div>
+                <span>Question Stats</span>
+              </div>
+            </div>
+            <div class="stat-container">
+              <div class="stat-inner"
+              v-if="StatsMenuIndex === 0"
+              >class stats</div>
+              <div class="stat-inner"
+              v-if="StatsMenuIndex === 1"
+              >
+              <topic-stats />
+              </div>
+              <div class="stat-inner"
+              v-if="StatsMenuIndex === 2"
+              >question stats</div>
+            </div>
           </div>
         </div>
 
@@ -298,24 +343,22 @@ import courseModule from "@/components/courseModule.vue";
 import {
   courseType,
   CourseModule,
-  CourseModuleSection,
-  CourseModuleSectionItems,
-  CourseModuleItemEnum
 } from "@/store/interfaces/course";
 import { documentType } from "@/store/interfaces/document";
-import Assignments from "@/components/Assignments.vue";
+import { UserType } from "@/store/interfaces/user.types";
+import { QuestionSet } from "@/store/interfaces/question.type";
 import {
   AssignmentModule,
-  AssignmentReading,
-  AssignmentTest
 } from "@/store/interfaces/assignments.types";
+
+
+import Assignments from "@/components/Assignments.vue";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
 import AddCourseModule from "@/components/AddCourseModule.vue";
 import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
-import { UserType } from "@/store/interfaces/user.types";
-import { QuestionSet } from "@/store/interfaces/question.type";
 import AddQuestionSetToCourse from "@/components/AddQuestionSetToCourse.vue";
+import TopicStats from "@/components/TopicStats.vue";
 
 export default defineComponent({
   components: {
@@ -326,7 +369,8 @@ export default defineComponent({
     AddCourseModule,
     AddAssignmentModule,
     AddDocumentToCourse,
-    AddQuestionSetToCourse
+    AddQuestionSetToCourse,
+    TopicStats
   },
   name: "Course",
   setup() {
@@ -383,18 +427,29 @@ export default defineComponent({
     const CourseModuleAction = ref(0);
     const AssigmentModuleAction = ref(0);
     const QuestionSetsMenuIndex = ref(0);
-    const menuChoices = [
-      "Home",
-      "Documents",
-      "Assignments",
-      "Question Sets",
-      "Grades"
-    ];
+    const menuChoices = computed(() => {
+      const defaultChoices = 
+      [
+        "Home",
+        "Documents",
+        "Assignments",
+        "Question Sets",
+      ];
+      if (IsTeacher.value) {
+        defaultChoices.push("Stats")
+      }
+      return defaultChoices
+    });
 
+    const StatsMenuIndex = ref<number>(0);
+    
     const courseEditingModal = ref<any>();
 
 
 
+    const StatsMenuUpdate = (UpdatedMenuIndex: number) => {
+      StatsMenuIndex.value = UpdatedMenuIndex
+    }
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
@@ -491,7 +546,9 @@ export default defineComponent({
       QuestionSets,
       documentQuestionSets,
       DescriptionSubstringLength,
-      OpenQuestionSet
+      OpenQuestionSet,
+      StatsMenuUpdate,
+      StatsMenuIndex
     };
   }
 });
@@ -733,6 +790,10 @@ export default defineComponent({
   vertical-align: -moz-baseline;
 }
 
+.questionsettable-header {
+  width: 24% !important;
+}
+
 /* .questionsettable th:not(:first-child, :last-child) {
 } */
 .th-container {
@@ -771,7 +832,7 @@ export default defineComponent({
 }
 
 tr.table-questionsets-row.qs-splitter {
-  height: 4rem;
+  height: 6rem;
   font-weight: 700;
 }
 
@@ -808,4 +869,73 @@ tr.table-questionsets-row.qs-splitter {
   cursor: pointer;
   border-bottom: 4px solid #3b7991a6;
 }
+
+.stat-type-menu-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-type-button {
+  width: 30%;
+  height: 8rem;
+  /* background: white; */
+  /* background: #265a70d4; */
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 2% 0;
+  transition: all 0.3s;
+  /* box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important; */
+  background: #365766;
+  opacity: 0.9;
+  color: white;
+}
+
+.stat-type-button.stat-active {
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  transform: scale(1.1);
+  color: white;
+  opacity: 1;
+}
+
+
+.stat-type-button:hover {
+  color: white;
+  cursor: pointer;
+  transform: scale(1.1);
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  opacity: 1;
+}
+
+.stat-type-button:hover > .stat-icon-container, .stat-type-button.stat-active > .stat-icon-container {
+  transform: rotate(15deg);
+}
+
+.stat-icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.1s;
+}
+
+
+
+
+.stat-icon-container .icon {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+
+.stat-type-button span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 4px solid transparent;
+  padding: 1% 0;
+}
+
 </style>
