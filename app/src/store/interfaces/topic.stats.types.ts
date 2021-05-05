@@ -1,8 +1,8 @@
 
-export type CourseDocuments = {
+export type TopicStatsDocuments = {
   Documentid: number;
   name: string;
-}
+};
 
 export type TopicTimeUserStat = {
   UserId: number;

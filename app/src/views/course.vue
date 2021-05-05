@@ -25,9 +25,9 @@
 
                 <div class="media_content media-body">
                   <p>Teacher</p>
-                  <h6 class="title"
-                  v-if="courseTeacher" 
-                  >{{ courseTeacher.UserName }}</h6>
+                  <h6 class="title" v-if="courseTeacher">
+                    {{ courseTeacher.UserName }}
+                  </h6>
                 </div>
                 <div @click="showDoc()" class="contact-teacher">
                   <a href="mailto:kassaye85@gmail.com">
@@ -88,10 +88,10 @@
         :AssignmentModule="assignmentModule"
       />
 
-      <add-question-set-to-course 
-      v-if="AddingType === 3"
-      :courseID="course.courseId"
-      :courseQuestionSets="course.QuestionSets"
+      <add-question-set-to-course
+        v-if="AddingType === 3"
+        :courseID="course.courseId"
+        :courseQuestionSets="course.QuestionSets"
       />
     </template>
   </course-editing-modal>
@@ -271,46 +271,47 @@
           </div>
           <div class="course-page-view-inner-body">
             <div class="stat-type-menu-container">
-              <div class="stat-type-button card"
-              :class="{'stat-active': StatsMenuIndex === 0}"
-              @click="StatsMenuUpdate(0)"
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 0 }"
+                @click="StatsMenuUpdate(0)"
               >
                 <div class="stat-icon-container">
                   <fa icon="object-group" class="icon" />
                 </div>
                 <span>Class Stats</span>
               </div>
-              <div class="stat-type-button card"
-              :class="{'stat-active': StatsMenuIndex === 1}"
-              @click="StatsMenuUpdate(1)"
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 1 }"
+                @click="StatsMenuUpdate(1)"
               >
                 <div class="stat-icon-container">
                   <fa icon="object-ungroup" class="icon" />
                 </div>
                 <span>Topic Stats</span>
               </div>
-              <div class="stat-type-button card"
-              :class="{'stat-active': StatsMenuIndex === 2}"
-              @click="StatsMenuUpdate(2)"
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 2 }"
+                @click="StatsMenuUpdate(2)"
               >
                 <div class="stat-icon-container">
                   <fa icon="network-wired" class="icon" />
-                  </div>
+                </div>
                 <span>Question Stats</span>
               </div>
             </div>
             <div class="stat-container">
-              <div class="stat-inner"
-              v-if="StatsMenuIndex === 0"
-              >class stats</div>
-              <div class="stat-inner"
-              v-if="StatsMenuIndex === 1"
-              >
-              <topic-stats />
+              <div class="stat-inner" v-if="StatsMenuIndex === 0">
+                class stats
               </div>
-              <div class="stat-inner"
-              v-if="StatsMenuIndex === 2"
-              >question stats</div>
+              <div class="stat-inner" v-if="StatsMenuIndex === 1">
+                <topic-stats :TopicStatsDocuments="TopicStatsDocumentsProp" />
+              </div>
+              <div class="stat-inner" v-if="StatsMenuIndex === 2">
+                question stats
+              </div>
             </div>
           </div>
         </div>
@@ -340,17 +341,12 @@ import {
 } from "vue";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
-import {
-  courseType,
-  CourseModule,
-} from "@/store/interfaces/course";
+import { courseType, CourseModule } from "@/store/interfaces/course";
 import { documentType } from "@/store/interfaces/document";
 import { UserType } from "@/store/interfaces/user.types";
 import { QuestionSet } from "@/store/interfaces/question.type";
-import {
-  AssignmentModule,
-} from "@/store/interfaces/assignments.types";
-
+import { AssignmentModule } from "@/store/interfaces/assignments.types";
+import { TopicStatsDocuments } from "@/store/interfaces/topic.stats.types";
 
 import Assignments from "@/components/Assignments.vue";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
@@ -413,13 +409,27 @@ export default defineComponent({
       return store.getters.getCourseQuestionSets(course.value.QuestionSets);
     });
 
-    const documentQuestionSets: ComputedRef<Array<QuestionSet>> = computed(() => {
-      let questionsetIDs: number[] = []
-      documents.value.forEach((doc: documentType) => {
-        questionsetIDs = [...questionsetIDs, ...doc.QuestionSetID]
-      })
-      return store.getters.getCourseDocumentQuestionSets(questionsetIDs)
-    });
+    const documentQuestionSets: ComputedRef<Array<QuestionSet>> = computed(
+      () => {
+        let questionsetIDs: number[] = [];
+        documents.value.forEach((doc: documentType) => {
+          questionsetIDs = [...questionsetIDs, ...doc.QuestionSetID];
+        });
+        return store.getters.getCourseDocumentQuestionSets(questionsetIDs);
+      }
+    );
+
+
+    const TopicStatsDocumentsProp: ComputedRef<Array<TopicStatsDocuments>> = computed(() => {
+      const Docs: TopicStatsDocuments[] = [];
+      documents.value.map((doc: documentType) => {
+        Docs.push({
+          Documentid: doc.Documentid,
+          name: doc.name
+        });
+      });
+      return Docs
+    })
 
     const menuIndex = ref<number>(0);
     const DescriptionSubstringLength = 25;
@@ -428,28 +438,25 @@ export default defineComponent({
     const AssigmentModuleAction = ref(0);
     const QuestionSetsMenuIndex = ref(0);
     const menuChoices = computed(() => {
-      const defaultChoices = 
-      [
+      const defaultChoices = [
         "Home",
         "Documents",
         "Assignments",
-        "Question Sets",
+        "Question Sets"
       ];
       if (IsTeacher.value) {
-        defaultChoices.push("Stats")
+        defaultChoices.push("Stats");
       }
-      return defaultChoices
+      return defaultChoices;
     });
 
     const StatsMenuIndex = ref<number>(0);
-    
+
     const courseEditingModal = ref<any>();
 
-
-
     const StatsMenuUpdate = (UpdatedMenuIndex: number) => {
-      StatsMenuIndex.value = UpdatedMenuIndex
-    }
+      StatsMenuIndex.value = UpdatedMenuIndex;
+    };
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
@@ -548,7 +555,8 @@ export default defineComponent({
       DescriptionSubstringLength,
       OpenQuestionSet,
       StatsMenuUpdate,
-      StatsMenuIndex
+      StatsMenuIndex,
+      TopicStatsDocumentsProp
     };
   }
 });
@@ -900,7 +908,6 @@ tr.table-questionsets-row.qs-splitter {
   opacity: 1;
 }
 
-
 .stat-type-button:hover {
   color: white;
   cursor: pointer;
@@ -909,7 +916,8 @@ tr.table-questionsets-row.qs-splitter {
   opacity: 1;
 }
 
-.stat-type-button:hover > .stat-icon-container, .stat-type-button.stat-active > .stat-icon-container {
+.stat-type-button:hover > .stat-icon-container,
+.stat-type-button.stat-active > .stat-icon-container {
   transform: rotate(15deg);
 }
 
@@ -922,14 +930,10 @@ tr.table-questionsets-row.qs-splitter {
   transition: all 0.1s;
 }
 
-
-
-
 .stat-icon-container .icon {
   min-width: 100%;
   min-height: 100%;
 }
-
 
 .stat-type-button span {
   font-size: 1.1rem;
@@ -937,5 +941,4 @@ tr.table-questionsets-row.qs-splitter {
   border-bottom: 4px solid transparent;
   padding: 1% 0;
 }
-
 </style>
