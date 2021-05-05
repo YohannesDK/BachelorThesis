@@ -129,6 +129,7 @@ export default defineComponent({
           scatterSeries.value[index].data = scatterData;
         });
 
+        
         return {
           ...ChartConfiguration,
           xAxis: {
@@ -146,10 +147,7 @@ export default defineComponent({
               name: "Pre-calculted Time",
               data: TopicStatData.value.TimeExpected
             },
-            scatterSeries.value[0],
-            scatterSeries.value[1],
-            scatterSeries.value[2],
-            scatterSeries.value[3]
+            ...scatterSeries.value
           ]
         };
       }
