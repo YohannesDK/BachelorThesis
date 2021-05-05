@@ -33,8 +33,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, PropType, ref, Ref, watch } from "vue";
-import { GroupedTopicData, TopicStatsDocuments } from "@/store/interfaces/topic.stats.types";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  PropType,
+  ref,
+  Ref,
+  watch
+} from "vue";
+import {
+  GroupedTopicData,
+  TopicStatsDocuments
+} from "@/store/interfaces/topic.stats.types";
 import VueHighcharts from "vue3-highcharts";
 import store from "@/store";
 
@@ -50,16 +61,14 @@ export default defineComponent({
     }
   },
   setup(props) {
-
     const SelectDocumentID: Ref<number> = ref(-1);
     const selectedDocumentName: Ref<string> = ref("");
-    const scatterSeries = ref<Array<any>>([]);
 
     const TopicStatData = computed(() => {
       if (SelectDocumentID.value !== -1) {
         return store.getters.getTopicStats(SelectDocumentID.value);
       }
-      return -1
+      return -1;
     });
 
     const ChartConfiguration = {
@@ -78,88 +87,36 @@ export default defineComponent({
       tooltip: {
         headerFormat: "",
         pointFormat: "Name: <b>{point.name}</b><br/>Time: <b>{point.y}</b>"
-      },
-    }
+      }
+    };
 
-    // sort student times, and set them in groups
-    const dataList: any = ref([
+    const scatterSeries = ref<Array<any>>([
       {
-        name: "Time Used",
+        type: "scatter",
+        name: `Student Group 1`,
         data: []
       },
       {
-        name: "Time Expected",
+        type: "scatter",
+        name: `Student Group 2`,
         data: []
       },
-      // {
-      //   type: "spline",
-      //   name: "Average",
-      //   data: [32, 12, 32, 23, 44, 54, 23, 54, 23, 23, 4, 2, 21]
-      // },
-      // {
-      //   type: "scatter",
-      //   name: "Students Group 1",
-      //   data: [
-      //     {
-      //       x: 0,
-      //       y: 35,
-      //       name: "Yohannes"
-      //     },
-      //     {
-      //       x: 1,
-      //       y: 24,
-      //       name: "Osama"
-      //     },
-      //     {
-      //       x: 2,
-      //       y: 5,
-      //       name: "Mamma"
-      //     }
-      //   ]
-      // },
-      // {
-      //   type: "scatter",
-      //   name: "Students Group 2",
-      //   data: [
-      //     {
-      //       x: 0,
-      //       y: 20,
-      //       name: "Yohannes"
-      //     },
-      //     {
-      //       x: 1,
-      //       y: 44,
-      //       name: "Osama"
-      //     },
-      //     {
-      //       x: 2,
-      //       y: 34,
-      //       name: "Mamma"
-      //     }
-      //   ]
-      // }
+      {
+        type: "scatter",
+        name: `Student Group 3`,
+        data: []
+      },
+      {
+        type: "scatter",
+        name: `Student Group 4`,
+        data: []
+      }
     ]);
-
-
-    const categories: any = [
-      "header 1",
-      "header 2",
-      "header 3",
-      "header 4",
-      "header 5",
-      "header 6",
-      "header 7",
-      "header 8",
-      "header 9",
-      "header 11",
-      "header 12",
-      "header 13"
-    ];
 
     const chartOptions = computed(() => {
       if (TopicStatData.value !== -1) {
-        const StudentTopicData: GroupedTopicData[][] = TopicStatData.value.StudentGroupsResult;
-
+        const StudentTopicData: GroupedTopicData[][] =
+          TopicStatData.value.StudentGroupsResult;
 
         StudentTopicData.forEach((g: GroupedTopicData[], index: number) => {
           const scatterData = g.map((g1: GroupedTopicData) => {
@@ -167,17 +124,10 @@ export default defineComponent({
               x: g1.headerIndex,
               y: g1.UserStat.Time,
               name: g1.UserStat.Name
-            }
+            };
           });
-
-          scatterSeries.value.push({
-            type: "scatter",
-            name: `Student Group ${index + 1 }`,
-            data: scatterData
-          });
+          scatterSeries.value[index].data = scatterData;
         });
-
-        console.log(...scatterSeries.value)
 
         return {
           ...ChartConfiguration,
@@ -196,19 +146,23 @@ export default defineComponent({
               name: "Pre-calculted Time",
               data: TopicStatData.value.TimeExpected
             },
-            ...scatterSeries.value
+            scatterSeries.value[0],
+            scatterSeries.value[1],
+            scatterSeries.value[2],
+            scatterSeries.value[3]
           ]
-          };
+        };
       }
-      return -1
+      return -1;
     });
 
-
     const UpdateDocumentSelected = (docID: number, docName: string) => {
-      scatterSeries.value.length = 0;
+      scatterSeries.value.forEach(scatterSerie => {
+        scatterSerie.data.length = 0;
+      });
+
       SelectDocumentID.value = docID;
       selectedDocumentName.value = docName;
-      // console.log(TopicStatData.value.TopicHeaders);
     };
 
     return {
@@ -242,8 +196,6 @@ export default defineComponent({
   border-radius: 9px;
 }
 
-
-
 .document-list li {
   height: 3rem;
   margin-right: 1%;
@@ -257,10 +209,10 @@ export default defineComponent({
 }
 
 .document-list li.active {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    /* background: rgb(74 104 118); */
-    /* border: 1px solid whitesmoke; */
-    /* color: white !important; */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  /* background: rgb(74 104 118); */
+  /* border: 1px solid whitesmoke; */
+  /* color: white !important; */
 }
 
 .document-list li:hover {
