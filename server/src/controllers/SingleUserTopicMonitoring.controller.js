@@ -4,6 +4,7 @@ const models = require("../models/index.js");
 
 const updateSingleUserTopicMonitoring = async (request, response) => {
   const UserID = request.body.UserID;
+  const UserName = request.body.UserName;
   const DocumentTopicData = request.body.DocumentTopicData;
 
   await Promise.all(DocumentTopicData.TopicTimes.map(async (TopicTimeData) => {
@@ -16,7 +17,8 @@ const updateSingleUserTopicMonitoring = async (request, response) => {
       await models.SingleUserTopicMonitoring.create({
         TopicID: TopicTimeData.TopicID,
         Time: TopicTimeData.Time,
-        UserId: UserID
+        UserId: UserID,
+        UserName: UserName
       }) 
     } else {
       await models.SingleUserTopicMonitoring.increment("Time", {by: TopicTimeData.Time, where: {

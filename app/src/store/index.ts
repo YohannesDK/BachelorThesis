@@ -5,6 +5,7 @@ import QuestionTestModule from "./modules/QuestionTest.module";
 import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
 import CourseModule from "./modules/courses.module";
+import StatsModule from "./modules/Stats.module";
 // import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
@@ -110,9 +111,10 @@ const store = createStore({
     QuestionTestModule,
     DocumentModule,
     TestStatsModule,
-    CourseModule
+    CourseModule,
+    StatsModule
   }
-  // uncomment this on to persist state
+  // uncomment this to persist state
   // plugins: [createPersistedState()]
 });
 

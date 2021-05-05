@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   SingleUserTopicMonitoring.init({
     TopicID: DataTypes.STRING,
     Time: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER
+    UserId: DataTypes.INTEGER,
+    UserName: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'SingleUserTopicMonitoring',

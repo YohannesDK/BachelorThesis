@@ -11,6 +11,7 @@ export function UpdateSingleUserTopicMonitoring(DocumentTopicData: DocumentTopic
     axios
       .post("/updateSingleUserTopicMonitoring", {
         UserID: User.UserID,
+        UserName: User.UserName,
         DocumentTopicData: DocumentTopicData 
       }).then((response: AxiosResponse) => {
         if (response.status && response.status === 200) {

@@ -11,7 +11,7 @@ export type TopicTimeUserStat = {
 }
 
 export type TopicTimeStat = {
-  TopicID: number;
+  TopicID: string;
   Topic: string;
   Time: number;
   ExpectedTime?: number;
@@ -25,9 +25,13 @@ export type DocumentTopicStat = {
   TopicStats: TopicTimeStat[]
 }
 
+export type GroupedTopicData = {
+  headerIndex: number;
+  UserStat: TopicTimeUserStat
+}
+
 
 export type GroupedTopicUserStats = {
-  Group: string;
   percentage: number; 
   UserStats: TopicTimeUserStat[]
 }
