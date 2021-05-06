@@ -210,13 +210,6 @@ export default {
 
       const UserStatsSorted: GroupedTopicData[] = [];
 
-      const StudentGroups = {
-        "Student Group 1" : [] as GroupedTopicData[],
-        "Student Group 2" : [] as GroupedTopicData[],
-        "Student Group 3" : [] as GroupedTopicData[],
-        "Student Group 4" : [] as GroupedTopicData[]
-      };
-
       if (DocumentTopicStat) {
         DocumentTopicStat.TopicStats.forEach((TopicStat: TopicTimeStat, index: number) => {
           TopicHeaders.push(TopicStat.Topic);

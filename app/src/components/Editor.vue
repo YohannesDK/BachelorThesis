@@ -131,7 +131,7 @@ export default defineComponent({
 
       if (props.courseDocument === true && !IsTeacher.value) {
         emit("updateTopicTime", TopicData.value)
-      }
+      } 
 
     });
 
@@ -142,7 +142,6 @@ export default defineComponent({
     };
 
     const InitilizeDocment = () => {
-      console.log(typeof props.courseDocument, props.courseDocument);
 
       // initialize editor instance
       Editor = new MyQuill(root.value, {

@@ -11,5 +11,5 @@ export function UpdateTopicMonitoring(DocumentTopicData: DocumentTopicData, cour
       if (response.status && response.status === 200) {
         console.log("topic updated saved");
       }
-    })
+    });
 }

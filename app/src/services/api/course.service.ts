@@ -7,6 +7,7 @@ import { documentType } from "@/store/interfaces/document";
 import { datify } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import { QuestionSet } from "@/store/interfaces/question.type";
+import { DocumentTopicStat } from "@/store/interfaces/topic.stats.types";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -51,10 +52,12 @@ export function getAllCourses() {
         const courses: courseType[] = response.data.courses;
         const courseDocuments: documentType[] = response.data.allCourseDocument;
         const courseTeachers = response.data.allTeachers;
-        const CourseDocumentQuestionSets : QuestionSet[] = response.data.allCourseDocumentQuestionSets;
-        const CourseQuestionSets: QuestionSet[] = response.data.allCourseQuestionSets;
-
-
+        const CourseDocumentQuestionSets: QuestionSet[] =
+          response.data.allCourseDocumentQuestionSets;
+        const CourseQuestionSets: QuestionSet[] =
+          response.data.allCourseQuestionSets;
+        const CourseDocumentTopicStat: DocumentTopicStat[] =
+          response.data.allCourseDocumentTopicStats;
 
         if (courses) {
           courses.forEach((course: courseType) => {
@@ -63,31 +66,31 @@ export function getAllCourses() {
         }
         if (courseDocuments) {
           courseDocuments.forEach((doc: documentType) => {
-              if (doc.body !== "") {
+            if (doc.body !== "") {
               doc.body = JSON.parse(doc.body as string).ops;
             } else {
               doc.body = [];
             }
             doc.lastEdited = datify(doc.lastEdited);
             store.dispatch("AddCourseDocuments", doc);
-          }) 
+          });
         }
         if (courseTeachers) {
           courseTeachers.forEach((teacher: UserType) => {
-            store.dispatch("AddCourseTeacher", teacher)
-          }); 
+            store.dispatch("AddCourseTeacher", teacher);
+          });
         }
         if (CourseDocumentQuestionSets) {
           CourseDocumentQuestionSets.forEach((QS: QuestionSet) => {
             QS.LastEdited = datify(QS.LastEdited as string);
             store.dispatch("AddCourseDocumentQuestionSets", QS);
-          })
+          });
         }
         if (CourseQuestionSets) {
           CourseQuestionSets.forEach((QS: QuestionSet) => {
             QS.LastEdited = datify(QS.LastEdited as string);
             store.dispatch("AddCourseQuestionSets", QS);
-          }) 
+          });
         }
       }
     })
@@ -127,12 +130,12 @@ export function CreateCourseModule(newCourseModule: CourseModule) {
 export function UpdateCourseModule(EditData: any) {
   axios
     .post("/updateCourseModule", {
-      EditData: EditData,
+      EditData: EditData
     })
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         if (response.data.courseModule) {
-          store.dispatch("UpdateCourseModule", response.data.courseModule) 
+          store.dispatch("UpdateCourseModule", response.data.courseModule);
         }
       }
     });
@@ -142,13 +145,13 @@ export function PublishCourseModule(courseModule: CourseModule) {
   axios
     .post("/publishCourseModule", {
       courseModule: courseModule
-    }).then((response: AxiosResponse) => {
+    })
+    .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         store.dispatch("publishCourseModule", courseModule);
       }
-    })
+    });
 }
-
 
 export function DeleteCourseModule() {
   return "Not Implemented";
@@ -162,7 +165,10 @@ export function CreateAssignmentModule(assingmentModule: AssignmentModule) {
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         if (response.data.newAssingmentModule) {
-          store.dispatch("AddNewAssignmentModule", response.data.newAssingmentModule);
+          store.dispatch(
+            "AddNewAssignmentModule",
+            response.data.newAssingmentModule
+          );
         }
       }
     });
@@ -176,10 +182,13 @@ export function UpdateAssignmentModule(EditData: any) {
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
         if (response.data.updatedAssignmentModule) {
-          store.dispatch("updateAssignmentModule", response.data.updatedAssignmentModule); 
+          store.dispatch(
+            "updateAssignmentModule",
+            response.data.updatedAssignmentModule
+          );
         }
       }
-    })
+    });
 }
 
 export function DeleteAssignmentModule() {
