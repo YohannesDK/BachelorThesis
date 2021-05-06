@@ -143,10 +143,10 @@ export default defineComponent({
               name: "Time Used",
               data: TopicStatData.value.TimeUsed
             },
-            {
-              name: "Pre-calculted Time",
-              data: TopicStatData.value.TimeExpected
-            },
+            // {
+            //   name: "Pre-calculted Time",
+            //   data: TopicStatData.value.TimeExpected
+            // },
             ...scatterSeries.value
           ]
         };

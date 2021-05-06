@@ -152,6 +152,7 @@ const getCourses = (request, response) => {
         let allCourseDocuments = [];
         let allCourseQuestionSets = [];
         let allCourseDocumentQuestionSets = [];
+        let allCourseDocumentTopicStats = []
         let allTeachers = [];
 
         if (role.toLowerCase() === "teacher") {
@@ -170,7 +171,6 @@ const getCourses = (request, response) => {
                     }; 
                 });
 
-                let allCourseDocuments = [];
                 
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
@@ -245,7 +245,7 @@ const getCourses = (request, response) => {
                     }));
                     course.AssignmentModules = [...assingment_modules_right_format];
 
-                    // fetch all course documents and their question sets
+                    // fetch all course documents and their question sets, and also fetch all topic stats related to each document
                     let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
 
                     await Promise.all(courseDocRelations.map( async (courseDoc) => {
@@ -282,6 +282,41 @@ const getCourses = (request, response) => {
                                 }));
 
                             }
+
+
+                            // fetch Topic Data
+                            const DocumentTopics = await models.TopicMonitoring.findAll({ where : {DocumentID: doc.id }});
+                            const document_topic_stat = {
+                                Documentid: doc.id,
+                                name: doc.title,
+                                TopicStats: []
+                            };
+                            if (DocumentTopics) {
+                                await Promise.all(DocumentTopics.map(async (DTopic) => {
+                                    let TopicTimeStat = {
+                                        TopicID: DTopic.TopicID,
+                                        Topic: DTopic.TopicName,
+                                        Time: DTopic.Time,
+                                        ExpectedTime: 0,
+                                        UserStats: []
+                                    };
+
+                                    let UserTopicStats = await models.SingleUserTopicMonitoring.findAll({where: {TopicID: DTopic.TopicID }});
+
+                                    if (UserTopicStats) {
+                                        UserTopicStats.forEach(UserTopicStat => {
+                                            let UTS = {
+                                                UserId: UserTopicStat.UserId,
+                                                Name: UserTopicStat.UserName,
+                                                Time: UserTopicStat.Time
+                                            };
+                                            TopicTimeStat.UserStats.push(UTS);
+                                        }); 
+                                    }
+                                    document_topic_stat.TopicStats.push(TopicTimeStat);
+                                }))
+                            }
+                            allCourseDocumentTopicStats.push(document_topic_stat);
                             allCourseDocuments.push(document_right_format);
                         }
                     }));
@@ -305,9 +340,9 @@ const getCourses = (request, response) => {
                     allCourseDocument: allCourseDocuments,
                     allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
                     allCourseQuestionSets: allCourseQuestionSets,
+                    allCourseDocumentTopicStats: allCourseDocumentTopicStats,
                     allTeachers: allTeachers
-                });
-            }
+                }); }
             else {
                 return response.send(400);
             }

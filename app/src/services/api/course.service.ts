@@ -52,12 +52,17 @@ export function getAllCourses() {
         const courses: courseType[] = response.data.courses;
         const courseDocuments: documentType[] = response.data.allCourseDocument;
         const courseTeachers = response.data.allTeachers;
+
         const CourseDocumentQuestionSets: QuestionSet[] =
           response.data.allCourseDocumentQuestionSets;
+
         const CourseQuestionSets: QuestionSet[] =
           response.data.allCourseQuestionSets;
+
         const CourseDocumentTopicStat: DocumentTopicStat[] =
           response.data.allCourseDocumentTopicStats;
+
+        console.log(CourseDocumentTopicStat)
 
         if (courses) {
           courses.forEach((course: courseType) => {
@@ -90,6 +95,12 @@ export function getAllCourses() {
           CourseQuestionSets.forEach((QS: QuestionSet) => {
             QS.LastEdited = datify(QS.LastEdited as string);
             store.dispatch("AddCourseQuestionSets", QS);
+          });
+        }
+
+        if (CourseDocumentTopicStat) { 
+          CourseDocumentTopicStat.forEach((DocumentTopicStat: DocumentTopicStat) => {
+            store.dispatch("AddDocumentTopicStat", DocumentTopicStat);
           });
         }
       }

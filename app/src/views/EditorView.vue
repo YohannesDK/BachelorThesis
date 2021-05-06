@@ -125,8 +125,10 @@ export default defineComponent({
 
       if (courseID !== undefined) {
         courseID = Number(courseID) 
-        UpdateTopicMonitoring(documentTopicData, courseID);
-        UpdateSingleUserTopicMonitoring(documentTopicData);
+        if (documentTopicData.TopicTimes.length > 0) {
+          UpdateTopicMonitoring(documentTopicData, courseID);
+          UpdateSingleUserTopicMonitoring(documentTopicData);
+        }
       }
     }
 
