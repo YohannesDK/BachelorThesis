@@ -6,7 +6,7 @@ import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
 import CourseModule from "./modules/courses.module";
 import StatsModule from "./modules/Stats.module";
-// import createPersistedState from "vuex-persistedstate";
+import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {
@@ -18,8 +18,6 @@ const store = createStore({
       FirstName: "",
       LastName: ""
     } as UserType,
-
-    activeUser: {},
     loading: false,
     alertMessages: [] as any[]
   },
@@ -42,7 +40,6 @@ const store = createStore({
     },
     AddNewAlert: (state, alertData) => {
       let alertID = 0
-      console.log(alertData);
 
       if (state.alertMessages.length > 0) {
         alertID = state.alertMessages[state.alertMessages.length - 1].id + 1; 
@@ -113,9 +110,9 @@ const store = createStore({
     TestStatsModule,
     CourseModule,
     StatsModule
-  }
+  },
   // uncomment this to persist state
-  // plugins: [createPersistedState()]
+  plugins: [createPersistedState()]
 });
 
 export default store;

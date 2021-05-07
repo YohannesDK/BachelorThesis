@@ -15,11 +15,17 @@ export default {
       } else {
         state.DocumentTopicStats[DTSIndex] = documentTopicStat;
       }
+    },
+    UnLoadStatsModule: (state: any) => {
+      state.DocumentTopicStats.length = 0;
     }
   },
   actions: {
     AddDocumentTopicStat: (context: any, documentTopicStat: DocumentTopicStat) => {
       context.commit("AddDocumentTopicStat", documentTopicStat);
+    },
+    UnLoadStatsModule: (context: any) => {
+      context.commit("UnLoadStatsModule");
     }
   },
   getters: {

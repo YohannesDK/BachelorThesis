@@ -310,6 +310,13 @@ export default {
         }
       }
             
+    },
+    UnLoadCourseModule: (state: any) => {
+      state.courses.length = 0;
+      state.courseDocuments.length = 0;
+      state.courseQuestionSets.length = 0;
+      state.courseDocumentQuestionSets.length = 0;
+      state.courseTeachers.length = 0;
     }
   },
   actions: {
@@ -373,6 +380,9 @@ export default {
     },
     RemoveQuestionSetFromCourse: (context: any, data: any) => {
       context.commit("RemoveQuestionSetFromCourse", data)
+    },
+    UnLoadCourseModule: (context: any) => {
+      context.commit("UnLoadCourseModule")
     }
   },
   getters: {

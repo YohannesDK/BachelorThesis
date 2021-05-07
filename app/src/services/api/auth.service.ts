@@ -1,6 +1,6 @@
 import router from "@/router";
 import store from "@/store/index";
-import { UserType } from "@/store/interfaces/user.types";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
 import { AxiosResponse } from "axios";
 import axios from "@/services/api";
 import jwtDecode, { JwtPayload, JwtDecodeOptions } from "jwt-decode";
@@ -50,6 +50,20 @@ export function Login(username: string, password: string) {
 
 export function Logout() {
   localStorage.removeItem("token");
+  const emptyUser: UserType = {
+    UserID: -1,
+    UserName: "",
+    Role: RoleType.Student,
+    FirstName: "",
+    LastName: ""
+  };
+  store.dispatch("setUser", emptyUser);
+  store.dispatch("unLoadQuestionSetModule");
+  store.dispatch("unLoadQuestionTestModule");
+  store.dispatch("UnLoadDocumentModule");
+  store.dispatch("UnloadTestStatsModule");
+  store.dispatch("UnLoadCourseModule");
+  store.dispatch("UnLoadStatsModule");
   router.push("/");
 }
 

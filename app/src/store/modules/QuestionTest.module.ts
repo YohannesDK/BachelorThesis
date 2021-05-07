@@ -11,6 +11,10 @@ export default {
     },
     AddTestData: (state: any, TestData: TestData) => {
       state.TestData.push(TestData);
+    },
+    unLoadQuestionTestModule: (state: any) => {
+      state.TestID = 0;
+      state.TestData.length = 0;
     }
   },
   actions: {
@@ -19,6 +23,9 @@ export default {
     },
     AddTestData: (context: any, TestData: TestData) => {
       context.commit("AddTestData", TestData);
+    },
+    unLoadQuestionTestModule: (context: any) => {
+      context.commit("unLoadQuestionTestModule");
     }
   },
   getters: {

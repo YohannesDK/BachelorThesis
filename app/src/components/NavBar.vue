@@ -173,14 +173,6 @@ export default defineComponent({
     });
 
     const signout = () => {
-      const emptyUser: UserType = {
-        UserID: -1,
-        UserName: "",
-        Role: RoleType.Student,
-        FirstName: "",
-        LastName: ""
-      };
-      store.dispatch("setUser", emptyUser);
       Logout();
     };
 
