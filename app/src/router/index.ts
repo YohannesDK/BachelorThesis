@@ -112,6 +112,15 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "questiontest" */ "../views/QuestionTest.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (from.name === "Course") {
+        to.meta.courseQS = true;
+        to.meta.courseID = from.query.cid
+      } else {
+        to.meta.courseQS = false;
+      }
+      next()
+    },
     path: "/TakeTest",
     name: "TakeTest",
     meta: { showSideBar: false },

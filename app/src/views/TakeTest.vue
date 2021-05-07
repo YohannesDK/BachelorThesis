@@ -98,7 +98,7 @@ import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import router from "@/router";
 import store from "@/store";
 import { Question, QuestionTypeEnum, QuestionSetFlag, QuestionSet } from "@/store/interfaces/question.type";
-import { defineComponent, onMounted, ref, Ref } from "vue";
+import { ComputedRef, computed , defineComponent, onMounted, ref, Ref } from "vue";
 import axios, { AxiosError } from "axios";
 import { SingleTestStat, TestData, TestStat } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
@@ -115,6 +115,9 @@ export default defineComponent({
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
     const hideInfoBar = ref<boolean>(true);
+
+    const user: UserType = store.getters.getActiveUser;
+
     let counting = true;
     const correct = 0;
     let timer = 0;
@@ -259,15 +262,29 @@ export default defineComponent({
         }             
       }, 1000)
 
-      const user: UserType = store.getters.getActiveUser;
-      if (router.currentRoute.value.query.QSID) {
-        const qs: QuestionSet = store.getters.getQuestionSetById(
-          Number(router.currentRoute.value.query.QSID)
-        );
-        Data.value.QSID = qs.QSID;
-        Data.value.Tittle = qs.Tittle;
-        Data.value.Description = qs.Description;
-        Data.value.QuestionSet = qs.QuestionSet;
+      const QSID = router.currentRoute.value.query.QSID;
+
+      if (QSID) {
+        const qs: ComputedRef<QuestionSet> = computed(() => {
+          if (router.currentRoute.value.meta.courseQS) {
+            const QuestionSetType = router.currentRoute.value.query.QST;
+
+            if (QuestionSetType && Number(QuestionSetType) === 0) {
+              return store.getters.getCourseQuestionSetById(Number(QSID));
+            } else if (QuestionSetType && Number(QuestionSetType) === 1) {
+              return store.getters.getCourseDocumentQuestionSetById(Number(QSID));
+            }
+          } else {
+            return store.getters.getQuestionSetById(
+                Number(router.currentRoute.value.query.QSID)
+              );
+          }
+        });
+
+        Data.value.QSID = qs.value.QSID;
+        Data.value.Tittle = qs.value.Tittle;
+        Data.value.Description = qs.value.Description;
+        Data.value.QuestionSet = qs.value.QuestionSet;
       }
 
       // initilize test data

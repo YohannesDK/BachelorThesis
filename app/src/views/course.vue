@@ -208,7 +208,7 @@
                   class="table-questionsets-row"
                   v-for="(questionset, index) in QuestionSets"
                   :key="index"
-                  @click="OpenQuestionSet(questionset.QSID)"
+                  @click="OpenQuestionSet(questionset.QSID, 0)"
                 >
                   <th scope="row">{{ index + 1 }}</th>
                   <td>
@@ -239,7 +239,7 @@
                   class="table-questionsets-row"
                   v-for="(questionset, index) in documentQuestionSets"
                   :key="index"
-                  @click="OpenQuestionSet(questionset.QSID)"
+                  @click="OpenQuestionSet(questionset.QSID, 1)"
                 >
                   <th scope="row">{{ index + 1 }}</th>
                   <td>
@@ -462,13 +462,13 @@ export default defineComponent({
       menuIndex.value = UpdatedMenuIndex;
     };
 
-    const OpenQuestionSet = (QSID: number) => {
+    const OpenQuestionSet = (QSID: number, questionsetType = 0) => {
       router.push({
-        name: "AddQuestionSet",
-        query: { QSID: QSID }
+        name: "TakeTest",
+        query: { QSID: QSID, QST: questionsetType },
       });
     };
-
+    
     const AddNew = (addingType: number) => {
       CourseModuleAction.value = 0;
       if (courseEditingModal.value) {

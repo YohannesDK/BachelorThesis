@@ -433,6 +433,13 @@ export default {
       return courseQuestionSets
     },
 
+    getCourseQuestionSetById: (state: any) => (QSID: number) => {
+      return (state.courseQuestionSets as QuestionSet[]).find((qs: QuestionSet) => qs.QSID === QSID);
+    },
+
+    getCourseDocumentQuestionSetById: (state: any) => (QSID: number) => {
+      return (state.courseDocumentQuestionSets as QuestionSet[]).find((qs: QuestionSet) => qs.QSID === QSID);
+    },
     
     getCourseDocumentById: (state: any) => (documentID: number) => {
       console.log(state.courseDocuments, documentID)
