@@ -310,7 +310,7 @@
                 <topic-stats :TopicStatsDocuments="TopicStatsDocumentsProp" />
               </div>
               <div class="stat-inner" v-if="StatsMenuIndex === 2">
-                question stats
+                <question-stats :QuestionSetStatsProp="QuestionSetStatsProps" />
               </div>
             </div>
           </div>
@@ -347,6 +347,7 @@ import { UserType } from "@/store/interfaces/user.types";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import { AssignmentModule } from "@/store/interfaces/assignments.types";
 import { TopicStatsDocuments } from "@/store/interfaces/topic.stats.types";
+import { QuestionSetStats } from "@/store/interfaces/QuestionSet.stats.types";
 
 import Assignments from "@/components/Assignments.vue";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
@@ -355,6 +356,7 @@ import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
 import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
 import AddQuestionSetToCourse from "@/components/AddQuestionSetToCourse.vue";
 import TopicStats from "@/components/TopicStats.vue";
+import QuestionStats from "@/components/QuestionStats.vue";
 
 export default defineComponent({
   components: {
@@ -366,7 +368,8 @@ export default defineComponent({
     AddAssignmentModule,
     AddDocumentToCourse,
     AddQuestionSetToCourse,
-    TopicStats
+    TopicStats,
+    QuestionStats
   },
   name: "Course",
   setup() {
@@ -405,7 +408,7 @@ export default defineComponent({
       store.getters.getCourseDocuments(course.value.documents)
     );
 
-    const QuestionSets: ComputedRef<QuestionSet> = computed(() => {
+    const QuestionSets: ComputedRef<Array<QuestionSet>> = computed(() => {
       return store.getters.getCourseQuestionSets(course.value.QuestionSets);
     });
 
@@ -429,6 +432,24 @@ export default defineComponent({
         });
       });
       return Docs
+    })
+
+    const QuestionSetStatsProps: ComputedRef<Array<QuestionSetStats>> = computed(() => {
+      const QSProp: QuestionSetStats[] = [];
+
+      QuestionSets.value.map((qs: QuestionSet) => {
+        QSProp.push({
+          QSID: qs.QSID,
+          Tittle: qs.Tittle
+        });
+      });
+
+      documentQuestionSets.value.map((qs: QuestionSet) => {
+        const QSIndex = QSProp.map((addedQs: QuestionSetStats) => addedQs.QSID).indexOf(qs.QSID);
+        if (QSIndex === -1) QSProp.push({QSID: qs.QSID, Tittle: qs.Tittle});
+      })
+
+      return QSProp
     })
 
     const menuIndex = ref<number>(0);
@@ -556,7 +577,8 @@ export default defineComponent({
       OpenQuestionSet,
       StatsMenuUpdate,
       StatsMenuIndex,
-      TopicStatsDocumentsProp
+      TopicStatsDocumentsProp,
+      QuestionSetStatsProps
     };
   }
 });

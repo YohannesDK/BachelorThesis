@@ -73,7 +73,8 @@ export default defineComponent({
 
     const ChartConfiguration = {
       chart: {
-        type: "column"
+        type: "column",
+        zoomType: 'xy'
       },
       title: false,
       yAxis: [
@@ -84,10 +85,19 @@ export default defineComponent({
           }
         }
       ],
-      tooltip: {
-        headerFormat: "",
-        pointFormat: "Name: <b>{point.name}</b><br/>Time: <b>{point.y}</b>"
-      }
+      plotOptions: {
+        column: {
+          tooltip: {
+            headerFormat: "<b>{point.x}</b><br>",
+          }
+        },
+        scatter: {
+          tooltip: {
+            headerFormat: "",
+            pointFormat: "Name: <b>{point.name}</b><br/>Time: <b>{point.y}</b>"
+          }
+        }
+      },
     };
 
     const scatterSeries = ref<Array<any>>([
@@ -121,7 +131,8 @@ export default defineComponent({
         StudentTopicData.forEach((g: GroupedTopicData[], index: number) => {
           const scatterData = g.map((g1: GroupedTopicData) => {
             return {
-              x: g1.headerIndex,
+              x: g1.headerIndex, //+ (Math.random() * (0.1 - (-0.1)) + (-0.1)), // add some randomnes so we wont have to mane
+                                 // scatter blots placed upon each other
               y: g1.UserStat.Time,
               name: g1.UserStat.Name
             };
@@ -143,6 +154,7 @@ export default defineComponent({
               name: "Time Used",
               data: TopicStatData.value.TimeUsed
             },
+            // TODO - find out if this is needed, and how to do it
             // {
             //   name: "Pre-calculted Time",
             //   data: TopicStatData.value.TimeExpected
@@ -181,6 +193,7 @@ export default defineComponent({
   flex-wrap: wrap;
   max-height: 14rem;
   overflow: scroll;
+  padding-bottom: 3%;
 }
 
 .document-list::-webkit-scrollbar {

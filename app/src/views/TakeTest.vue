@@ -50,27 +50,6 @@
       </li>
     </ul>
   </div>
-  <div class="test-info shadow" :class="{ hide: hideInfoBar }">
-    <div v-if="hideInfoBar" @click="hideInfoBar = false">
-      <fa icon="info" />
-    </div>
-    <div class="test-info-inner">
-      <div class="test-info-nav">
-        <div class="close-info" @click="hideInfoBar = true">
-          <fa icon="minus-circle" class="close-minus" />
-        </div>
-      </div>
-      <div class="test-info-data">
-        <ul class="list-unstyled">
-          <li>Time Remaining</li>
-          <li>12:55 min</li>
-
-          <li>Questions Answered</li>
-          <li>1 / 12</li>
-        </ul>
-      </div>
-    </div>
-  </div>
   <div
     class="test-handin shadow"
     @click="Finished"
@@ -267,11 +246,11 @@ export default defineComponent({
       if (QSID) {
         const qs: ComputedRef<QuestionSet> = computed(() => {
           if (router.currentRoute.value.meta.courseQS) {
-            const QuestionSetType = router.currentRoute.value.query.QST;
+            const CourseQuestionSetType = router.currentRoute.value.query.QST;
 
-            if (QuestionSetType && Number(QuestionSetType) === 0) {
+            if (CourseQuestionSetType && Number(CourseQuestionSetType) === 0) {
               return store.getters.getCourseQuestionSetById(Number(QSID));
-            } else if (QuestionSetType && Number(QuestionSetType) === 1) {
+            } else if (CourseQuestionSetType && Number(CourseQuestionSetType) === 1) {
               return store.getters.getCourseDocumentQuestionSetById(Number(QSID));
             }
           } else {
@@ -303,8 +282,8 @@ export default defineComponent({
       setTimeout(() => {
         // TODO
         // while fetching all data, if not in store
-        store.dispatch("loading", false);
         InitilizeTest();
+        store.dispatch("loading", false);
       }, 1000);
     });
 

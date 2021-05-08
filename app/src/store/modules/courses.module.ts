@@ -432,10 +432,26 @@ export default {
       });
       return courseQuestionSets
     },
+    
+    getAllCourseQuestionSets: (state: any) => {
+      const AllCourseQuestionSets: QuestionSet[] = [...state.courseQuestionSets];
+
+      (state.courseDocumentQuestionSets as QuestionSet[]).forEach((qs: QuestionSet) => {
+        const QSIndex = AllCourseQuestionSets.map((alreadyAddedQS: QuestionSet) => alreadyAddedQS.QSID)
+        .indexOf(qs.QSID);
+
+        if (QSIndex === -1) {
+          AllCourseQuestionSets.push(qs);
+        }
+      });
+
+      return AllCourseQuestionSets
+    },
 
     getCourseQuestionSetById: (state: any) => (QSID: number) => {
       return (state.courseQuestionSets as QuestionSet[]).find((qs: QuestionSet) => qs.QSID === QSID);
     },
+
 
     getCourseDocumentQuestionSetById: (state: any) => (QSID: number) => {
       return (state.courseDocumentQuestionSets as QuestionSet[]).find((qs: QuestionSet) => qs.QSID === QSID);
