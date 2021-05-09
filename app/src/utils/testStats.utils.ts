@@ -15,10 +15,20 @@ import {
 
 export function SingeTestStatResult(
   QSID: number,
-  TestQuestionAndAnswer: TestQuestionAndAnswer
+  TestQuestionAndAnswer: TestQuestionAndAnswer,
+  courseQS = false
 ): number {
-  const qs: QuestionSet = store.getters.getQuestionSetById(QSID);
+  let qs!: QuestionSet;
   let result = -1;
+
+  if (courseQS) {
+    qs = store.getters.getCourseQuestionSetById(QSID);
+    if (!qs) {
+      qs = store.getters.getCourseDocumentQuestionSetById(QSID);
+    }
+  } else {
+    qs = store.getters.getQuestionSetById(QSID)
+  }
 
   if (qs) {
     qs.QuestionSet.find((question: Question) => {
@@ -58,16 +68,16 @@ export function SingeTestStatResult(
 
 export function CreateSingleTestStat(
   QSID: number,
-  TestQuestionAndAnswer: TestQuestionAndAnswer
+  TestQuestionAndAnswer: TestQuestionAndAnswer,
+  courseQS = false
 ): SingleTestStat {
   const SingleTestStat: SingleTestStat = {
-    SingleTestStatID: store.getters.getSingleTestStatID,
+    SingleTestStatID: -1,
     QuestionID: TestQuestionAndAnswer.QuestionID,
     Correct: TestStatAnswerCorrect.CORRECT
   };
-  store.dispatch("IncrementSingleTestStatID");
 
-  const correct = SingeTestStatResult(QSID, TestQuestionAndAnswer);
+  const correct = SingeTestStatResult(QSID, TestQuestionAndAnswer, courseQS);
   if (correct !== -1) {
     SingleTestStat.Correct = correct;
   }
@@ -76,11 +86,11 @@ export function CreateSingleTestStat(
 }
 
 export function CreateTestStat(
-  TestStatID: number,
-  TestData: TestData
-): TestStat {
+  TestData: TestData,
+): [TestStat, number] {
+  let score = 0;
   const TestStat: TestStat = {
-    TestStatID: TestStatID,
+    TestStatID: -1,
     TestID: TestData.TestID,
     TestStats: []
   };
@@ -88,10 +98,12 @@ export function CreateTestStat(
   TestData.TestData.forEach((test: TestQuestionAndAnswer) => {
     const SingleTestStat: SingleTestStat = CreateSingleTestStat(
       TestData.QSID,
-      test
+      test,
+      TestData.courseID !== -1
     );
+    score += SingleTestStat.Correct;
     TestStat.TestStats.push(SingleTestStat);
   });
 
-  return TestStat;
+  return [TestStat, score];
 }

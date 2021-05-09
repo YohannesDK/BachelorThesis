@@ -6,11 +6,15 @@ export default {
     TestData: [] as TestData[]
   },
   mutations: {
-    IncrementTestID: (state: any) => {
-      state.TestID++;
-    },
     AddTestData: (state: any, TestData: TestData) => {
-      state.TestData.push(TestData);
+      const TestDataIndex = (state.TestData as TestData[]).map((td: TestData) => td.TestID)
+        .indexOf(TestData.TestID);
+
+      if (TestDataIndex === -1) {
+        state.TestData.push(TestData);
+      } else{
+        state.TestData[TestDataIndex] = TestData
+      }
     },
     unLoadQuestionTestModule: (state: any) => {
       state.TestID = 0;
@@ -18,9 +22,6 @@ export default {
     }
   },
   actions: {
-    IncrementTestID: (context: any) => {
-      context.commit("IncrementTestID");
-    },
     AddTestData: (context: any, TestData: TestData) => {
       context.commit("AddTestData", TestData);
     },

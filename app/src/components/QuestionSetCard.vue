@@ -615,24 +615,28 @@ export default defineComponent({
 
       if (QuestionType.value === QuestionTypeEnum.ShortText) {
         TestQuestionAndAnswer = {
+          TQAID: -1,
           QuestionType: QuestionTypeEnum.ShortText,
           QuestionID: QuestionData.QuestionID,
           Answer: TestShortAnswer.value
         };
       } else if (QuestionType.value === QuestionTypeEnum.LongText) {
         TestQuestionAndAnswer = {
+          TQAID: -1,
           QuestionType: QuestionTypeEnum.LongText,
           QuestionID: QuestionData.QuestionID,
           Answer: TestLongTextAnswer.value
         };
       } else if (QuestionType.value === QuestionTypeEnum.TrueFalse) {
         TestQuestionAndAnswer = {
+          TQAID: -1,
           QuestionType: QuestionTypeEnum.TrueFalse,
           QuestionID: QuestionData.QuestionID,
           Answer: TrueFalseAnswer.value
         };
       } else if (QuestionType.value === QuestionTypeEnum.MultipleChoice) {
         TestQuestionAndAnswer = {
+          TQAID: -1,
           QuestionType: QuestionTypeEnum.MultipleChoice,
           QuestionID: QuestionData.QuestionID,
           Answer: MultipleChoiceAnswerID.value

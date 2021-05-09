@@ -486,7 +486,7 @@ export default defineComponent({
     const OpenQuestionSet = (QSID: number, questionsetType = 0) => {
       router.push({
         name: "TakeTest",
-        query: { QSID: QSID, QST: questionsetType },
+        query: { QSID: QSID, QST: questionsetType, cid: course.value.courseId},
       });
     };
     

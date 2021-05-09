@@ -19,6 +19,8 @@ const updateTopicMonitoring = async (request, response) => {
         CourseID: courseID
       }) 
     } else {
+      await models.TopicMonitoring.update({TopicName: TopicTimeData.TopicName}, {where: {TopicID: TopicTimeData.TopicID}});
+
       await models.TopicMonitoring.increment("Time", {by: TopicTimeData.Time, where: {
         TopicID: TopicTimeData.TopicID
       }});

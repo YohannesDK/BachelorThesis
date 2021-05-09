@@ -52,7 +52,6 @@ export default defineComponent({
     }
   },
   setup() {
-    const QuestionSets: QuestionSet[] = store.getters.getAllCourseQuestionSets;
     const SelectedQuestionSetID = ref(-1);
     const SelectedQuestionSetName  = ref("");
 
@@ -138,7 +137,6 @@ export default defineComponent({
     }
 
     return {
-      QuestionSets,
       SelectedQuestionSetID,
       SelectedQuestionSetName,
       UpdateQuestionSetSelected,

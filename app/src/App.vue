@@ -108,9 +108,19 @@ export default defineComponent({
   padding: 0;
 }
 
+body::-webkit-scrollbar{
+  width: 0.8rem;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgb(177, 176, 176);
+  border-radius: 9px;
+}
+
 .appContainer {
   z-index: 0;
 }
+
 
 .appContainer.loading {
   z-index: 1;

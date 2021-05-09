@@ -18,6 +18,7 @@ export type TestStat = {
 };
 
 export type TestQuestionAndAnswer = {
+  TQAID: number;
   QuestionType:
     | QuestionTypeEnum.ShortText
     | QuestionTypeEnum.LongText
@@ -31,6 +32,10 @@ export type TestData = {
   TestID: number;
   QSID: number;
   userID: number;
+  name: string;
+  Time: number;
+  Score: number;
+  courseID: number;
   date: Date;
   TestData: TestQuestionAndAnswer[];
 };

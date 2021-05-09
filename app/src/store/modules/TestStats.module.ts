@@ -20,7 +20,7 @@ export default {
       state.SingleTestStatID++;
     },
     AddNewTestStat: (state: any, TestData: TestData) => {
-      const TestStat: TestStat = CreateTestStat(state.TestStatID, TestData);
+      const TestStat: TestStat = CreateTestStat(TestData)[0];
       (state.TestStats as TestStat[]).push(TestStat);
     },
     UnloadTestStatsModule: (state: any) => {
