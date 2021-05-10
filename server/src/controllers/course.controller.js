@@ -604,6 +604,8 @@ const getAvailableCourses = (request, response) => {
             let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id} });
             let courses = await models.courses.findAll();
 
+            console.log(joinedCourses)
+
             if (joinedCourses.length === 0) {
                 availableCourses = courses;
             } else {

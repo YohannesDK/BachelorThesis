@@ -239,6 +239,8 @@ const getQuestionSets = (request, response) => {
             error: err
         });
 
+        console.log(decoded.id);
+
         const questiosets = await questionset_helpers.select_questionsets_helper({createdBy: decoded.id})
 
         if (questiosets !== null) {

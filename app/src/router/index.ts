@@ -73,6 +73,13 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "register" */ "../views/register.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (IsAuthenticated()) {
+        next({ name: "Home" });
+      } else {
+        next();
+      }
+    },
     path: "/login",
     name: "Login",
     meta: { showSideBar: false },

@@ -499,7 +499,7 @@ export default defineComponent({
       default: QuestionCardType.EditQuestions
     }
   },
-  emits: ["focusChange", "questionUpdated", "delete"],
+  emits: ["AddNew","focusChange", "questionUpdated", "delete"],
   setup(props, {emit}) {
     // focus watcher, for UI
     const showSideBar: Ref<boolean> = ref(props.focus);

@@ -54,6 +54,7 @@ export function GetAllQuestionSets() {
     }
   }).then((response: AxiosResponse) => {
     if (response.status && response.status === 200) {
+      console.log(response.data)
       const QuestionSets = response.data.QuestionSets;
       if (QuestionSets) {
         QuestionSets.forEach((questionset: QuestionSet) => {

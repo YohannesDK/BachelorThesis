@@ -12,20 +12,17 @@ const select_questionsets_helper = async (conditions) => {
 
     if (QuestionSets) { 
         let questionSets_right_format = QuestionSets.map(questionset => {
-            // TODO - this should not be necessary, just because some QS title and desc are empty
-            if (questionset.title && questionset.description) { 
-                return {
-                    QSID: questionset.questionset_id,
-                    Tittle: questionset.title,
-                    Description: questionset.description || "",
-                    QuestionSet: [],
-                    CreateBy: questionset.createdBy,
-                    LastEdited: `${questionset.updatedAt}`,
-                    DocumentID: [],
-                    CourseId: []
-                };
+            return {
+                QSID: questionset.questionset_id,
+                Tittle: questionset.title,
+                Description: questionset.description || "",
+                QuestionSet: [],
+                CreateBy: questionset.createdBy,
+                LastEdited: `${questionset.updatedAt}`,
+                DocumentID: [],
+                CourseId: []
             }
-        }).filter(qs => qs);
+        })
 
 
         await Promise.all(questionSets_right_format.map(async (questionset, question_set_index) => {
