@@ -34,15 +34,22 @@ export default {
         .find((DTS: DocumentTopicStat) => DTS.Documentid === documentId);
 
       const TopicHeaders: string[] = [];
-      const TimeUsed: number[] = [];
+      let TimeUsed: number[] = [];
       const TimeExpected: number[] = [];
 
+      let TotalDocumentTime = 0;
+      
       const UserStatsSorted: GroupedTopicData[] = [];
 
       if (DocumentTopicStat) {
+
+
         DocumentTopicStat.TopicStats.forEach((TopicStat: TopicTimeStat, index: number) => {
           TopicHeaders.push(TopicStat.Topic);
+
           TimeUsed.push(TopicStat.Time);
+          TotalDocumentTime += TopicStat.Time;
+
           TimeExpected.push(TopicStat.ExpectedTime || 0);
 
           TopicStat.UserStats.forEach((userStat: TopicTimeUserStat) => {
@@ -61,6 +68,8 @@ export default {
         while (UserStatsSorted.length > 0) {
           StudentGroupsResult.push(UserStatsSorted.splice(0, size))
         }
+
+        TimeUsed = TimeUsed.map((time: number) => { return Math.round((time/TotalDocumentTime) * 100)})
 
         return {
           TopicHeaders,

@@ -87,7 +87,7 @@ export default defineComponent({
         {
           min: 0,
           title: {
-            text: "Time"
+            text: "Time %"
           }
         }
       ],
@@ -95,6 +95,7 @@ export default defineComponent({
         column: {
           tooltip: {
             headerFormat: "<b>{point.x}</b><br>",
+            pointFormat: "Time: <b>{point.y} %</b>"
           }
         },
         scatter: {
