@@ -78,6 +78,8 @@ export default defineComponent({
         message: "Document Created!",
         type: 1
       });
+
+      // TODO - remove this one later
       store.dispatch("AddNewAlert", {
         message: "Document Created! 2",
         type: 2

@@ -310,7 +310,7 @@
                 <topic-stats :TopicStatsDocuments="TopicStatsDocumentsProp" />
               </div>
               <div class="stat-inner" v-if="StatsMenuIndex === 2">
-                <question-stats :QuestionSetStatsProp="QuestionSetStatsProps" />
+                <question-stats :CourseID="CourseId" :QuestionSetStatsProp="QuestionSetStatsProps" />
               </div>
             </div>
           </div>
@@ -551,6 +551,7 @@ export default defineComponent({
     // };
 
     return {
+      CourseId,
       course,
       menuChoices,
       menuIndex,

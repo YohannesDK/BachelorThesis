@@ -19,7 +19,7 @@ export function SingeTestStatResult(
   courseQS = false
 ): number {
   let qs!: QuestionSet;
-  let result = -1;
+  let result = 0;
 
   if (courseQS) {
     qs = store.getters.getCourseQuestionSetById(QSID);
@@ -29,6 +29,7 @@ export function SingeTestStatResult(
   } else {
     qs = store.getters.getQuestionSetById(QSID)
   }
+
 
   if (qs) {
     qs.QuestionSet.find((question: Question) => {

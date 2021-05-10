@@ -12,7 +12,6 @@ dotenv.config({
 // const MainRouter = require("./routes/router.js");
 const attemptRoutes = require("./routes/attempts.routes.js")
 const questionSetsRoutes = require("./routes/questionSets.routes.js")
-const attemptDataRoutes = require("./routes/attemptData.routes")
 const questionsRoutes = require("./routes/questions.routes")
 const documentRoutes = require("./routes/document.routes")
 const courseRoutes = require("./routes/course.routes.js")
@@ -44,7 +43,6 @@ app.use(bodyParser.urlencoded({extended : false}));
 
 app.use(attemptRoutes)
 app.use(questionSetsRoutes)
-app.use(attemptDataRoutes)
 app.use(questionsRoutes)
 app.use(documentRoutes)
 app.use(courseRoutes)

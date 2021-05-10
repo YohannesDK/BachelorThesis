@@ -96,6 +96,7 @@ export default defineComponent({
   setup() {
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
+    const TestFinished = ref(false);
 
     const user: UserType = store.getters.getActiveUser;
     const IsTeacher = computed(() => store.getters.getIsTeacher);
@@ -158,20 +159,24 @@ export default defineComponent({
 
 
     const Finished = () => {
-      counting = false;
-      questionCards.value.forEach((ele: any) => {
-        if (ele) {
-          try {
-            const testData = ele.getTestData.call();
-            TestData.value.TestData.push(testData);
-          } catch (e) {
-            console.error(e);
+      if (!TestFinished.value) {
+        counting = false;
+        TestFinished.value = true
+        questionCards.value.forEach((ele: any) => {
+          if (ele) {
+            try {
+              const testData = ele.getTestData.call();
+              ele.ShowTestResult.call();
+              TestData.value.TestData.push(testData);
+            } catch (e) {
+              console.error(e);
+            }
           }
+        });
+        TestData.value.Time = timer.value;
+        if (!IsTeacher.value) {
+          SaveAttempt(TestData.value);
         }
-      });
-      TestData.value.Time = timer.value;
-      if (!IsTeacher.value) {
-        SaveAttempt(TestData.value);
       }
     };
 
@@ -217,6 +222,7 @@ export default defineComponent({
         Data.value.Tittle = qs.value.Tittle;
         Data.value.Description = qs.value.Description;
         Data.value.QuestionSet = qs.value.QuestionSet;
+        console.log(Data.value)
       }
 
       // initilize test data
@@ -224,6 +230,11 @@ export default defineComponent({
         TestData.value.QSID = Data.value.QSID;
         TestData.value.userID = user.UserID;
         TestData.value.name = user.UserName;
+
+        if (router.currentRoute.value.meta.courseQS) {
+          const courseID = Number(router.currentRoute.value.query.cid);
+          TestData.value.courseID = courseID;
+        }
       }
     };
 

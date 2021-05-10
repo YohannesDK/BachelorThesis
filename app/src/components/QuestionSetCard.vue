@@ -13,6 +13,25 @@
     >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
+
+        <div class="question-test-result"
+        v-if="VisualizeTestResults"
+        :class="{'text-success' : TestResult}"
+        >
+          <span v-if="TestResult">Correct</span>
+          <span v-if="!TestResult">Wrong</span>
+          <div class="question-test-result-icon" 
+            :class="{'text-success' : TestResult}"
+          >
+            <fa icon="check" 
+            v-if="TestResult === true"
+            />
+            <fa icon="times" 
+            v-if="TestResult === false"
+            />
+          </div>
+        </div>
+
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
@@ -58,6 +77,7 @@
                     v-test="{ id: 'question-card-type-Answer' }"
                     @change="$emit('SaveStatus')"
                     v-if="QuestionCardType === 1"
+                    :disabled="VisualizeTestResults"
                   />
                 </div>
               </div>
@@ -75,6 +95,24 @@
     >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
+        <div class="question-test-result"
+          v-if="VisualizeTestResults"
+          :class="{'text-success' : TestResult}"
+          >
+            
+            <span v-if="TestResult">Correct</span>
+            <span v-if="!TestResult">Wrong</span>
+            <div class="question-test-result-icon" 
+              :class="{'text-success' : TestResult}"
+            >
+              <fa icon="check" 
+              v-if="TestResult === true"
+              />
+              <fa icon="times" 
+              v-if="TestResult === false"
+              />
+            </div>
+        </div>
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
@@ -124,6 +162,7 @@
                   v-test="{ id: 'question-card-type-Answer' }"
                   @change="$emit('SaveStatus')"
                   v-if="QuestionCardType === 1"
+                  :disabled="VisualizeTestResults"
                 ></textarea>
               </div>
             </div>
@@ -140,6 +179,23 @@
     >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
+          <div class="question-test-result"
+            v-if="VisualizeTestResults"
+            :class="{'text-success' : TestResult}"
+          >
+            <span v-if="TestResult">Correct</span>
+            <span v-if="!TestResult">Wrong</span>
+            <div class="question-test-result-icon" 
+              :class="{'text-success' : TestResult}"
+            >
+              <fa icon="check" 
+              v-if="TestResult === true"
+              />
+              <fa icon="times" 
+              v-if="TestResult === false"
+              />
+            </div>
+          </div>
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
@@ -200,6 +256,23 @@
     >
       <div class="question-card-inner-top">
         <span class="question-nr">{{ index + 1 }}</span>
+          <div class="question-test-result"
+            v-if="VisualizeTestResults"
+            :class="{'text-success' : TestResult}"
+          >
+            <span v-if="TestResult">Correct</span>
+            <span v-if="!TestResult">Wrong</span>
+            <div class="question-test-result-icon" 
+              :class="{'text-success' : TestResult}"
+            >
+              <fa icon="check" 
+              v-if="TestResult === true"
+              />
+              <fa icon="times" 
+              v-if="TestResult === false"
+              />
+            </div>
+          </div>
         <div
           class="question-delete-button"
           @click.stop="$emit('delete', index)"
@@ -430,6 +503,7 @@ export default defineComponent({
   setup(props, {emit}) {
     // focus watcher, for UI
     const showSideBar: Ref<boolean> = ref(props.focus);
+    const VisualizeTestResults = ref(false);
     watch(
       () => props.focus,
       newValue => {
@@ -493,11 +567,15 @@ export default defineComponent({
     const MultipleChoiceAnswerID = ref<number>(-1);
 
     const TrueFalseHandler = (answer: number) => {
-      TrueFalseAnswer.value = answer;
+      if (!VisualizeTestResults.value) {
+        TrueFalseAnswer.value = answer;
+      }
     };
 
     const MultipleChoiceHandler = (multipleChoiceAnswerID: number) => {
-      MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
+      if (!VisualizeTestResults.value) {
+        MultipleChoiceAnswerID.value = multipleChoiceAnswerID;
+      }
     };
 
     const UpdateMultpleChoiceAnswer = (
@@ -598,6 +676,7 @@ export default defineComponent({
     //#endregion
 
     //#region - question test logic
+    const TestResult = ref(false);
     const TestShortAnswer = ref<string>("");
     const TestLongTextAnswer = ref<string>("");
 
@@ -656,6 +735,25 @@ export default defineComponent({
         return MultipleChoiceAnswerID.value === -1;
       }
     });
+
+    const ShowTestResult = () => {
+      const question = props.QuestionProp;
+      if (!question) {
+        return 
+      }
+
+      if (question.QuestionType === QuestionTypeEnum.ShortText) {
+        TestResult.value = (question.Question as ShortTextQuestionType).Answer.Answer === TestShortAnswer.value
+      } else if (question.QuestionType === QuestionTypeEnum.LongText) {
+        TestResult.value = (question.Question as LongTextQuestionType).Answer.Answer === TestLongTextAnswer.value
+      } else if (question.QuestionType === QuestionTypeEnum.TrueFalse) {
+        TestResult.value = (question.Question as TrueFalseQuestionType).CorrectAnswer === TrueFalseAnswer.value
+      } else if (question.QuestionType === QuestionTypeEnum.MultipleChoice) {
+        TestResult.value = (question.Question as MultipleChoiceQuestionType).CorrectAnswer === MultipleChoiceAnswerID.value
+      }
+
+      VisualizeTestResults.value = true;
+    }
     //#endregion
 
 
@@ -697,7 +795,10 @@ export default defineComponent({
       TestShortAnswer,
       TestLongTextAnswer,
       Answered,
-      getTestData
+      getTestData,
+      ShowTestResult,
+      TestResult,
+      VisualizeTestResults
     };
   }
 });
@@ -807,7 +908,13 @@ export default defineComponent({
   width: 2.5rem;
 }
 
-.question-delete-button {
+.question-test-result {
+  color: tomato;
+  display: flex;
+  align-items: center;
+}
+
+.question-delete-button, .question-test-result-icon{
   display: flex;
   justify-content: center;
   align-items: center;

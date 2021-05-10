@@ -8,6 +8,7 @@ import { datify } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import { QuestionSet } from "@/store/interfaces/question.type";
 import { DocumentTopicStat } from "@/store/interfaces/topic.stats.types";
+import { TestData } from "@/store/interfaces/QuestionTest.types";
 
 export function CreateCourse(course: courseType, coursePassword: string) {
   axios
@@ -62,7 +63,8 @@ export function getAllCourses() {
         const CourseDocumentTopicStat: DocumentTopicStat[] =
           response.data.allCourseDocumentTopicStats;
 
-        console.log(CourseDocumentTopicStat)
+        const allTestDataStats: TestData[] = response.data.allTestDataStats;
+
 
         if (courses) {
           courses.forEach((course: courseType) => {
@@ -101,6 +103,12 @@ export function getAllCourses() {
         if (CourseDocumentTopicStat) { 
           CourseDocumentTopicStat.forEach((DocumentTopicStat: DocumentTopicStat) => {
             store.dispatch("AddDocumentTopicStat", DocumentTopicStat);
+          });
+        }
+
+        if (allTestDataStats) {
+          allTestDataStats.forEach((testdata: TestData) => {
+            store.dispatch("AddTestData", testdata) 
           });
         }
       }

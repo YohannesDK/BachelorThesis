@@ -30,9 +30,6 @@ export default {
     }
   },
   getters: {
-    getTestID: (state: any) => {
-      return state.TestID;
-    },
     getAllTestData: (state: any) => {
       return state.TestData;
     },
@@ -44,6 +41,29 @@ export default {
         }
       });
       return testData;
+    },
+    getTestDataByCourseAndQSID: (state: any) => (courseid: number, QSID: number) => {
+      const UserAdded : {[userID: number]: any} = {}
+      const courseTestDatas: TestData[] = [];
+
+      (state.TestData as TestData[]).forEach((testdata: TestData) => {
+        if (testdata.courseID === courseid && testdata.QSID === QSID) {
+          if (!(testdata.userID in UserAdded)) {
+            UserAdded[testdata.userID] = {
+              date : testdata.date,
+              index: courseTestDatas.length
+            } 
+            courseTestDatas.push(testdata);
+          } else {
+            if (UserAdded[testdata.userID].date < testdata.date) {
+              const index = UserAdded[testdata.userID].index;
+              courseTestDatas[index] = testdata
+            }
+          }
+        } 
+      });
+
+      return courseTestDatas
     },
     getTestDataByUserName: (state: any, userID: number) => {
       const testData: TestData[] = [];

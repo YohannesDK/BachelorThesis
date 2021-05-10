@@ -4,7 +4,7 @@
     <ul class="questionset-list list-unstyled">
       <li
         class="shadow-sm text-muted card"
-        v-for="qs in QuestionSetStatsProp"
+        v-for="qs in QuestionSetStatsProp || []"
         :key="qs"
         :class="{ active: SelectedQuestionSetID === qs.QSID }"
         @click="UpdateQuestionSetSelected(qs.QSID, qs.Tittle)"
@@ -15,7 +15,7 @@
 
     <div
       class="topic-time-chart-container shadow rounded card p-1"
-      v-if="SelectDocumentID !== -1"
+      v-if="SelectedQuestionSetID !== -1 && ChartHasData"
     >
       <h4 class="text-muted mb-3 p-1">
         Questionset Stats - {{ SelectedQuestionSetName }}
@@ -29,6 +29,12 @@
         :animateOnUpdate="true"
       />
     </div>
+    <div 
+      v-if="SelectedQuestionSetID === -1 || !ChartHasData"
+      class="chart-no-data"
+    >
+      <h3>No Data</h3>
+    </div>
   </div>
 
 </template>
@@ -37,6 +43,7 @@
 import store from '@/store'
 import { QuestionSet } from '@/store/interfaces/question.type'
 import { QuestionSetStats } from "@/store/interfaces/QuestionSet.stats.types";
+import { TestData } from '@/store/interfaces/QuestionTest.types';
 import { defineComponent, ref, PropType, computed } from 'vue'
 import VueHighcharts from "vue3-highcharts";
 
@@ -46,22 +53,26 @@ export default defineComponent({
     VueHighcharts
   },
   props: {
+    CourseID: {
+      type: Number,
+      default: -1
+    },
+
     QuestionSetStatsProp: {
       type: Array as PropType<Array<QuestionSetStats>>,
       default: () => []
     }
   },
-  setup() {
+  setup(props) {
     const SelectedQuestionSetID = ref(-1);
     const SelectedQuestionSetName  = ref("");
 
     const QuestionSetStatData = computed(() => {
-      if (SelectedQuestionSetID.value !== -1) {
-        return 1; 
+      if (SelectedQuestionSetID.value !== -1 && props.CourseID !== -1) {
+        return store.getters.getTestDataByCourseAndQSID(props.CourseID, SelectedQuestionSetID.value); 
       }
       return -1
     })
-
 
     const ChartConfiguration = {
       chart: {
@@ -76,7 +87,10 @@ export default defineComponent({
         },
         startOnTick: true,
         endOnTick: true,
-        showLastLabel: true
+        showLastLabel: true,
+        min: 0, 
+        max:100,
+        tickInterval: 10
       },
       yAxis: {
         title: {
@@ -112,11 +126,7 @@ export default defineComponent({
     const scatterSerie = ref({
       name: "Students",
       color: "rgba(223, 83, 83, .5)",
-      data: [{
-        name: "Yohannes",
-        x: 10,
-        y: 40
-      }]
+      data: []
     });
 
     const chartOptions = computed(() => {
@@ -130,17 +140,24 @@ export default defineComponent({
       return -1
     })
 
+    const ChartHasData = computed(() => {
+      return scatterSerie.value.data.length > 0
+    })
 
     const UpdateQuestionSetSelected = (QSID: number, name: string) => {
       SelectedQuestionSetID.value = QSID;
       SelectedQuestionSetName.value = name;
+      if (QuestionSetStatData.value !== -1) {
+        scatterSerie.value.data = QuestionSetStatData.value.map((data: TestData) => {return {name: data.name, x: (data.Score/data.TestData.length)*100, y: data.Time}})
+      }
     }
 
     return {
       SelectedQuestionSetID,
       SelectedQuestionSetName,
       UpdateQuestionSetSelected,
-      chartOptions
+      chartOptions,
+      ChartHasData
     }
   },
 })
@@ -195,5 +212,11 @@ export default defineComponent({
 
 .questionset-charts-container {
   margin-bottom: 20vh;
+}
+
+.chart-no-data {
+  display: flex;
+  justify-content: center;
+  height: 40vh;
 }
 </style>

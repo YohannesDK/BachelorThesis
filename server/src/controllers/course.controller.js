@@ -152,7 +152,8 @@ const getCourses = (request, response) => {
         let allCourseDocuments = [];
         let allCourseQuestionSets = [];
         let allCourseDocumentQuestionSets = [];
-        let allCourseDocumentTopicStats = []
+        let allCourseDocumentTopicStats = [];
+        let allTestDataStats = [];
         let allTeachers = [];
 
         if (role.toLowerCase() === "teacher") {
@@ -332,6 +333,60 @@ const getCourses = (request, response) => {
                             allCourseQuestionSets.push(courseQuestionSet[0]);
                         }
                     }));
+
+
+                    // fetch all course questionSet stats
+                    let courseQsTestRelations = await models.CourseQuestionSetAttemps.findAll({where: {
+                        CourseID: course.courseId
+                    }});
+
+                    await Promise.all(courseQsTestRelations.map( async (courseTestRelation) => {
+                        let TestData = {
+                            TestID: -1,
+                            QSID: courseTestRelation.QuestionSetID,
+                            userID: -1,
+                            name: "",
+                            Time: -1,
+                            Score: -1,
+                            courseID: courseTestRelation.CourseID,
+                            date: -1,
+                            TestData: []
+                        }
+
+                        let Attempt = await models.Attempts.findOne({where: {
+                            AttemptId: courseTestRelation.AttemptId
+                        }});
+
+                        if (Attempt) {
+                            TestData.TestID = Attempt.AttemptId,
+                            TestData.userID = Attempt.userId,
+                            TestData.name = Attempt.Name,
+                            TestData.Time = Attempt.Time,
+                            TestData.Score = Attempt.Score,
+                            TestData.date = Attempt.createdAt 
+                        }
+
+                        // get user answers
+                        let attemptData = await models.AttemptData.findAll({where: {
+                            AttemptId: courseTestRelation.AttemptId
+                        }});
+                        attemptData.forEach(atd => {
+                            let TestQuestionAnswer = {
+                                TQAID: atd.id,
+                                QuestionType: atd.QuestionType,
+                                QuestionID: atd.QuestionId,
+                                Answer: -1
+                            } 
+                            if (atd.QuestionType === 0 || atd.QuestionType === 1) {
+                                TestQuestionAnswer.Answer = atd.TextAnswer 
+                            } else {
+                                TestQuestionAnswer.Answer = atd.ChoiceAnswer 
+                            }
+                            TestData.TestData.push(TestQuestionAnswer);
+                        });       
+                        
+                        allTestDataStats.push(TestData)
+                    }))
                 }));
 
                 
@@ -341,6 +396,7 @@ const getCourses = (request, response) => {
                     allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
                     allCourseQuestionSets: allCourseQuestionSets,
                     allCourseDocumentTopicStats: allCourseDocumentTopicStats,
+                    allTestDataStats: allTestDataStats,
                     allTeachers: allTeachers
                 }); }
             else {

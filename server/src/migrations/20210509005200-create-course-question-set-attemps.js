@@ -11,6 +11,9 @@ module.exports = {
       CourseID: {
         type: Sequelize.INTEGER
       },
+      QuestionSetID: {
+        type: Sequelize.INTEGER
+      },
       AttemptId: {
         type: Sequelize.INTEGER
       },

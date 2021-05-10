@@ -7,9 +7,9 @@ import { DeltaOperation } from "quill";
 
 // creates new document
 export function CreateDocument(userId: number, body = "", title = "Edit Title...") {
-  console.log("create document")
   //Post request to create an empty document
-  axios
+  // let newDocID = -1;
+  return axios
     .post("/createDocument", {
       userId: userId,
       body: body,
@@ -24,6 +24,8 @@ export function CreateDocument(userId: number, body = "", title = "Edit Title...
         }
         NewDocument.lastEdited = datify(NewDocument.lastEdited);
         store.dispatch("UpdateDocuments", NewDocument);
+
+        return NewDocument.Documentid;
       }
     })
 }

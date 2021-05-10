@@ -17,7 +17,6 @@ export function checkLogin(form: any) {
 
 export function Login(username: string, password: string) {
   axios
-    // .post("/user/login", {
     .post("/user", {
       username: username,
       password: password

@@ -15,7 +15,7 @@
 
     <div
       class="topic-time-chart-container shadow rounded card p-1"
-      v-if="SelectDocumentID !== -1"
+      v-if="SelectDocumentID !== -1 && ChartHasData"
     >
       <h4 class="text-muted mb-3 p-1">
         Topic Times - {{ selectedDocumentName }}
@@ -28,6 +28,12 @@
         :oneToOneUpdate="true"
         :animateOnUpdate="true"
       />
+    </div>
+    <div 
+      v-if="SelectDocumentID === -1 || !ChartHasData"
+      class="chart-no-data"
+    >
+      <h3>No Data</h3>
     </div>
   </div>
 </template>
@@ -166,6 +172,16 @@ export default defineComponent({
       return -1;
     });
 
+    
+    
+    const ChartHasData = computed(() => {
+      if (TopicStatData.value === -1) {
+        return false 
+      }
+      return TopicStatData.value.TopicHeaders.length > 0
+    })
+
+
     const UpdateDocumentSelected = (docID: number, docName: string) => {
       scatterSeries.value.forEach(scatterSerie => {
         scatterSerie.data.length = 0;
@@ -180,7 +196,8 @@ export default defineComponent({
       SelectDocumentID,
       selectedDocumentName,
       UpdateDocumentSelected,
-      TopicStatData
+      TopicStatData,
+      ChartHasData
     };
   }
 });
@@ -234,5 +251,11 @@ export default defineComponent({
 
 .topic-time-chart-container {
   margin-bottom: 20vh;
+}
+
+.chart-no-data {
+  display: flex;
+  justify-content: center;
+  height: 40vh;
 }
 </style>

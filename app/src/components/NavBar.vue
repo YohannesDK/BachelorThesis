@@ -177,8 +177,15 @@ export default defineComponent({
     };
 
     // Editor
-    const OpenEditor = async () => {
-      router.push({ name: "EditorView", query: { did: -1 } });
+    const OpenEditor = () => {
+      const newDocID = CreateDocument(user.value.UserID);
+
+      newDocID.then((docid: number | undefined) => {
+        if (docid && typeof docid === "number") {
+          router.push({ name: "EditorView", query: { did: docid} });
+        }
+      })
+
     };
 
     const smallsidebar = () => {
