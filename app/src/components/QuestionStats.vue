@@ -4,7 +4,7 @@
     <ul class="questionset-list list-unstyled">
       <li
         class="shadow-sm text-muted card"
-        v-for="qs in QuestionSetStatsProp || []"
+        v-for="qs in QuestionSetStatsProp"
         :key="qs"
         :class="{ active: SelectedQuestionSetID === qs.QSID }"
         @click="UpdateQuestionSetSelected(qs.QSID, qs.Tittle)"
@@ -123,32 +123,32 @@ export default defineComponent({
       }
     }
 
-    const scatterSerie = ref({
+    const scatterSerie = ref([{
       name: "Students",
       color: "rgba(223, 83, 83, .5)",
       data: []
-    });
+    }]);
 
     const chartOptions = computed(() => {
       if (QuestionSetStatData.value !== -1) {
         
         return {
           ...ChartConfiguration,
-          series: [scatterSerie.value]
+          series: [...scatterSerie.value]
         }
       }
       return -1
     })
 
     const ChartHasData = computed(() => {
-      return scatterSerie.value.data.length > 0
+      return scatterSerie.value[0].data.length > 0
     })
 
     const UpdateQuestionSetSelected = (QSID: number, name: string) => {
       SelectedQuestionSetID.value = QSID;
       SelectedQuestionSetName.value = name;
       if (QuestionSetStatData.value !== -1) {
-        scatterSerie.value.data = QuestionSetStatData.value.map((data: TestData) => {return {name: data.name, x: (data.Score/data.TestData.length)*100, y: data.Time}})
+        scatterSerie.value[0].data = QuestionSetStatData.value.map((data: TestData) => {return {name: data.name, x: (data.Score/data.TestData.length)*100, y: data.Time}})
       }
     }
 
