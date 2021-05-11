@@ -17,7 +17,7 @@
           >
             Good Morning!
           </h1>
-          <p v-test="{ id: 'dashboard-username' }">{{ user.UserName }}</p>
+          <p v-test="{ id: 'dashboard-username' }">{{ user.FirstName }}</p>
         </div>
         <p v-test="{ id: 'dashboard-date' }">
           {{ day }} {{ month }} {{ year }}

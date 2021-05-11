@@ -28,14 +28,17 @@ const user = (request, response) => {
       // });
 
       // If the above statements are not executed, the user information is correct. Proceed to create a token
-      let token = jwt.sign({ username: users.username, password: users.password, fullname: users.fullname, role: users.role, id: users.id}, "secretkey");
+      let token = jwt.sign({ username: users.username, role: users.role, id: users.id}, "secretkey");
+
 
       // Return the user data and token to frontend
       return response.status(200).json({
           title: "logged in",
-          username: users.username,
-          password: users.password,
           id: users.id,
+          firstname: users.firstname,
+          lastname: users.lastname,
+          email: users.email,
+          username: users.username,
           role: users.role,
           token: token
       });
@@ -65,7 +68,9 @@ const register = (request, response) => {
           if(!users){
               models.users.create({
                   username: username,
-                  fullname: firstname + " " + lastname,
+                  firstname: firstname,
+                  lastname: lastname,
+                  email: email,
                   password: bcrypt.hashSync(password, 10),
                   role: role
               });

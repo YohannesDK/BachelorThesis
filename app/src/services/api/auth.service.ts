@@ -27,7 +27,8 @@ export function Login(username: string, password: string) {
           UserID: response.data.id,
           UserName: response.data.username,
           Role: response.data.role.toUpperCase(),
-          FirstName: "None Yet" //TODO - fix so we have firstname / lastname in user model
+          FirstName: response.data.firstname, //TODO - fix so we have firstname / lastname in user model
+          LastName: response.data.lastname
         };
         store.dispatch("setUser", user);
         store.dispatch("login");
