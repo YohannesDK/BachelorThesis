@@ -26,9 +26,10 @@ export function Login(username: string, password: string) {
         const user: UserType = {
           UserID: response.data.id,
           UserName: response.data.username,
-          Role: response.data.role.toUpperCase(),
-          FirstName: response.data.firstname, //TODO - fix so we have firstname / lastname in user model
-          LastName: response.data.lastname
+          Role: response.data.role!.toUpperCase(),
+          FirstName: response.data.firstname,
+          LastName: response.data.lastname,
+          Email: response.data.email
         };
         store.dispatch("setUser", user);
         store.dispatch("login");

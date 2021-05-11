@@ -34,6 +34,7 @@ const store = createStore({
       state.user.Role = user.Role;
       state.user.FirstName = user.FirstName;
       state.user.LastName = user.LastName;
+      state.user.Email = user.Email
     },
     loading: (state, loadingstatus) => {
       state.loading = loadingstatus;
@@ -77,6 +78,12 @@ const store = createStore({
     },
     RemoveAlert: (context, alertID: number) => {
       context.commit("RemoveAlert", alertID)
+    },
+    NotImplementedAlert: (context: any) => {
+      context.commit("AddNewAlert", {
+        message: "Not Implemented",
+        type: 0
+      });
     }
   },
   getters: {

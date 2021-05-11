@@ -44,7 +44,9 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="" v-test="{ id: 'navbar-addNew-dropdown-course' }">
+                  <a href="" 
+                  @click.prevent="OpenCoursesPage()"
+                  v-test="{ id: 'navbar-addNew-dropdown-course' }">
                     <fa icon="book" class="sidebar-menu-faicons"></fa>
                     Course</a
                   >
@@ -60,7 +62,9 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="">
+                  <a href=""
+                  @click.prevent="AddResourceGroup()"
+                  >
                     <fa icon="layer-group" class="sidebar-menu-faicons"></fa>
                     Resource Group</a
                   >
@@ -184,9 +188,17 @@ export default defineComponent({
         if (docid && typeof docid === "number") {
           router.push({ name: "EditorView", query: { did: docid} });
         }
-      })
+      });
 
     };
+
+    const OpenCoursesPage = () => {
+      router.push({name: "Courses"});
+    }
+
+    const AddResourceGroup = () => {
+      store.dispatch("NotImplementedAlert");
+    }
 
     const smallsidebar = () => {
       if (sidebar.value) {
@@ -212,7 +224,9 @@ export default defineComponent({
       addProject,
       OpenEditor,
       AddNewQuestionSet,
-      smallsidebar
+      smallsidebar,
+      OpenCoursesPage,
+      AddResourceGroup
     };
   }
 });

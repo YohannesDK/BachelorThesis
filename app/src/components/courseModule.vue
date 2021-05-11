@@ -132,8 +132,8 @@ export default defineComponent({
           });
         } else if (sectionItem.ItemType === CourseModuleItemEnum.TEST) {
           router.push({
-            name: "questiontest",
-            query: { QSID: sectionItem.ItemResourceID }
+            name: "TakeTest",
+            query: { QSID: sectionItem.ItemResourceID, QST: 0, cid: props.courseModule.courseId}
           });
         } else if (sectionItem.ItemType === CourseModuleItemEnum.Link) {
           if (sectionItem.ItemLink !== "" && sectionItem.ItemLink) {

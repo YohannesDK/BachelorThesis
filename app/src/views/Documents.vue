@@ -18,9 +18,6 @@
         <fa icon="search" size="lg" />
       </div>
     </div>
-    <div class="search-icon-wrapper" style="min-height:45px; margin-left:1%;">
-      <fa icon="filter" size="lg" />
-    </div>
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
@@ -74,16 +71,6 @@ export default defineComponent({
         return;
       }
       CreateDocument(user.value.UserID);
-      store.dispatch("AddNewAlert", {
-        message: "Document Created!",
-        type: 1
-      });
-
-      // TODO - remove this one later
-      store.dispatch("AddNewAlert", {
-        message: "Document Created! 2",
-        type: 2
-      });
     };
 
     //for searching through document - name, tag, etc.
@@ -92,7 +79,6 @@ export default defineComponent({
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: documentType) => {
-          console.log(doc.name, doc.QuestionSetID);
           return (
             doc.name
               .replace(/ /g, "")

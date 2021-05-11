@@ -36,7 +36,6 @@ export default defineComponent({
       return props.AlertMessage;
     });
 
-    console.log(msg)
 
     // local show
     const show = ref(props.ShowAlert);
@@ -70,7 +69,7 @@ export default defineComponent({
 
 <style scoped>
 .alert-container {
-  background: lightblue;
+  background: #DAD4C4;
   z-index: 10;
   height: 2rem;
   padding: 1%;

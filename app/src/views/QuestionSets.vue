@@ -10,10 +10,6 @@
           :QSID="AttachQSID"
           v-if="slotProps.settings === 0"
         />
-        <attach-course-to-question-set-vue
-          :QSID="AttachQSID"
-          v-if="slotProps.settings === 1"
-        />
       </template>
     </modal>
 
@@ -123,7 +119,9 @@
                     >
                       Open
                     </li>
-                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }">
+                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    @click="NotImplementedAlert()"
+                    >
                       Rename
                     </li>
                     <li
@@ -135,10 +133,13 @@
                     <li
                       @click="attachToDocument(questionset.QSID)"
                       v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                      v-if="IsTeacher"
                     >
                       Attach Question Set
                     </li>
-                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }">
+                    <li v-test="{ id: 'myquestionset-options-dropdown-items' }"
+                    @click="NotImplementedAlert()"
+                    >
                       Share
                     </li>
                     <hr />
@@ -193,7 +194,6 @@ export default defineComponent({
   components: {
     Modal,
     AttachDocumentToQuestionSet,
-    AttachCourseToQuestionSetVue
   },
   setup() {
     const displaytype = ref<string>("");
@@ -204,6 +204,9 @@ export default defineComponent({
     const allQuestionSets = ref<Array<QuestionSet>>(
       store.getters.getAllQuestionSets
     );
+
+
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     // drop down logic
     const dropdownIndex = ref<number>(-1);
@@ -290,12 +293,12 @@ export default defineComponent({
       }
     };
 
-    // onMounted(() => {
-    //   console.log(allQuestionSets.value);
-    // });
+    const NotImplementedAlert = () => {
+      store.dispatch("NotImplementedAlert");
+    }
 
     const OpenTest = (QSID: number) => {
-      router.push({ name: "questiontest", query: { QSID: QSID } });
+      router.push({ name: "TakeTest", query: { QSID: QSID } });
     };
 
     return {
@@ -314,7 +317,9 @@ export default defineComponent({
       OpenTest,
       OpenQuestionSet,
       DescriptionSubstringLength,
-      allQuestionSets
+      allQuestionSets,
+      IsTeacher,
+      NotImplementedAlert
     };
   }
 });

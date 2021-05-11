@@ -58,9 +58,9 @@ const register = (request, response) => {
       const firstname = register_info[0].text;
       const lastname = register_info[1].text;
       const email = register_info[2].email;
-      const role = register_info[3].choice.label;
-      const username = register_info[4].text;
-      const password = register_info[5].text;
+      const username = register_info[3].text;
+      const password = register_info[4].text;
+      const role = register_info[5].choice.label;
       
 
       models.users.findOne({where: {username: username} }).then(function (users){

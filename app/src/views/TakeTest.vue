@@ -183,6 +183,9 @@ export default defineComponent({
     const Quit = () => {
       const leave = window.confirm("Are you sure you want to quit?");
       if (leave) {
+        if (router.currentRoute.value.meta.courseQS) { 
+          router.back();
+        }
         router.push({ name: "QuestionSets" });
       }
     };
@@ -222,7 +225,6 @@ export default defineComponent({
         Data.value.Tittle = qs.value.Tittle;
         Data.value.Description = qs.value.Description;
         Data.value.QuestionSet = qs.value.QuestionSet;
-        console.log(Data.value)
       }
 
       // initilize test data
