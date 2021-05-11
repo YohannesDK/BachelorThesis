@@ -93,7 +93,7 @@ const getCourseAssignments = async (courseId) => {
 }
 
 
-const getCourseDocumentsAndData = async (course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments) => {
+const getCourseDocumentsAndData = async (course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, getTopicData = true) => {
 // fetch all course documents and their question sets, and also fetch all topic stats related to each document
   let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
 
@@ -132,40 +132,42 @@ const getCourseDocumentsAndData = async (course, allCourseDocumentQuestionSets, 
 
           }
 
-
-          // fetch Topic Data
-          const DocumentTopics = await models.TopicMonitoring.findAll({ where : {DocumentID: doc.id }});
-          const document_topic_stat = {
-              Documentid: doc.id,
-              name: doc.title,
-              TopicStats: []
-          };
-          if (DocumentTopics) {
-              await Promise.all(DocumentTopics.map(async (DTopic) => {
-                  let TopicTimeStat = {
-                      TopicID: DTopic.TopicID,
-                      Topic: DTopic.TopicName,
-                      Time: DTopic.Time,
-                      ExpectedTime: 0,
-                      UserStats: []
-                  };
-
-                  let UserTopicStats = await models.SingleUserTopicMonitoring.findAll({where: {TopicID: DTopic.TopicID }});
-
-                  if (UserTopicStats) {
-                      UserTopicStats.forEach(UserTopicStat => {
-                          let UTS = {
-                              UserId: UserTopicStat.UserId,
-                              Name: UserTopicStat.UserName,
-                              Time: UserTopicStat.Time
-                          };
-                          TopicTimeStat.UserStats.push(UTS);
-                      }); 
-                  }
-                  document_topic_stat.TopicStats.push(TopicTimeStat);
-              }))
+          if (getTopicData) {
+            // fetch Topic Data
+            const DocumentTopics = await models.TopicMonitoring.findAll({ where : {DocumentID: doc.id }});
+            const document_topic_stat = {
+                Documentid: doc.id,
+                name: doc.title,
+                TopicStats: []
+            };
+            if (DocumentTopics) {
+                await Promise.all(DocumentTopics.map(async (DTopic) => {
+                    let TopicTimeStat = {
+                        TopicID: DTopic.TopicID,
+                        Topic: DTopic.TopicName,
+                        Time: DTopic.Time,
+                        ExpectedTime: 0,
+                        UserStats: []
+                    };
+  
+                    let UserTopicStats = await models.SingleUserTopicMonitoring.findAll({where: {TopicID: DTopic.TopicID }});
+  
+                    if (UserTopicStats) {
+                        UserTopicStats.forEach(UserTopicStat => {
+                            let UTS = {
+                                UserId: UserTopicStat.UserId,
+                                Name: UserTopicStat.UserName,
+                                Time: UserTopicStat.Time
+                            };
+                            TopicTimeStat.UserStats.push(UTS);
+                        }); 
+                    }
+                    document_topic_stat.TopicStats.push(TopicTimeStat);
+                }))
+            }
+            allCourseDocumentTopicStats.push(document_topic_stat);
           }
-          allCourseDocumentTopicStats.push(document_topic_stat);
+
           allCourseDocuments.push(document_right_format);
       }
   }));
@@ -240,7 +242,6 @@ const getCourseQuestionSetStats = async (course, allTestDataStats) => {
       allTestDataStats.push(TestData)
   }))
 }
-
 
 
 module.exports = {

@@ -33,7 +33,8 @@ export function JoinCourse(courseId: number, coursePassword: string) {
     })
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
-        store.dispatch("AddCourse", response.data.course);
+        console.log(response.data)
+        store.dispatch("AddCourse", response.data.course[0]);
       }
     })
     .catch((error: AxiosError) => {

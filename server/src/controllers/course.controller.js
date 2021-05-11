@@ -7,6 +7,11 @@ const course_helpers = require("./helpers/course.helper");
 
 const JoinCourse = (request, response) => {
         let token = request.headers.token;
+        let allCourseDocuments = [];
+        let allCourseQuestionSets = [];
+        let allCourseDocumentQuestionSets = [];
+        let allCourseDocumentTopicStats = [];
+        let allTeachers = [];
         jwt.verify(token, "secretkey", async (err, decoded) => {
             if(err) return response.status(401).json({
                 title: "unauthorized",
@@ -31,7 +36,7 @@ const JoinCourse = (request, response) => {
                             courseId: course.id
                         });
 
-                        let course_right_format = {
+                        let course_right_format = [{
                             courseId: course.id,
                             courseName: course.courseName,
                             courseShorthand: course.shorthand,
@@ -39,11 +44,48 @@ const JoinCourse = (request, response) => {
                             courseModules: [],
                             AssignmentModules: [],
                             QuestionSets: []
-                        };
+                        }];
+
+
+                        await Promise.all(course_right_format.map(async (course) => {
+                            // fetch all course modules, sections and sectionitems
+                            let courseModules = await course_helpers.getCourseModules(course.courseId, 1)
+                            course.courseModules = [...courseModules];
+
+                            // fetch all course assignments
+                            let assignmentModules = await course_helpers.getCourseAssignments(course.courseId);
+                            course.AssignmentModules = [...assignmentModules];
+
+                            // fetch all course documents and their question sets
+                            await course_helpers.getCourseDocumentsAndData(course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
+
+
+                            // fetch all course questionSets
+                            await course_helpers.getCourseQuestionSets(course, allCourseQuestionSets);
+
+                            // fetch course teacher and add it to our list
+                            let teacher = await models.users.findOne({where: {
+                              id: course.Teacher,
+                            }});
+
+                            if (teacher) {
+                                const teacher_right_format = {
+                                    UserID: teacher.id,
+                                    UserName: teacher.username,
+                                    Role: teacher.Role
+                                };
+                                allTeachers.push(teacher_right_format);
+                            }
+                        }));
+
         
                         return response.status(200).json({
                             title: "Joined Course",
                             course: course_right_format,
+                            allCourseDocument: allCourseDocuments,
+                            allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                            allCourseQuestionSets: allCourseQuestionSets,
+                            allTeachers: allTeachers
                         });
                     }
                     return response.status(400).json({
@@ -135,8 +177,8 @@ const getCourses = (request, response) => {
         let allCourseQuestionSets = [];
         let allCourseDocumentQuestionSets = [];
         let allCourseDocumentTopicStats = [];
-        let allTestDataStats = [];
         let allTeachers = [];
+        let allTestDataStats = [];
 
         if (role.toLowerCase() === "teacher") {
             const courses = await models.courses.findAll({where: {userId: decoded.id}}); 
@@ -221,57 +263,11 @@ const getCourses = (request, response) => {
                     course.AssignmentModules = [...assignmentModules];
 
                     // fetch all course documents and their question sets
-                    let courseDocRelations = await models.CourseDocumentRelation.findAll({where: {course_id: course.courseId} });
-
-                    await Promise.all(courseDocRelations.map( async (courseDoc) => {
-                        let doc = await models.document.findOne({where: {id: courseDoc.document_id}});
-
-                        if (doc) {
-                            course.documents.push(doc.id);
-
-                            let document_right_format = {
-                                "Documentid": doc.id,
-                                "body": doc.body,
-                                "tags": [],
-                                "name": doc.title,
-                                "lastEdited": `${doc.updatedAt}`,
-                                "QuestionSetID": []
-                            };
-
-                            const documentQuestionSetRelations = await models.QuestionsetDocumentRelation.findAll({where: {
-                                document_id: doc.id
-                            }});
-                            
-
-                            if (documentQuestionSetRelations) {
-                                await Promise.all(documentQuestionSetRelations.map(async (DocQSRelation) => {
-                                    document_right_format.QuestionSetID.push(DocQSRelation.questionset_id);
-
-                                    const questionset = await questionset_helpers.select_questionsets_helper({questionset_id: DocQSRelation.questionset_id })
-                                    if (questionset !== null) {
-                                        const questionsetExists = allCourseDocumentQuestionSets.map((qs) => qs.QSID).indexOf(DocQSRelation.questionset_id)
-                                        if (questionsetExists === -1) {
-                                            allCourseDocumentQuestionSets.push(questionset[0]);
-                                        }
-                                    } 
-                                }));
-
-                            }
-                            allCourseDocuments.push(document_right_format);
-                        }
-                    }));
+                    await course_helpers.getCourseDocumentsAndData(course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
 
 
                     // fetch all course questionSets
-                    let courseQsRelations = await models.CourseQuestionSetRelation.findAll({where: {CourseID: course.courseId}})
-
-                    await Promise.all(courseQsRelations.map(async (courseQS) => {
-                        const courseQuestionSet = await questionset_helpers.select_questionsets_helper({questionset_id: courseQS.QuestionSetID});
-                        if (courseQuestionSet !== null) {
-                            course.QuestionSets.push(courseQS.QuestionSetID);
-                            allCourseQuestionSets.push(courseQuestionSet[0]);
-                        }
-                    }));
+                    await course_helpers.getCourseQuestionSets(course, allCourseQuestionSets);
 
                     // fetch course teacher and add it to our list
                     let teacher = await models.users.findOne({where: {

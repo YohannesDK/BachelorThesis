@@ -26,7 +26,7 @@
         />
       </li>
       <p class="m-auto" v-if="searchedQuestionSets.length === 0">
-        No documents...
+        No Question Sets...
       </p>
     </ul>
     <div class="savebtn" :class="{ saved: saved }" @click="save">
