@@ -24,15 +24,16 @@
                 </div>
 
                 <div class="media_content media-body">
-                  <p>Teacher</p>
+                  <p>Teacher
+                    <span>
+                      <a class="contact-teacher" :href="'mailto:' + courseTeacher.Email">
+                        <fa icon="paper-plane" />
+                      </a>
+                    </span>
+                  </p>
                   <h6 class="title" v-if="courseTeacher">
                     {{ courseTeacher.UserName }}
                   </h6>
-                </div>
-                <div @click="showDoc()" class="contact-teacher">
-                  <a href="mailto:kassaye85@gmail.com">
-                    <fa icon="paper-plane" />
-                  </a>
                 </div>
               </div>
             </div>
@@ -694,24 +695,11 @@ export default defineComponent({
 }
 
 .contact-teacher {
-  position: absolute;
-  padding: 2%;
-  top: -20%;
   border: none;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  left: 35%;
+  color: #cfea4e;
 }
 .contact-teacher:hover {
   cursor: pointer;
-}
-
-.contact-teacher a {
-  color: #cfea4e;
 }
 
 .course-page-container {

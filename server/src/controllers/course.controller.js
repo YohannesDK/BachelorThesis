@@ -281,7 +281,10 @@ const getCourses = (request, response) => {
                         const teacher_right_format = {
                             UserID: teacher.id,
                             UserName: teacher.username,
-                            Role: teacher.Role
+                            Role: teacher.Role,
+                            FirstName: teacher.firstname, 
+                            LastName: teacher.lastname, 
+                            Email: teacher.email, 
                         };
                         allTeachers.push(teacher_right_format);
                     }

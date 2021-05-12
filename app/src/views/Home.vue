@@ -15,7 +15,7 @@
             class="welcome-message"
             v-test="{ id: 'dashboard-welcome-message' }"
           >
-            Good Morning!
+            {{GreetMessage}}!
           </h1>
           <p v-test="{ id: 'dashboard-username' }">{{ user.FirstName }}</p>
         </div>
@@ -63,6 +63,7 @@
                 :document="doc"
                 :minimal="true"
               />
+              <h3 v-if="Documents.length === 0" class="text-muted">No Documents ...</h3>
             </div>
             <div class="courses-container " v-if="navHeaderId == 1">
               <div class="card-container d-flex">
@@ -71,6 +72,23 @@
                   :key="index"
                   :course="course"
                 />
+                <h3 v-if="Courses.length === 0" class="text-muted">No Courses ...</h3>
+              </div>
+            </div>
+
+            <div class="documents-container d-flex p-1" v-if="navHeaderId === 2">
+              <div class="card-container d-flex">
+                <qscard 
+                  v-for="qs in QuestionSets"
+                  :key="qs"
+                  :questionset="qs"
+                />
+                <h3 v-if="QuestionSets.length === 0" class="text-muted">No QuestionSets ...</h3>
+              </div>
+            </div>
+            <div class="documents-container d-flex p-1" v-if="navHeaderId === 3">
+              <div class="card-container d-flex">
+                <h3 v-if="QuestionSets.length === 0" class="text-muted">No Resources ...</h3>
               </div>
             </div>
           </div>
@@ -112,13 +130,15 @@ import store from "@/store";
 import { computed, defineComponent, ref } from "vue";
 import Test from "@/directives/test.directive";
 import documentCard from "@/components/documentCard.vue";
-import { day, month, year } from "@/utils/calender.utils";
+import { date, day, month, year } from "@/utils/calender.utils";
 import CourseCard from "@/components/courseCard.vue";
+import Qscard from "@/components/qscard.vue";
 export default defineComponent({
   name: "Home",
   components: {
     documentCard,
-    CourseCard
+    CourseCard,
+    Qscard
   },
   directives: { Test },
   setup() {
@@ -185,9 +205,22 @@ export default defineComponent({
       LastActive = id;
     };
 
+
+    const GreetMessage = computed(() => {
+      const hours = date.getHours();
+      if (hours < 12) {
+        return "Good Morning"
+      } else if (hours >= 12 && hours <= 17) {
+        return "Good Afternoon"
+      } else if (hours >= 17 && hours <= 24) {
+        return "Good Evening"
+      }
+    })
+
     const Documents = computed(() => store.getters.getDocuments);
     const Courses = computed(() => store.getters.getCourses);
     const user = computed(() => store.getters.getActiveUser);
+    const QuestionSets = computed(() => store.getters.getAllQuestionSets);
     return {
       Notifications,
       navContent,
@@ -198,7 +231,9 @@ export default defineComponent({
       user,
       day,
       month,
-      year
+      year,
+      QuestionSets,
+      GreetMessage
     };
   }
 });

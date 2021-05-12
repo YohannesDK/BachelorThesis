@@ -18,6 +18,7 @@
 
     <div class="monitoring-data card shadow-sm"
     :class="{'show' : visualize}"
+    v-if="IsTeacher"
     @click="visualize = !visualize"
     >
       <div class="selected-topic">
@@ -30,7 +31,6 @@
       >
         <span>Topic: {{value.Topic}}</span>
         <span>Time: {{value.Time}}</span>
-        <span>InReadZone: {{value.InReadZone}}</span>
       </div>
     </div>
   </div>
@@ -202,7 +202,8 @@ export default defineComponent({
       TopicData,
       SelectedTopicID,
       Time,
-      visualize
+      visualize,
+      IsTeacher
     };
   }
 });
