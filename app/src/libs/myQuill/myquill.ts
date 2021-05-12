@@ -3,6 +3,7 @@ import { Delta, Op } from "types-quill-delta";
 import HeaderBlot from "./blots/headerBlot";
 import ParagraphBlot from "./blots/paragraphBlot";
 import TopicSelectionModule from "./modules/topicSelection.module";
+import TopicWordCounter from "./modules/topicWordCounter.module";
 
 type ITopic = {
   Topic: string;
@@ -16,7 +17,8 @@ class MyQuill extends Quill {
   public options: any;
 
   public SelectedTopicID: string | null;
-  public TopicData: {[topicID: string]: ITopic}
+  public TopicData: {[topicID: string]: ITopic};
+  public TopicWordCounter: {[topicID: string]: number};
 
   // public ScrollThrottle = false
   public ScrollTimeout: any = -1;
@@ -34,6 +36,7 @@ class MyQuill extends Quill {
 
     this.SelectedTopicID = options.SelectedTopicID || null
     this.TopicData = options.TopicData || {}
+    this.TopicWordCounter = options.TopicWordCounter || {}
     this.Time = options.Time || 0
 
     this.Monitor = options.Monitor || false
@@ -161,6 +164,26 @@ class MyQuill extends Quill {
     });
 
     return delta
+  }
+
+  /**
+   * CalculateTopicWord
+   */
+  public CalculateTopicWord(delta: Delta) {
+    let TopicID = "document"  
+    delta.map((op: Op, index: number) => {
+      if (("attributes" in op) && ("header" in op["attributes"]!)) {
+        TopicID = op["attributes"]!["header"]["ref"];
+      }
+      if (("insert" in op) && (typeof op["insert"] === "string") && (op["insert"]!.match(/\n/g)||[]).length === 0) {
+        const text = op["insert"]!.trim();
+        if (!(TopicID in this.TopicWordCounter)) {
+          this.TopicWordCounter[TopicID] = text.length > 0 ? text.split(/\s+/).length : -1 
+        } else {
+          this.TopicWordCounter[TopicID] += text.length > 0 ? text.split(/\s+/).length : 0 
+        }
+      }
+    })
   }
 
   public EnableTopicUpdating(topicID: string) {

@@ -32,6 +32,7 @@
         <span>Topic: {{value.Topic}}</span>
         <span>Time: {{value.Time}}</span>
       </div>
+      {{TopicWordCounter}}
     </div>
   </div>
 </template>
@@ -81,6 +82,7 @@ export default defineComponent({
 
     const SelectedTopicID = ref(null);
     const TopicData = ref({});
+    const TopicWordCounter = ref({})
     const Time = ref(0);
 
     // Editor container element
@@ -119,6 +121,9 @@ export default defineComponent({
       if (Saved.value === false) {
         const delta = Editor.getContents();
         Editor.UpdateTopicIds(delta);
+        Editor.CalculateTopicWord(delta);
+
+        console.log(TopicWordCounter);
 
         const updatedData = {
           docID: props.docmentId,
@@ -152,8 +157,9 @@ export default defineComponent({
           syntax: {
             highlight: (text: string) => hljs.highlightAuto(text).value
           },
-          TopicSelectionModule: {}
+          TopicSelectionModule: {},
         },
+        TopicWordCounter: TopicWordCounter.value,
         SelectedTopicID: SelectedTopicID.value,
         TopicData: TopicData.value,
         Time: Time.value,
@@ -203,7 +209,8 @@ export default defineComponent({
       SelectedTopicID,
       Time,
       visualize,
-      IsTeacher
+      IsTeacher,
+      TopicWordCounter
     };
   }
 });
