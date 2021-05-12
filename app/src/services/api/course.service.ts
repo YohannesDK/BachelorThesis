@@ -33,8 +33,49 @@ export function JoinCourse(courseId: number, coursePassword: string) {
     })
     .then((response: AxiosResponse) => {
       if (response.status && response.status === 200) {
-        console.log(response.data)
-        store.dispatch("AddCourse", response.data.course[0]);
+        const course: courseType = response.data.course[0];
+        const courseDocuments: documentType[] = response.data.allCourseDocument;
+        const courseTeachers = response.data.allTeachers;
+
+        const CourseDocumentQuestionSets: QuestionSet[] =
+          response.data.allCourseDocumentQuestionSets;
+
+        const CourseQuestionSets: QuestionSet[] =
+          response.data.allCourseQuestionSets;
+        
+        if (course) {
+          store.dispatch("AddCourse", course);
+        }
+
+        if (courseDocuments) {
+          courseDocuments.forEach((doc: documentType) => {
+            if (doc.body !== "") {
+              doc.body = JSON.parse(doc.body as string).ops;
+            } else {
+              doc.body = [];
+            }
+            doc.lastEdited = datify(doc.lastEdited);
+            store.dispatch("AddCourseDocuments", doc);
+          });
+        }
+        if (courseTeachers) {
+          courseTeachers.forEach((teacher: UserType) => {
+            store.dispatch("AddCourseTeacher", teacher);
+          });
+        }
+        if (CourseDocumentQuestionSets) {
+          CourseDocumentQuestionSets.forEach((QS: QuestionSet) => {
+            QS.LastEdited = datify(QS.LastEdited as string);
+            store.dispatch("AddCourseDocumentQuestionSets", QS);
+          });
+        }
+        if (CourseQuestionSets) {
+          CourseQuestionSets.forEach((QS: QuestionSet) => {
+            QS.LastEdited = datify(QS.LastEdited as string);
+            store.dispatch("AddCourseQuestionSets", QS);
+          });
+        }
+
       }
     })
     .catch((error: AxiosError) => {

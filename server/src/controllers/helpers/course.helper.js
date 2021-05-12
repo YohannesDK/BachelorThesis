@@ -178,13 +178,16 @@ const getCourseQuestionSets = async (course, allCourseQuestionSets) => {
   // fetch all course questionSets
   let courseQsRelations = await models.CourseQuestionSetRelation.findAll({where: {CourseID: course.courseId}})
 
-  await Promise.all(courseQsRelations.map(async (courseQS) => {
-    const courseQuestionSet = await questionset_helpers.select_questionsets_helper({questionset_id: courseQS.QuestionSetID});
-    if (courseQuestionSet !== null) {
-        course.QuestionSets.push(courseQS.QuestionSetID);
-        allCourseQuestionSets.push(courseQuestionSet[0]);
-    }
-  }));
+  console.log(courseQsRelations);
+  if (courseQsRelations && courseQsRelations.length > 0) {
+    await Promise.all(courseQsRelations.map(async (courseQS) => {
+      const courseQuestionSet = await questionset_helpers.select_questionsets_helper({questionset_id: courseQS.QuestionSetID});
+      if (courseQuestionSet !== null) {
+          course.QuestionSets.push(courseQS.QuestionSetID);
+          allCourseQuestionSets.push(courseQuestionSet[0]);
+      }
+    }));
+  }
 }
 
 

@@ -47,8 +47,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted, Ref, ref } from "vue";
+import { defineComponent, onBeforeMount, onBeforeUnmount, onMounted, Ref, ref } from "vue";
 import { getAvailableCourses, JoinCourse } from "@/services/api/course.service";
+import { courseType } from "@/store/interfaces/course";
 
 export default defineComponent({
   name: "JoinCourse",
@@ -57,7 +58,7 @@ export default defineComponent({
     const SelectedCourseName = ref("");
     const coursePassword = ref("");
 
-    const AvailabeCourses: Ref<any> = ref([]);
+    const AvailabeCourses: Ref<Array<courseType>> = ref([]);
     const Join = () => {
       if (SelectedCourseID.value !== -1 && coursePassword.value !== "") {
         JoinCourse(SelectedCourseID.value, coursePassword.value);
@@ -65,8 +66,13 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      AvailabeCourses.value.length = 0;
       AvailabeCourses.value = await getAvailableCourses();
     });
+
+    onBeforeUnmount(() => {
+      AvailabeCourses.value.length = 0;
+    })
 
     return {
       Join,

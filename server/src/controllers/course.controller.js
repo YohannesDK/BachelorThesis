@@ -40,32 +40,35 @@ const JoinCourse = (request, response) => {
                             courseId: course.id,
                             courseName: course.courseName,
                             courseShorthand: course.shorthand,
+                            Teacher: course.userId,
                             documents: [],
                             courseModules: [],
                             AssignmentModules: [],
                             QuestionSets: []
                         }];
 
+                        console.log(course_right_format)
 
-                        await Promise.all(course_right_format.map(async (course) => {
+
+                        await Promise.all(course_right_format.map(async (joinedcourse) => {
                             // fetch all course modules, sections and sectionitems
-                            let courseModules = await course_helpers.getCourseModules(course.courseId, 1)
-                            course.courseModules = [...courseModules];
+                            let courseModules = await course_helpers.getCourseModules(joinedcourse.courseId, 1)
+                            joinedcourse.courseModules = [...courseModules];
 
                             // fetch all course assignments
-                            let assignmentModules = await course_helpers.getCourseAssignments(course.courseId);
-                            course.AssignmentModules = [...assignmentModules];
+                            let assignmentModules = await course_helpers.getCourseAssignments(joinedcourse.courseId);
+                            joinedcourse.AssignmentModules = [...assignmentModules];
 
                             // fetch all course documents and their question sets
-                            await course_helpers.getCourseDocumentsAndData(course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
+                            await course_helpers.getCourseDocumentsAndData(joinedcourse, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
 
 
                             // fetch all course questionSets
-                            await course_helpers.getCourseQuestionSets(course, allCourseQuestionSets);
+                            await course_helpers.getCourseQuestionSets(joinedcourse, allCourseQuestionSets);
 
                             // fetch course teacher and add it to our list
                             let teacher = await models.users.findOne({where: {
-                              id: course.Teacher,
+                              id: joinedcourse.Teacher,
                             }});
 
                             if (teacher) {
@@ -303,6 +306,7 @@ const getCourses = (request, response) => {
 
 const getAvailableCourses = (request, response) => {
         let availableCourses = [];
+        let addedCourses = {};
 
         let token = request.headers.token;
         jwt.verify(token, "secretkey", async (err, decoded )=> {
@@ -315,18 +319,17 @@ const getAvailableCourses = (request, response) => {
             let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id} });
             let courses = await models.courses.findAll();
 
-            console.log(joinedCourses)
+            // console.log(joinedCourses.map((j) => j))
 
             if (joinedCourses.length === 0) {
+              console.log("her");
                 availableCourses = courses;
             } else {
-                joinedCourses.forEach(junction => {
-                    courses.forEach(course => {
-                        if (course.courseId !== junction.courseId) {
-                            availableCourses.push(course);
-                        } 
-                    }); 
-                });
+                availableCourses = courses.filter((course) => {
+                  if (!joinedCourses.map((jcourse) => jcourse.courseId).includes(course.id)) {
+                    return course 
+                  }
+                })
             }
 
             return response.status(200).json({
