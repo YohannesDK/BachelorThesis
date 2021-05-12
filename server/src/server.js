@@ -12,12 +12,12 @@ dotenv.config({
 // const MainRouter = require("./routes/router.js");
 const attemptRoutes = require("./routes/attempts.routes.js")
 const questionSetsRoutes = require("./routes/questionSets.routes.js")
-const attemptDataRoutes = require("./routes/attemptData.routes")
 const questionsRoutes = require("./routes/questions.routes")
 const documentRoutes = require("./routes/document.routes")
 const courseRoutes = require("./routes/course.routes.js")
 const userRoutes = require("./routes/user.routes")
-
+const topicMonitoringRoutes = require("./routes/topicMonitoring.routes");
+const SingleUserTopicMonitoringRoutes = require("./routes/SingleUserTopicMonitoring.routes");
 
 
 var cors = require("cors");
@@ -43,11 +43,12 @@ app.use(bodyParser.urlencoded({extended : false}));
 
 app.use(attemptRoutes)
 app.use(questionSetsRoutes)
-app.use(attemptDataRoutes)
 app.use(questionsRoutes)
 app.use(documentRoutes)
 app.use(courseRoutes)
 app.use(userRoutes)
+app.use(topicMonitoringRoutes);
+app.use(SingleUserTopicMonitoringRoutes);
 
 // main router will delegate request to correct route handlers
 // having problems with sequelize. 

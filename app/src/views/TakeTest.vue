@@ -9,6 +9,9 @@
         v-test="{ id: 'TakeTest-test-navbar-tittle' }"
         >{{ Data.Tittle }}</span
       >
+      <div>
+        <span>{{time[0]}} : {{time[1]}} min</span>
+      </div>
     </div>
   </div>
 
@@ -50,27 +53,6 @@
       </li>
     </ul>
   </div>
-  <div class="test-info shadow" :class="{ hide: hideInfoBar }">
-    <div v-if="hideInfoBar" @click="hideInfoBar = false">
-      <fa icon="info" />
-    </div>
-    <div class="test-info-inner">
-      <div class="test-info-nav">
-        <div class="close-info" @click="hideInfoBar = true">
-          <fa icon="minus-circle" class="close-minus" />
-        </div>
-      </div>
-      <div class="test-info-data">
-        <ul class="list-unstyled">
-          <li>Time Remaining</li>
-          <li>12:55 min</li>
-
-          <li>Questions Answered</li>
-          <li>1 / 12</li>
-        </ul>
-      </div>
-    </div>
-  </div>
   <div
     class="test-handin shadow"
     @click="Finished"
@@ -98,13 +80,13 @@ import QuestionSetCard from "@/components/QuestionSetCard.vue";
 import router from "@/router";
 import store from "@/store";
 import { Question, QuestionTypeEnum, QuestionSetFlag, QuestionSet } from "@/store/interfaces/question.type";
-import { defineComponent, onMounted, ref, Ref } from "vue";
-import axios, { AxiosError } from "axios";
+import { ComputedRef, computed , defineComponent, onMounted, ref, Ref } from "vue";
 import { SingleTestStat, TestData, TestStat } from "@/store/interfaces/QuestionTest.types";
 import { date } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import Test from "@/directives/test.directive";
-import { CreateTestStat } from "@/utils/testStats.utils";
+import { SaveAttempt } from "@/services/api/Tests.service";
+
 export default defineComponent({
   components: { QuestionSetCard },
   name: "TakeTest",
@@ -114,11 +96,10 @@ export default defineComponent({
   setup() {
     const focusIndex = ref<number>(0);
     const questionCards = ref<Array<any>>([]);
-    const hideInfoBar = ref<boolean>(true);
-    let counting = true;
-    const correct = 0;
-    let timer = 0;
-    const sortedAnswers = [] as any;
+    const TestFinished = ref(false);
+
+    const user: UserType = store.getters.getActiveUser;
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     const Data = ref<QuestionSet>({
       QSID: -1,
@@ -134,10 +115,34 @@ export default defineComponent({
     const TestData: Ref<TestData> = ref<TestData>({
       TestID: -1,
       userID: -1,
+      Time: -1,
+      Score: -1,
+      name: "",
       date: date,
+      courseID: -1,
       QSID: -1,
       TestData: []
     });
+
+    let counting = true;
+    const timer = ref(0);
+    const TimeLabel = (secs: number) => {
+      const value = String(secs) + "";
+      if (value.length < 2) {
+        return "0" + value 
+      }
+      return value
+    }
+    const time = computed(() => {
+      if (counting) {
+        const secs = TimeLabel(timer.value % 60);
+        const min = TimeLabel(Math.floor(timer.value/60));
+        return [min, secs]
+      }
+      return ["00", "00"]
+    })
+
+
 
     const OnfocusChange = (index: number) => {
       focusIndex.value = index;
@@ -152,142 +157,95 @@ export default defineComponent({
       }
     };
 
-    const delayReturn = () => {
-      for(let i = 0; i < TestData.value.TestData.length; i++){
-
-          axios
-          .post("/api/storeAttemptData", {
-            headers: { token: localStorage.getItem("token") },
-            QuestionId: TestData.value.TestData[i].QuestionID,
-            Answer: JSON.stringify(TestData.value.TestData[i].Answer),
-            CorrectAnswer: JSON.stringify(sortedAnswers[i])
-          })
-          .then(response => {
-            console.log(response)
-          });
-
-      }
-    };
-
-    //This function is called by the Finished function.
-    const checkAnswer = () => {
-
-      let correct = 0;
-      const testStat: TestStat[] = store.getters.getAllTestStats;
-
-      if (testStat.length > 0) {
-        const latestTestStat: TestStat = testStat[testStat.length - 1];
-        const total = Data.value.QuestionSet.length
-        
-        latestTestStat.TestStats.map((STS: SingleTestStat) => {
-          correct += STS.Correct 
-          return STS 
-        })
-
-        window.alert("You got " + correct + " out of " + total + " correct answers. You spent " + timer + " seconds.");
-      }
-
-      // for(let i = 0; i < TestData.value.TestData.length; i++){
-
-      //   console.log(Data.value.QuestionSet[i].Question)
-
-      //   // if(TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.Answer || 
-      //   //   TestData.value.TestData[i].Answer == Data.value.QuestionSet[i].Question.CorrectAnswer ){
-
-      //   //     correct++;
-      //   //  }
-      // }
-
-      // axios
-      //   .post("/api/saveAttempt", {
-      //     headers: { token: localStorage.getItem("token") },
-      //     // @ts-ignore
-      //     questionsetId: parseInt(router.currentRoute.value.query.QSID),
-      //     Time: timer,
-      //     Score: correct
-      //   })
-      //   .then(response => {
-      //     console.log(response)
-      //   }).catch((error: AxiosError) => {
-      //     console.error(error);
-      //   })
-
-    }
-
 
     const Finished = () => {
-      counting = false;
-      questionCards.value.forEach((ele: any) => {
-        if (ele) {
-          try {
-            const testData = ele.getTestData.call();
-            TestData.value.TestData.push(testData);
-          } catch (e) {
-            console.error(e);
+      if (!TestFinished.value) {
+        counting = false;
+        TestFinished.value = true
+        questionCards.value.forEach((ele: any) => {
+          if (ele) {
+            try {
+              const testData = ele.getTestData.call();
+              ele.ShowTestResult.call();
+              TestData.value.TestData.push(testData);
+            } catch (e) {
+              console.error(e);
+            }
           }
+        });
+        TestData.value.Time = timer.value;
+        if (!IsTeacher.value) {
+          SaveAttempt(TestData.value);
         }
-      });
-      store.dispatch("AddTestData", TestData.value);
-      store.dispatch("AddNewTestStat", TestData.value);
-      checkAnswer();
-
-      console.log(TestData.value.TestData.length)
-      // router.push({ name: "QuestionSets" });
+      }
     };
 
     const Quit = () => {
       const leave = window.confirm("Are you sure you want to quit?");
       if (leave) {
+        if (router.currentRoute.value.meta.courseQS) { 
+          router.back();
+        }
         router.push({ name: "QuestionSets" });
       }
     };
 
     const InitilizeTest = () => {
 
-      //Sorting the answers from backend to a list
-      //Set the counting variable to true upon loading the page.
-      //When it is true, the counter starts
-
       counting = true;
       //Starts timer
       const interval = setInterval(() => {
         if (counting === true) {
-          timer++
-          console.log(timer)
+          timer.value++
         } else {
           clearInterval(interval)                
         }             
       }, 1000)
 
-      const user: UserType = store.getters.getActiveUser;
-      if (router.currentRoute.value.query.QSID) {
-        const qs: QuestionSet = store.getters.getQuestionSetById(
-          Number(router.currentRoute.value.query.QSID)
-        );
-        Data.value.QSID = qs.QSID;
-        Data.value.Tittle = qs.Tittle;
-        Data.value.Description = qs.Description;
-        Data.value.QuestionSet = qs.QuestionSet;
+      const QSID = router.currentRoute.value.query.QSID;
+
+      if (QSID) {
+        const qs: ComputedRef<QuestionSet> = computed(() => {
+          if (router.currentRoute.value.meta.courseQS) {
+            const CourseQuestionSetType = router.currentRoute.value.query.QST;
+
+            if (CourseQuestionSetType && Number(CourseQuestionSetType) === 0) {
+              return store.getters.getCourseQuestionSetById(Number(QSID));
+            } else if (CourseQuestionSetType && Number(CourseQuestionSetType) === 1) {
+              return store.getters.getCourseDocumentQuestionSetById(Number(QSID));
+            }
+          } else {
+            return store.getters.getQuestionSetById(
+                Number(router.currentRoute.value.query.QSID)
+              );
+          }
+        });
+
+        Data.value.QSID = qs.value.QSID;
+        Data.value.Tittle = qs.value.Tittle;
+        Data.value.Description = qs.value.Description;
+        Data.value.QuestionSet = qs.value.QuestionSet;
       }
 
       // initilize test data
       if (TestData.value.TestID === -1) {
-        TestData.value.TestID = store.getters.getTestID;
         TestData.value.QSID = Data.value.QSID;
-        TestData.value.userID = -1;
+        TestData.value.userID = user.UserID;
+        TestData.value.name = user.UserName;
 
-        store.dispatch("IncrementTestID");
-        console.log(TestData)
+        if (router.currentRoute.value.meta.courseQS) {
+          const courseID = Number(router.currentRoute.value.query.cid);
+          TestData.value.courseID = courseID;
+        }
       }
     };
 
     onMounted(() => {
       store.dispatch("loading", true);
       setTimeout(() => {
-        // TODO
-        // while fetching all data, if not in store
-        store.dispatch("loading", false);
+        // visuale
         InitilizeTest();
+        store.dispatch("loading", false);
       }, 1000);
     });
 
@@ -296,10 +254,9 @@ export default defineComponent({
       focusIndex,
       OnfocusChange,
       questionCards,
-      hideInfoBar,
       Finished,
       Quit,
-      checkAnswer
+      time
     };
   }
 });

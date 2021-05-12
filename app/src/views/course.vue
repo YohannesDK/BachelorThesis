@@ -24,13 +24,16 @@
                 </div>
 
                 <div class="media_content media-body">
-                  <p>Teacher</p>
-                  <h6 class="title">Kiara alva ruba</h6>
-                </div>
-                <div @click="showDoc()" class="contact-teacher">
-                  <a href="mailto:kassaye85@gmail.com">
-                    <fa icon="paper-plane" />
-                  </a>
+                  <p>Teacher
+                    <span>
+                      <a class="contact-teacher" :href="'mailto:' + courseTeacher.Email">
+                        <fa icon="paper-plane" />
+                      </a>
+                    </span>
+                  </p>
+                  <h6 class="title" v-if="courseTeacher">
+                    {{ courseTeacher.UserName }}
+                  </h6>
                 </div>
               </div>
             </div>
@@ -68,7 +71,12 @@
         :courseModule="courseModule"
       />
 
-      <div v-if="AddingType === 1">documents</div>
+      <add-document-to-course
+        v-if="AddingType === 1"
+        :courseID="course.courseId"
+        :courseDocuments="course.documents"
+        @documentsUpdated="ondocumentsUpdated"
+      />
 
       <add-assignment-module
         v-if="AddingType === 2 && AssigmentModuleAction === 0"
@@ -81,7 +89,11 @@
         :AssignmentModule="assignmentModule"
       />
 
-      <div v-if="AddingType === 3">tests</div>
+      <add-question-set-to-course
+        v-if="AddingType === 3"
+        :courseID="course.courseId"
+        :courseQuestionSets="course.QuestionSets"
+      />
     </template>
   </course-editing-modal>
 
@@ -152,18 +164,156 @@
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 3">
           <div class="course-page-view-inner-header">
-            <h1>Tests</h1>
+            <h1>Question Sets</h1>
             <div class="icon-container" @click="AddNew(3)" v-if="IsTeacher">
               <div class="icon">
                 <fa icon="plus" />
               </div>
             </div>
           </div>
+          <div class="course-page-view-inner-body">
+            <table class="table questionsettable">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col" class="questionsettable-header">
+                    <div class="th-container" @click="updateSortOption(0)">
+                      <span>Tittle</span>
+                    </div>
+                  </th>
+                  <th scope="col" class="questionsettable-header">
+                    <div class="th-container" @click="updateSortOption(0)">
+                      <span>Description</span>
+                    </div>
+                  </th>
+                  <th scope="col" class="questionsettable-header">
+                    <div class="th-container" @click="updateSortOption(1)">
+                      <span>Questions</span>
+                    </div>
+                  </th>
+                  <th scope="col" class="questionsettable-header">
+                    <div class="th-container" @click="updateSortOption(2)">
+                      <span>Last Edited</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-questionsets-row qs-splitter">
+                  <th scope="row"></th>
+                  <td colspan="4">
+                    Course Question sets
+                  </td>
+                </tr>
+                <tr
+                  class="table-questionsets-row"
+                  v-for="(questionset, index) in QuestionSets"
+                  :key="index"
+                  @click="OpenQuestionSet(questionset.QSID, 0)"
+                >
+                  <th scope="row">{{ index + 1 }}</th>
+                  <td>
+                    {{ questionset.Tittle }}
+                  </td>
+                  <td>
+                    {{
+                      questionset.Description.substring(
+                        0,
+                        DescriptionSubstringLength
+                      ) + "..."
+                    }}
+                  </td>
+                  <td>
+                    {{ questionset.QuestionSet.length }}
+                  </td>
+                  <td>
+                    {{ questionset.LastEdited }}
+                  </td>
+                </tr>
+                <tr class="table-questionsets-row qs-splitter">
+                  <th scope="row"></th>
+                  <td colspan="4">
+                    Document Question sets
+                  </td>
+                </tr>
+                <tr
+                  class="table-questionsets-row"
+                  v-for="(questionset, index) in documentQuestionSets"
+                  :key="index"
+                  @click="OpenQuestionSet(questionset.QSID, 1)"
+                >
+                  <th scope="row">{{ index + 1 }}</th>
+                  <td>
+                    {{ questionset.Tittle }}
+                  </td>
+                  <td>
+                    {{
+                      questionset.Description.substring(
+                        0,
+                        DescriptionSubstringLength
+                      ) + "..."
+                    }}
+                  </td>
+                  <td>
+                    {{ questionset.QuestionSet.length }}
+                  </td>
+                  <td>
+                    {{ questionset.LastEdited }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="course-page-view-inner-container" v-if="menuIndex === 4">
           <div class="course-page-view-inner-header">
-            <h1>Grades</h1>
+            <h1>Stats</h1>
+          </div>
+          <div class="course-page-view-inner-body">
+            <div class="stat-type-menu-container">
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 0 }"
+                @click="StatsMenuUpdate(0)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="object-group" class="icon" />
+                </div>
+                <span>Class Stats</span>
+              </div>
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 1 }"
+                @click="StatsMenuUpdate(1)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="object-ungroup" class="icon" />
+                </div>
+                <span>Topic Stats</span>
+              </div>
+              <div
+                class="stat-type-button card"
+                :class="{ 'stat-active': StatsMenuIndex === 2 }"
+                @click="StatsMenuUpdate(2)"
+              >
+                <div class="stat-icon-container">
+                  <fa icon="network-wired" class="icon" />
+                </div>
+                <span>Question Stats</span>
+              </div>
+            </div>
+            <div class="stat-container">
+              <div class="stat-inner" v-if="StatsMenuIndex === 0">
+                class stats
+              </div>
+              <div class="stat-inner" v-if="StatsMenuIndex === 1">
+                <topic-stats :TopicStatsDocuments="TopicStatsDocumentsProp" />
+              </div>
+              <div class="stat-inner" v-if="StatsMenuIndex === 2">
+                <question-stats :CourseID="CourseId" :QuestionSetStatsProp="QuestionSetStatsProps" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -187,27 +337,27 @@ import {
   ref,
   computed,
   reactive,
-  Ref
+  Ref,
+  ComputedRef
 } from "vue";
 import store from "@/store";
 import courseModule from "@/components/courseModule.vue";
-import {
-  courseType,
-  CourseModule,
-  CourseModuleSection,
-  CourseModuleSectionItems,
-  CourseModuleItemEnum
-} from "@/store/interfaces/course";
+import { courseType, CourseModule } from "@/store/interfaces/course";
 import { documentType } from "@/store/interfaces/document";
+import { UserType } from "@/store/interfaces/user.types";
+import { QuestionSet } from "@/store/interfaces/question.type";
+import { AssignmentModule } from "@/store/interfaces/assignments.types";
+import { TopicStatsDocuments } from "@/store/interfaces/topic.stats.types";
+import { QuestionSetStats } from "@/store/interfaces/QuestionSet.stats.types";
+
 import Assignments from "@/components/Assignments.vue";
-import {
-  AssignmentModule,
-  AssignmentReading,
-  AssignmentTest
-} from "@/store/interfaces/assignments.types";
 import CourseEditingModal from "@/components/CourseEditingModal.vue";
 import AddCourseModule from "@/components/AddCourseModule.vue";
 import AddAssignmentModule from "@/components/AddAssignmentModule.vue";
+import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
+import AddQuestionSetToCourse from "@/components/AddQuestionSetToCourse.vue";
+import TopicStats from "@/components/TopicStats.vue";
+import QuestionStats from "@/components/QuestionStats.vue";
 
 export default defineComponent({
   components: {
@@ -216,12 +366,27 @@ export default defineComponent({
     Assignments,
     CourseEditingModal,
     AddCourseModule,
-    AddAssignmentModule
+    AddAssignmentModule,
+    AddDocumentToCourse,
+    AddQuestionSetToCourse,
+    TopicStats,
+    QuestionStats
   },
   name: "Course",
   setup() {
     const CourseId = Number(router.currentRoute.value.query.cid);
     const course: Ref<courseType> = ref(store.getters.getCoursebyId(CourseId));
+
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
+
+    const courseTeacher: ComputedRef<UserType> = computed(() => {
+      if (IsTeacher.value) {
+        return store.getters.getActiveUser;
+      } else {
+        return store.getters.getCourseTeacher(course.value.Teacher);
+      }
+    });
+
     const courseModule: Ref<CourseModule> = ref({
       courseModuleID: -1,
       courseId: -1,
@@ -240,23 +405,92 @@ export default defineComponent({
       TestList: []
     });
 
-    const documents: Ref<documentType> = ref(store.getters.getDocuments);
+    const documents: Ref<Array<documentType>> = ref(
+      store.getters.getCourseDocuments(course.value.documents)
+    );
 
-    const AddingType = ref(0);
+    const QuestionSets: ComputedRef<Array<QuestionSet>> = computed(() => {
+      return store.getters.getCourseQuestionSets(course.value.QuestionSets);
+    });
 
-    const CourseModuleAction = ref(0);
-    const AssigmentModuleAction = ref(0);
+    const documentQuestionSets: ComputedRef<Array<QuestionSet>> = computed(
+      () => {
+        let questionsetIDs: number[] = [];
+        documents.value.forEach((doc: documentType) => {
+          questionsetIDs = [...questionsetIDs, ...doc.QuestionSetID];
+        });
+        return store.getters.getCourseDocumentQuestionSets(questionsetIDs);
+      }
+    );
+
+
+    const TopicStatsDocumentsProp: ComputedRef<Array<TopicStatsDocuments>> = computed(() => {
+      const Docs: TopicStatsDocuments[] = [];
+      documents.value.map((doc: documentType) => {
+        Docs.push({
+          Documentid: doc.Documentid,
+          name: doc.name
+        });
+      });
+      return Docs
+    })
+
+    const QuestionSetStatsProps: ComputedRef<Array<QuestionSetStats>> = computed(() => {
+      const QSProp: QuestionSetStats[] = [];
+
+      QuestionSets.value.map((qs: QuestionSet) => {
+        QSProp.push({
+          QSID: qs.QSID,
+          Tittle: qs.Tittle
+        });
+      });
+
+      documentQuestionSets.value.map((qs: QuestionSet) => {
+        const QSIndex = QSProp.map((addedQs: QuestionSetStats) => addedQs.QSID).indexOf(qs.QSID);
+        if (QSIndex === -1) QSProp.push({QSID: qs.QSID, Tittle: qs.Tittle});
+      })
+
+      return QSProp
+    })
 
     const menuIndex = ref<number>(0);
+    const DescriptionSubstringLength = 25;
+    const AddingType = ref(0);
+    const CourseModuleAction = ref(0);
+    const AssigmentModuleAction = ref(0);
+    const QuestionSetsMenuIndex = ref(0);
+    const menuChoices = computed(() => {
+      const defaultChoices = [
+        "Home",
+        "Documents",
+        "Assignments",
+        "Question Sets"
+      ];
+      if (IsTeacher.value) {
+        defaultChoices.push("Stats");
+      }
+      return defaultChoices;
+    });
+
+    const StatsMenuIndex = ref<number>(0);
 
     const courseEditingModal = ref<any>();
 
-    const menuChoices = ["Home", "Documents", "Assignments", "Tests", "Grades"];
+    const StatsMenuUpdate = (UpdatedMenuIndex: number) => {
+      StatsMenuIndex.value = UpdatedMenuIndex;
+    };
 
     const MenuUpdate = (UpdatedMenuIndex: number) => {
       menuIndex.value = UpdatedMenuIndex;
     };
 
+    const OpenQuestionSet = (QSID: number, questionsetType = 0) => {
+      router.push({
+        name: "TakeTest",
+        query: { QSID: QSID, QST: questionsetType, cid: course.value.courseId},
+      });
+    };
+    
     const AddNew = (addingType: number) => {
       CourseModuleAction.value = 0;
       if (courseEditingModal.value) {
@@ -305,9 +539,20 @@ export default defineComponent({
       store.dispatch("deleteAssignmentModule", assigmentmodule);
     };
 
-    const IsTeacher = computed(() => store.getters.getIsTeacher);
+    const ondocumentsUpdated = () => {
+      documents.value = store.getters.getCourseDocuments(
+        course.value.documents
+      );
+    };
+
+    // const onCourseQuestionSetsUpdated = () => {
+    //   QuestionSets.value = store.getters.getCourseQuestionSets(
+    //     course.value.QuestionSets
+    //   );
+    // };
 
     return {
+      CourseId,
       course,
       menuChoices,
       menuIndex,
@@ -324,7 +569,18 @@ export default defineComponent({
       OnAssingmentEdit,
       OnAssignmentDelete,
       AssigmentModuleAction,
-      IsTeacher
+      IsTeacher,
+      ondocumentsUpdated,
+      courseTeacher,
+      QuestionSetsMenuIndex,
+      QuestionSets,
+      documentQuestionSets,
+      DescriptionSubstringLength,
+      OpenQuestionSet,
+      StatsMenuUpdate,
+      StatsMenuIndex,
+      TopicStatsDocumentsProp,
+      QuestionSetStatsProps
     };
   }
 });
@@ -439,24 +695,11 @@ export default defineComponent({
 }
 
 .contact-teacher {
-  position: absolute;
-  padding: 2%;
-  top: -20%;
   border: none;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  left: 35%;
+  color: #cfea4e;
 }
 .contact-teacher:hover {
   cursor: pointer;
-}
-
-.contact-teacher a {
-  color: #cfea4e;
 }
 
 .course-page-container {
@@ -558,5 +801,155 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   /* padding: 0 1%; */
+}
+
+.questionsettable {
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: baseline;
+  vertical-align: -moz-baseline;
+}
+
+.questionsettable-header {
+  width: 24% !important;
+}
+
+/* .questionsettable th:not(:first-child, :last-child) {
+} */
+.th-container {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2%;
+  padding-left: unset;
+}
+
+.th-container span {
+  white-space: nowrap;
+  margin-right: 1.2rem;
+}
+
+.th-icon-container {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.th-icon-container:hover {
+  background-color: rgba(229, 231, 238, 0.514);
+  cursor: pointer;
+}
+
+.table-questionsets-row {
+  transition: all 0.3s;
+}
+
+.table-questionsets-row:hover {
+  background-color: rgba(229, 231, 238, 0.514);
+  cursor: pointer;
+}
+
+tr.table-questionsets-row.qs-splitter {
+  height: 6rem;
+  font-weight: 700;
+}
+
+.qs-splitter td {
+  vertical-align: middle;
+}
+
+.qs-splitter:hover {
+  background-color: rgba(229, 231, 238, 0);
+}
+.course-questionset-menu-btn {
+  width: 49.9%;
+  display: flex;
+  justify-content: center;
+  min-height: 3rem;
+  align-items: center;
+  border-radius: 3px;
+  transition: all 0.3s;
+  border-bottom: 4px solid transparent;
+}
+
+.course-questionset-menu-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.course-questionset-menu-btn.active {
+  border-bottom: 4px solid #3b7991;
+  background: rgba(245, 245, 245, 0.493);
+}
+
+.course-questionset-menu-btn:hover {
+  background: rgba(245, 245, 245, 0.493);
+  cursor: pointer;
+  border-bottom: 4px solid #3b7991a6;
+}
+
+.stat-type-menu-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-type-button {
+  width: 30%;
+  height: 8rem;
+  /* background: white; */
+  /* background: #265a70d4; */
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 2% 0;
+  transition: all 0.3s;
+  /* box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important; */
+  background: #365766;
+  opacity: 0.9;
+  color: white;
+}
+
+.stat-type-button.stat-active {
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  transform: scale(1.1);
+  color: white;
+  opacity: 1;
+}
+
+.stat-type-button:hover {
+  color: white;
+  cursor: pointer;
+  transform: scale(1.1);
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  opacity: 1;
+}
+
+.stat-type-button:hover > .stat-icon-container,
+.stat-type-button.stat-active > .stat-icon-container {
+  transform: rotate(15deg);
+}
+
+.stat-icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.1s;
+}
+
+.stat-icon-container .icon {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.stat-type-button span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 4px solid transparent;
+  padding: 1% 0;
 }
 </style>

@@ -33,7 +33,10 @@ import {
   faFlag,
   faPaperPlane,
   faExternalLinkAlt,
-  faUserPlus
+  faUserPlus,
+  faObjectGroup,
+  faObjectUngroup,
+  faNetworkWired
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -71,7 +74,10 @@ library.add(
   faFlag,
   faPaperPlane,
   faExternalLinkAlt,
-  faUserPlus
+  faUserPlus,
+  faObjectGroup,
+  faObjectUngroup,
+  faNetworkWired
 );
 
 export { FontAwesomeIcon };

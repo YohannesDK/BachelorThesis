@@ -13,7 +13,6 @@
               }}</span>
             </div>
           </div>
-          <button @click="createTFQ()">True False Question</button>
           <div class="QuestionSetHeader-Button">
             <button
               type="button"
@@ -111,8 +110,6 @@ import { day, month, year } from "@/utils/calender.utils";
 import { UserType } from "@/store/interfaces/user.types";
 import {
   createQuestionSet,
-  FetchQS,
-  SaveQS,
   UpdateQuestionSet
 } from "@/services/api/questionset.service";
 export default defineComponent({

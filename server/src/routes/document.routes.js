@@ -11,7 +11,10 @@ const documentController = require("../controllers/document.controller")
 router.post("/api/getAllDocuments", documentController.get_all_documents)
 
 //This api call creates a document relation
-router.post("/api/linkDocument", documentController.link_document)
+router.post("/api/linkDocumentToCourse", documentController.link_document_to_course)
+
+//This api call removes a document - course, relation
+router.post("/api/RemoveDocumentFromCourse", documentController.remove_document_from_course)
 
 //This api call creates a document
 router.post("/api/createDocument", documentController.create_document)

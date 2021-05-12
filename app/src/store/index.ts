@@ -5,7 +5,8 @@ import QuestionTestModule from "./modules/QuestionTest.module";
 import DocumentModule from "./modules/Documents.module";
 import TestStatsModule from "./modules/TestStats.module";
 import CourseModule from "./modules/courses.module";
-// import createPersistedState from "vuex-persistedstate";
+import StatsModule from "./modules/Stats.module";
+import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {
@@ -17,9 +18,8 @@ const store = createStore({
       FirstName: "",
       LastName: ""
     } as UserType,
-
-    activeUser: {},
-    loading: false
+    loading: false,
+    alertMessages: [] as any[]
   },
   mutations: {
     login: state => {
@@ -34,9 +34,30 @@ const store = createStore({
       state.user.Role = user.Role;
       state.user.FirstName = user.FirstName;
       state.user.LastName = user.LastName;
+      state.user.Email = user.Email
     },
     loading: (state, loadingstatus) => {
       state.loading = loadingstatus;
+    },
+    AddNewAlert: (state, alertData) => {
+      let alertID = 0
+
+      if (state.alertMessages.length > 0) {
+        alertID = state.alertMessages[state.alertMessages.length - 1].id + 1; 
+      }
+      const alert = {
+        id: alertID,
+        message: alertData.message,
+        shown: false,
+        type: alertData.type
+      }
+      state.alertMessages.push(alert)
+    },
+    RemoveAlert: (state, alertID) => {
+      const alert = state.alertMessages.find((alert) => alert.id === alertID);
+      if (alert) {
+        alert.shown = true; 
+      }
     }
   },
   actions: {
@@ -51,6 +72,18 @@ const store = createStore({
     },
     setUser: (context, user: UserType) => {
       context.commit("setUser", user);
+    },
+    AddNewAlert: (context, alertData) => {
+      context.commit("AddNewAlert", alertData)
+    },
+    RemoveAlert: (context, alertID: number) => {
+      context.commit("RemoveAlert", alertID)
+    },
+    NotImplementedAlert: (context: any) => {
+      context.commit("AddNewAlert", {
+        message: "Not Implemented",
+        type: 0
+      });
     }
   },
   getters: {
@@ -68,6 +101,13 @@ const store = createStore({
         return state.user.Role.toLocaleLowerCase() === "teacher";
       }
       return -1;
+    },
+    getAlertMessages: state => {
+      return state.alertMessages.filter((alert: any) => {
+        if (alert.shown === false) {
+          return alert
+        }
+      })
     }
   },
   modules: {
@@ -75,10 +115,11 @@ const store = createStore({
     QuestionTestModule,
     DocumentModule,
     TestStatsModule,
-    CourseModule
-  }
-  // uncomment this on to persist state
-  // plugins: [createPersistedState()]
+    CourseModule,
+    StatsModule
+  },
+  // uncomment this to persist state
+  plugins: [createPersistedState()]
 });
 
 export default store;

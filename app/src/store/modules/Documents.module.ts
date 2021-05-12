@@ -1,10 +1,9 @@
-import { documentType, documentsNeedUpdate } from "../interfaces/document";
+import { documentType } from "../interfaces/document";
 import { UpdateDocument } from "@/services/api/document.service";
 export default {
   state: {
     documents: [] as documentType[],
     HighestdocumentID: 0,
-    documentsNeedUpdate: {} as documentsNeedUpdate
   },
   mutations: {
     AddNewDocument: (state: any) => {
@@ -92,11 +91,14 @@ export default {
         (doc: documentType) => doc.Documentid === Data.docID
       );
       if (doc) {
-        console.log(Data, doc)
         doc.name = Data.DocumentTittle;
         doc.body = Data.body;
         UpdateDocument(Data.userId, doc);
       }
+    },
+    UnLoadDocumentModule: (state: any) => {
+      state.documents.HighestdocumentID = 0;
+      state.documents.length = 0;
     }
   },
   actions: {
@@ -123,6 +125,9 @@ export default {
     },
     UpdateDocumentBody: (context: any, Data: any) => {
       context.commit("UpdateDocumentBody", Data);
+    },
+    UnLoadDocumentModule: (context: any) => {
+      context.commit("UnLoadDocumentModule")
     }
   },
   getters: {

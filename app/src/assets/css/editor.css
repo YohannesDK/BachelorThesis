@@ -10,4 +10,22 @@
   overflow: visible;
   box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
 }
+/* 
+.ql-editor {
+  overflow: visible;
+} */
+
+#editor .ql-tooltip {
+  max-width: 530px;
+  padding: 1% 0;
+  /* left: 0 !important; */
+}
+
+#editor .ql-toolbar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
 

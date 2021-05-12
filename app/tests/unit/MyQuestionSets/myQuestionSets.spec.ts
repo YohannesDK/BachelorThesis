@@ -33,7 +33,7 @@ const dropdownoptions = [
   "open",
   "rename",
   "practise",
-  "attach question set",
+  // "attach question set",
   "share",
   "delete"
 ];

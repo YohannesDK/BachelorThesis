@@ -20,8 +20,13 @@ export default {
       state.SingleTestStatID++;
     },
     AddNewTestStat: (state: any, TestData: TestData) => {
-      const TestStat: TestStat = CreateTestStat(state.TestStatID, TestData);
+      const TestStat: TestStat = CreateTestStat(TestData)[0];
       (state.TestStats as TestStat[]).push(TestStat);
+    },
+    UnloadTestStatsModule: (state: any) => {
+      state.TestStatID = 0;
+      state.SingleTestStatID = 0;
+      state.TestStats.length = 0;
     }
   },
   actions: {
@@ -34,7 +39,11 @@ export default {
     AddNewTestStat: (context: any, TestData: TestData) => {
       context.commit("IncrementTestStatID");
       context.commit("AddNewTestStat", TestData);
+    },
+    UnloadTestStatsModule: (context: any) => {
+      context.commit("UnloadTestStatsModule")
     }
+    // UnloadTestStatsModule: (con)
   },
   getters: {
     getSingleTestStatID: (state: any) => {

@@ -1,28 +1,17 @@
-// const _ = require('lodash');
 
-// /**
-//  * Deep diff between two object, using lodash
-//  * @param  {Object} object Object compared
-//  * @param  {Object} base   Object to compare with
-//  * @return {Object}        Return a new object who represent the diff
-//  */
-// exports.updateDifference = (object, base) => {
-// 	function changes(object, base) {
-// 		return _.transform(object, function(result, value, key) {
-// 			if (!_.isEqual(value, base[key])) {
-// 				result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
-// 			}
-// 		});
-// 	}
-// 	return changes(object, base);
-// }
-
-//Create functions here
 const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 
+const questionset_helpers = require("./helpers/questionsets.helper");
+const course_helpers = require("./helpers/course.helper");
+
 const JoinCourse = (request, response) => {
         let token = request.headers.token;
+        let allCourseDocuments = [];
+        let allCourseQuestionSets = [];
+        let allCourseDocumentQuestionSets = [];
+        let allCourseDocumentTopicStats = [];
+        let allTeachers = [];
         jwt.verify(token, "secretkey", async (err, decoded) => {
             if(err) return response.status(401).json({
                 title: "unauthorized",
@@ -34,7 +23,7 @@ const JoinCourse = (request, response) => {
                         title: "Course Not Found",
                         error: "No course found"
                     });
-                };
+                }
         
                 let alreadyJoined = await models.StudentCourseJunction.findOne({
                     where: {userId: decoded.id, courseId: course.id }
@@ -47,19 +36,59 @@ const JoinCourse = (request, response) => {
                             courseId: course.id
                         });
 
-                        let course_right_format = {
+                        let course_right_format = [{
                             courseId: course.id,
                             courseName: course.courseName,
                             courseShorthand: course.shorthand,
+                            Teacher: course.userId,
                             documents: [],
                             courseModules: [],
                             AssignmentModules: [],
                             QuestionSets: []
-                        };
+                        }];
+
+                        console.log(course_right_format)
+
+
+                        await Promise.all(course_right_format.map(async (joinedcourse) => {
+                            // fetch all course modules, sections and sectionitems
+                            let courseModules = await course_helpers.getCourseModules(joinedcourse.courseId, 1)
+                            joinedcourse.courseModules = [...courseModules];
+
+                            // fetch all course assignments
+                            let assignmentModules = await course_helpers.getCourseAssignments(joinedcourse.courseId);
+                            joinedcourse.AssignmentModules = [...assignmentModules];
+
+                            // fetch all course documents and their question sets
+                            await course_helpers.getCourseDocumentsAndData(joinedcourse, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
+
+
+                            // fetch all course questionSets
+                            await course_helpers.getCourseQuestionSets(joinedcourse, allCourseQuestionSets);
+
+                            // fetch course teacher and add it to our list
+                            let teacher = await models.users.findOne({where: {
+                              id: joinedcourse.Teacher,
+                            }});
+
+                            if (teacher) {
+                                const teacher_right_format = {
+                                    UserID: teacher.id,
+                                    UserName: teacher.username,
+                                    Role: teacher.Role
+                                };
+                                allTeachers.push(teacher_right_format);
+                            }
+                        }));
+
         
                         return response.status(200).json({
                             title: "Joined Course",
                             course: course_right_format,
+                            allCourseDocument: allCourseDocuments,
+                            allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                            allCourseQuestionSets: allCourseQuestionSets,
+                            allTeachers: allTeachers
                         });
                     }
                     return response.status(400).json({
@@ -71,8 +100,8 @@ const JoinCourse = (request, response) => {
                     title: "Already Joined",
                 });
             });
-        })
-}
+        });
+};
 
 const create_course = (request, response) => {
     let token = request.headers.token;
@@ -89,7 +118,7 @@ const create_course = (request, response) => {
             });
         }
 
-    })
+    });
 
     models.users.findOne({where: {id: request.body.userId}}).then( async (users) => {
         let course = await models.courses.create({
@@ -109,10 +138,10 @@ const create_course = (request, response) => {
             QuestionSets: []
         };
 
-        return response.status(200).json({course: course_right_format})
+        return response.status(200).json({course: course_right_format});
     });
     return response.status(400);
-}
+};
 
 const fetch_course_doc = (request, response) => {
 
@@ -135,7 +164,7 @@ const fetch_course_doc = (request, response) => {
         setTimeout(delayReturn, 100);
 
         });
-}
+};
 
 
 const getCourses = (request, response) => {
@@ -147,8 +176,15 @@ const getCourses = (request, response) => {
         });
 
         let { role } = decoded;
+        let allCourseDocuments = [];
+        let allCourseQuestionSets = [];
+        let allCourseDocumentQuestionSets = [];
+        let allCourseDocumentTopicStats = [];
+        let allTeachers = [];
+        let allTestDataStats = [];
+
         if (role.toLowerCase() === "teacher") {
-            const courses = await models.courses.findAll({where: {userId: decoded.id}}) 
+            const courses = await models.courses.findAll({where: {userId: decoded.id}}); 
 
             if (courses) {
                 let courses_right_format = courses.map(course => {
@@ -160,99 +196,45 @@ const getCourses = (request, response) => {
                         courseModules: [],
                         AssignmentModules: [],
                         QuestionSets: []
-                    } 
+                    }; 
                 });
+
                 
                 await Promise.all(courses_right_format.map(async (course) => {
-                    // fetch all course modules, sections and sectionitems
-                    let courseModules = await models.CourseModule.findAll({where: {
-                        courseId: course.courseId,
-                    }});
+                    let courseModules = await course_helpers.getCourseModules(course.courseId)
+                    course.courseModules = [...courseModules];
 
-                    let course_modules_right_format = courseModules.map(courseModule => {
-                        return {
-                            courseModuleID: courseModule.courseModuleID,
-                            courseId: courseModule.courseId,
-                            moduleOrderIndex: courseModule.moduleOrderIndex,
-                            public: courseModule.public,
-                            moduleName: courseModule.moduleName,
-                            moduleSections: []
-                        }
-                    });
+                    let assignmentModules = await course_helpers.getCourseAssignments(course.courseId);
+                    course.AssignmentModules = [...assignmentModules];
 
-                    await Promise.all(course_modules_right_format.map(async (coursemodule) => {
-                        let courseModuleSections = await models.CourseModuleSection.findAll({where: {
-                            courseModuleID: coursemodule.courseModuleID 
-                        }})
+                    await course_helpers.getCourseDocumentsAndData(course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments);
 
-                        let course_module_section_right_format = courseModuleSections.map(section => {
-                            return {
-                                SectionID: section.SectionID,
-                                courseModuleID: section.courseModuleID,
-                                SectionName: section.SectionName,
-                                SectionItems: [] 
-                            }
-                        });
+                    await course_helpers.getCourseQuestionSets(course, allCourseQuestionSets);
 
-                        await Promise.all(course_module_section_right_format.map(async (section) => {
-                            let coursemodulesectionitems = await models.CourseModuleSectionItem.findAll({where: {
-                                SectionID: section.SectionID 
-                            }});
-                            section.SectionItems = [...coursemodulesectionitems];
-                        }))
-
-                        coursemodule.moduleSections = [...course_module_section_right_format];
-                    }))
-                    course.courseModules = [...course_modules_right_format];
-
-                    // fetch all assignment modules
-                    let assignmentModules = await models.AssignmentModule.findAll({where: {
-                        courseID: course.courseId
-                    }});
-
-                    let assingment_modules_right_format = assignmentModules.map(assingmentModule => {
-                        return {
-                            AssignmentID: assingmentModule.AssignmentID,
-                            courseID: assingmentModule.courseID,
-                            AssignmentName: assingmentModule.AssignmentName,
-                            Date: assingmentModule.Date,
-                            ReadingList: [],
-                            TestList: []
-                        };
-                    });
-
-                    await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
-                        let assignmentReadings = await models.AssignmentReading.findAll({where: {
-                            AssignmentID: assingmentModule.AssignmentID
-                        }});
-                        assingmentModule.ReadingList = [...assignmentReadings];
-                    }));
-
-                    await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
-                        let assingmentTests = await models.AssignmentTest.findAll({where: {
-                            AssignmentID: assingmentModule.AssignmentID
-                        }});
-                        assingmentModule.TestList = [...assingmentTests];
-                    }));
-                    course.AssignmentModules = [...assingment_modules_right_format];
+                    await course_helpers.getCourseQuestionSetStats(course, allTestDataStats);
                 }));
 
+                
                 return response.status(200).json({
-                    courses: courses_right_format
-                })
-            }
+                    courses: courses_right_format,
+                    allCourseDocument: allCourseDocuments,
+                    allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                    allCourseQuestionSets: allCourseQuestionSets,
+                    allCourseDocumentTopicStats: allCourseDocumentTopicStats,
+                    allTestDataStats: allTestDataStats,
+                    allTeachers: allTeachers
+                }); }
             else {
                 return response.send(400);
             }
         }
         
         if (role.toLowerCase() === "student") {
-            console.log("student courses")
             let studentCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id}});
             if (!studentCourses) { 
                 return response.status(204).json({
                     tittle: "No Courses"
-                })
+                });
             }
             studentCourses = studentCourses.map(scourse => scourse.courseId);
 
@@ -266,103 +248,68 @@ const getCourses = (request, response) => {
                         courseId: course.id,
                         courseName: course.courseName,
                         courseShorthand: course.shorthand,
+                        Teacher: course.userId,
                         documents: [],
                         courseModules: [],
                         AssignmentModules: [],
                         QuestionSets: []
-                    } 
-                });
-
+                    }; 
+                }); 
 
                 await Promise.all(courses_right_format.map(async (course) => {
                     // fetch all course modules, sections and sectionitems
+                    let courseModules = await course_helpers.getCourseModules(course.courseId, 1)
+                    course.courseModules = [...courseModules];
 
-                    let courseModules = await models.CourseModule.findAll({where: {
-                        courseId: course.courseId,
-                        public: 1
+                    // fetch all course assignments
+                    let assignmentModules = await course_helpers.getCourseAssignments(course.courseId);
+                    course.AssignmentModules = [...assignmentModules];
+
+                    // fetch all course documents and their question sets
+                    await course_helpers.getCourseDocumentsAndData(course, allCourseDocumentQuestionSets, allCourseDocumentTopicStats, allCourseDocuments, false);
+
+
+                    // fetch all course questionSets
+                    await course_helpers.getCourseQuestionSets(course, allCourseQuestionSets);
+
+                    // fetch course teacher and add it to our list
+                    let teacher = await models.users.findOne({where: {
+                      id: course.Teacher,
                     }});
 
-                    let course_modules_right_format = courseModules.map(courseModule => {
-                        return {
-                            courseModuleID: courseModule.courseModuleID,
-                            courseId: courseModule.courseId,
-                            moduleOrderIndex: courseModule.moduleOrderIndex,
-                            public: courseModule.public,
-                            moduleName: courseModule.moduleName,
-                            moduleSections: []
-                        }
-                    });
-
-                    await Promise.all(course_modules_right_format.map(async (coursemodule) => {
-                        let courseModuleSections = await models.CourseModuleSection.findAll({where: {
-                            courseModuleID: coursemodule.courseModuleID 
-                        }})
-
-                        let course_module_section_right_format = courseModuleSections.map(section => {
-                            return {
-                                SectionID: section.SectionID,
-                                courseModuleID: section.courseModuleID,
-                                SectionName: section.SectionName,
-                                SectionItems: [] 
-                            }
-                        });
-
-                        await Promise.all(course_module_section_right_format.map(async (section) => {
-                            let coursemodulesectionitems = await models.CourseModuleSectionItem.findAll({where: {
-                                SectionID: section.SectionID 
-                            }});
-                            section.SectionItems = [...coursemodulesectionitems];
-                        }))
-                        coursemodule.moduleSections = [...course_module_section_right_format];
-                    }))
-                    course.courseModules = [...course_modules_right_format];
-
-                    // fetch all assignment modules
-                    let assignmentModules = await models.AssignmentModule.findAll({where: {
-                        courseID: course.courseId
-                    }});
-
-                    let assingment_modules_right_format = assignmentModules.map(assingmentModule => {
-                        return {
-                            AssignmentID: assingmentModule.AssignmentID,
-                            courseID: assingmentModule.courseID,
-                            AssignmentName: assingmentModule.AssignmentName,
-                            Date: assingmentModule.Date,
-                            ReadingList: [],
-                            TestList: []
+                    if (teacher) {
+                        const teacher_right_format = {
+                            UserID: teacher.id,
+                            UserName: teacher.username,
+                            Role: teacher.Role,
+                            FirstName: teacher.firstname, 
+                            LastName: teacher.lastname, 
+                            Email: teacher.email, 
                         };
-                    });
-
-                    await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
-                        let assignmentReadings = await models.AssignmentReading.findAll({where: {
-                            AssignmentID: assingmentModule.AssignmentID
-                        }});
-                        assingmentModule.ReadingList = [...assignmentReadings];
-                    }));
-
-                    await Promise.all(assingment_modules_right_format.map(async (assingmentModule) => {
-                        let assingmentTests = await models.AssignmentTest.findAll({where: {
-                            AssignmentID: assingmentModule.AssignmentID
-                        }});
-                        assingmentModule.TestList = [...assingmentTests];
-                    }));
-                    course.AssignmentModules = [...assingment_modules_right_format];
+                        allTeachers.push(teacher_right_format);
+                    }
                 }));
 
+
                 return response.status(200).json({
-                    courses: courses_right_format
-                })
+                    courses: courses_right_format,
+                    allCourseDocument: allCourseDocuments,
+                    allCourseDocumentQuestionSets: allCourseDocumentQuestionSets,
+                    allCourseQuestionSets: allCourseQuestionSets,
+                    allTeachers: allTeachers
+                });
             } else {
-                return response.send(400)
+                return response.send(400);
             }
 
         }
-    })
-}
+    });
+};
 
 
 const getAvailableCourses = (request, response) => {
         let availableCourses = [];
+        let addedCourses = {};
 
         let token = request.headers.token;
         jwt.verify(token, "secretkey", async (err, decoded )=> {
@@ -373,26 +320,27 @@ const getAvailableCourses = (request, response) => {
 
             // find all joined courses
             let joinedCourses = await models.StudentCourseJunction.findAll({where: {userId: decoded.id} });
-            let courses = await models.courses.findAll()
+            let courses = await models.courses.findAll();
+
+            // console.log(joinedCourses.map((j) => j))
 
             if (joinedCourses.length === 0) {
-                availableCourses = courses
+              console.log("her");
+                availableCourses = courses;
             } else {
-                joinedCourses.forEach(junction => {
-                    courses.forEach(course => {
-                        if (course.courseId !== junction.courseId) {
-                            availableCourses.push(course);
-                        } 
-                    }); 
-                });
+                availableCourses = courses.filter((course) => {
+                  if (!joinedCourses.map((jcourse) => jcourse.courseId).includes(course.id)) {
+                    return course 
+                  }
+                })
             }
 
             return response.status(200).json({
                 availableCourses: availableCourses,
-            })
+            });
 
         });
-}
+};
 
 
 const CreateCourseModule = (request, response) => {
@@ -464,7 +412,7 @@ const CreateCourseModule = (request, response) => {
                     });
                 }
                 sectionItems.push(createdCourseModuleSectionItem);
-            }))
+            }));
             let section_with_sectionItems = {
                 SectionID: createdCourseModuleSection.SectionID,
                 courseModuleID: createdCourseModule.courseModuleID,
@@ -472,7 +420,7 @@ const CreateCourseModule = (request, response) => {
                 SectionItems: sectionItems
             };
             NewcourseModule.moduleSections.push(section_with_sectionItems);
-        }))
+        }));
 
         return response.status(200).json({
             newcourseModule: NewcourseModule
@@ -480,17 +428,17 @@ const CreateCourseModule = (request, response) => {
 
     }).catch(() => {
         return response.sendStatus(400);
-    })
-}
+    });
+};
 
 
 const updateCourseModule = async (request, response) => {
 
-    const courseModule = request.body.EditData.courseModule
-    const updatedsections = request.body.EditData.updatedsections
-    const updatedsectionitems = request.body.EditData.updatedsectionitems
-    const deletedsections = request.body.EditData.deletedsections
-    const deletedsectionitems = request.body.EditData.deletedsectionitems
+    const courseModule = request.body.EditData.courseModule;
+    const updatedsections = request.body.EditData.updatedsections;
+    const updatedsectionitems = request.body.EditData.updatedsectionitems;
+    const deletedsections = request.body.EditData.deletedsections;
+    const deletedsectionitems = request.body.EditData.deletedsectionitems;
 
     
     let token = request.headers.token;
@@ -522,7 +470,7 @@ const updateCourseModule = async (request, response) => {
                 SectionName: section.SectionName
             });
             // assingn created section id
-            courseModule.moduleSections[section_index].SectionID = createdCourseModuleSection.SectionID
+            courseModule.moduleSections[section_index].SectionID = createdCourseModuleSection.SectionID;
 
             // create each item in section
             await Promise.all( section.SectionItems.map(async(sectionitem, section_item_index) => {
@@ -547,20 +495,20 @@ const updateCourseModule = async (request, response) => {
                 courseModule.moduleSections[section_index].SectionItems[section_item_index] = {
                     ItemID: createdCourseModuleSectionItem.ItemID,
                     SectionID: createdCourseModuleSectionItem.SectionID,
-                }
-            }))
+                };
+            }));
 
         }
 
         // update section name
         if (String(section.SectionID) in updatedsections) {
-            await models.CourseModuleSection.update({SectionName: section.SectionName}, {where: {SectionID: section.SectionID}})
+            await models.CourseModuleSection.update({SectionName: section.SectionName}, {where: {SectionID: section.SectionID}});
         }
     }));
 
     // delete entire sections
     await Promise.all(Object.keys(deletedsections).map(async (sectionID) => {
-        await models.CourseModuleSection.destroy({where: {SectionID: Number(sectionID)}})
+        await models.CourseModuleSection.destroy({where: {SectionID: Number(sectionID)}});
 
         // TODO - this should be done automatically using foreign keys
         await Promise.all( deletedsections[sectionID].SectionItems.map(async(sectionItem) => {
@@ -590,7 +538,7 @@ const updateCourseModule = async (request, response) => {
     return response.status(200).json({
         courseModule: courseModule
     });
-}
+};
 
 
 const publishCourseModule = async (request, response)  => {
@@ -599,12 +547,12 @@ const publishCourseModule = async (request, response)  => {
     await models.CourseModule.update({public: 1},
         {where: {courseModuleID: courseModule.courseModuleID}});
     return response.sendStatus(200);
-}
+};
 
 // TODO - need to fix this
 const deleteCourseModule = (request, response) => {
     return response.sendStatus(200);
-}
+};
 
 
 const createAssignmentModule = (request, response) => {
@@ -633,7 +581,7 @@ const createAssignmentModule = (request, response) => {
         Date: "",
         ReadingList: [],
         TestList: []
-    }
+    };
 
     models.AssignmentModule.create({
         courseID: assingmentModule.courseID,
@@ -641,9 +589,9 @@ const createAssignmentModule = (request, response) => {
         Date: assingmentModule.Date
     }).then(async (createdAssignmentModule) => {
         newAssingmentModule.AssignmentID = createdAssignmentModule.AssignmentID;
-        newAssingmentModule.courseID = createdAssignmentModule.courseID
+        newAssingmentModule.courseID = createdAssignmentModule.courseID;
         newAssingmentModule.AssignmentName = createdAssignmentModule.AssignmentName;
-        newAssingmentModule.Date = createdAssignmentModule.Date
+        newAssingmentModule.Date = createdAssignmentModule.Date;
 
         await Promise.all(assingmentModule.ReadingList.map(async (reading) => {
             // create reading assingment
@@ -668,13 +616,13 @@ const createAssignmentModule = (request, response) => {
         });
     }).catch(() => {
         return response.sendStatus(400);
-    })
-}
+    });
+};
 
 
 const updateAssignmentModule = async (request, response) => {
     const assignmentModule = request.body.EditData.assignmentModule;
-    console.log()
+    console.log();
     const deletedReadings = request.body.EditData.deletedAssignmentReadings;
     const deletedTests = request.body.EditData.deletedAssignmentTests;
 
@@ -713,7 +661,7 @@ const updateAssignmentModule = async (request, response) => {
                 ReadingID: createdReadingAssingment.ReadingID,
                 AssignmentID: createdReadingAssingment.AssignmentID,
                 ReadingDesc: createdReadingAssingment.ReadingDesc
-            }
+            };
         }
     }));
 
@@ -728,29 +676,29 @@ const updateAssignmentModule = async (request, response) => {
                 TestID: createdTestAssingment.TestID,
                 AssignmentID: createdTestAssingment.AssignmentID,
                 TestDesc: createdTestAssingment.TestDesc
-            }
+            };
         }
     }));
 
     // delete, deleted reading assignments
     await Promise.all(Object.keys(deletedReadings).map(async (ReadingID) => {
-        await models.AssignmentReading.destroy({where: {ReadingID: Number(ReadingID)}})
+        await models.AssignmentReading.destroy({where: {ReadingID: Number(ReadingID)}});
     }));
 
     // delete, deleted test assignments
     await Promise.all(Object.keys(deletedTests).map(async (TestID) => {
-        await models.AssignmentTest.destroy({where: {TestID: Number(TestID)}})
+        await models.AssignmentTest.destroy({where: {TestID: Number(TestID)}});
     }));
 
     return response.status(200).json({
         updatedAssignmentModule: assignmentModule
-    })
-}
+    });
+};
 
 // TODO - need to fix this
 const deleteAssignmentModule = (request, response) => {
     return response.sendStatus(200);
-}
+};
 
 
 module.exports = {
@@ -766,4 +714,4 @@ module.exports = {
     createAssignmentModule,
     updateAssignmentModule,
     deleteAssignmentModule
-}
+};

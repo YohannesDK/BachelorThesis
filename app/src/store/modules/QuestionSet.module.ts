@@ -56,6 +56,10 @@ export default {
           questionset.DocumentID.splice(docindex, 1);
         }
       }
+    },
+    unLoadQuestionSetModule: (state: any) => {
+      state.QuestionId = 0;
+      state.QuestionSets.length = 0;
     }
   },
   actions: {
@@ -73,6 +77,9 @@ export default {
     },
     RemoveDocumentFromQuestionSet: (context: any, data: any) => {
       context.commit("RemoveDocumentFromQuestionSet", data);
+    },
+    unLoadQuestionSetModule: (context: any) => {
+      context.commit("unLoadQuestionSetModule");
     }
   },
   getters: {

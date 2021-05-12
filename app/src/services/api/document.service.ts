@@ -8,7 +8,8 @@ import { DeltaOperation } from "quill";
 // creates new document
 export function CreateDocument(userId: number, body = "", title = "Edit Title...") {
   //Post request to create an empty document
-  axios
+  // let newDocID = -1;
+  return axios
     .post("/createDocument", {
       userId: userId,
       body: body,
@@ -23,6 +24,8 @@ export function CreateDocument(userId: number, body = "", title = "Edit Title...
         }
         NewDocument.lastEdited = datify(NewDocument.lastEdited);
         store.dispatch("UpdateDocuments", NewDocument);
+
+        return NewDocument.Documentid;
       }
     })
 }
@@ -84,4 +87,36 @@ export function UpdateDocument(userId: number, document: documentType) {
         console.log("updated");
       }
     });
+}
+
+
+
+export function LinkDocumentToCourse(courseID: number, documentID: number) {
+  axios
+  .post("/linkDocumentToCourse", {
+    documentId: documentID,
+    courseId: courseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
+}
+
+export function RemoveDocumentFromCourse(courseID: number, documentID: number) {
+  axios
+  .post("/RemoveDocumentFromCourse", {
+    documentId: documentID,
+    courseId: courseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
 }

@@ -1,6 +1,6 @@
 import router from "@/router";
 import store from "@/store/index";
-import { UserType } from "@/store/interfaces/user.types";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
 import { AxiosResponse } from "axios";
 import axios from "@/services/api";
 import jwtDecode, { JwtPayload, JwtDecodeOptions } from "jwt-decode";
@@ -17,7 +17,6 @@ export function checkLogin(form: any) {
 
 export function Login(username: string, password: string) {
   axios
-    // .post("/user/login", {
     .post("/user", {
       username: username,
       password: password
@@ -27,8 +26,10 @@ export function Login(username: string, password: string) {
         const user: UserType = {
           UserID: response.data.id,
           UserName: response.data.username,
-          Role: response.data.role.toUpperCase(),
-          FirstName: "None Yet" //TODO - fix so we have firstname / lastname in user model
+          Role: response.data.role!.toUpperCase(),
+          FirstName: response.data.firstname,
+          LastName: response.data.lastname,
+          Email: response.data.email
         };
         store.dispatch("setUser", user);
         store.dispatch("login");
@@ -50,6 +51,20 @@ export function Login(username: string, password: string) {
 
 export function Logout() {
   localStorage.removeItem("token");
+  const emptyUser: UserType = {
+    UserID: -1,
+    UserName: "",
+    Role: RoleType.Student,
+    FirstName: "",
+    LastName: ""
+  };
+  store.dispatch("setUser", emptyUser);
+  store.dispatch("unLoadQuestionSetModule");
+  store.dispatch("unLoadQuestionTestModule");
+  store.dispatch("UnLoadDocumentModule");
+  store.dispatch("UnloadTestStatsModule");
+  store.dispatch("UnLoadCourseModule");
+  store.dispatch("UnLoadStatsModule");
   router.push("/");
 }
 
