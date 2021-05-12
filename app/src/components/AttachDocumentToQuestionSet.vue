@@ -42,6 +42,7 @@ import { documentType } from "@/store/interfaces/document";
 import { computed, defineComponent, onMounted, ref } from "vue";
 import ToogleSwitchAttachDocument from "@/components/ToogleSwitchAttachDocument.vue";
 import Test from "@/directives/test.directive";
+import { AssignQSToDocument, RemoveQSFromDocument } from "@/services/api/questionset.service";
 export default defineComponent({
   components: { ToogleSwitchAttachDocument },
   name: "AttachDocument",
@@ -116,23 +117,9 @@ export default defineComponent({
         ) {
           const ele = data.value.documentToAttachTo[docid];
           if (ele.status === true) {
-            store.dispatch("SetDocumentQSID", {
-              documentid: Number(docid),
-              QSID: props.QSID
-            });
-            store.dispatch("AttachDocumentToQuestionSet", {
-              documentid: Number(docid),
-              QSID: props.QSID
-            });
+            AssignQSToDocument(props.QSID, Number(docid));
           } else if (ele.status === false) {
-            store.dispatch("DeleteQuestionSetFromDocument", {
-              documentid: Number(docid),
-              QSID: props.QSID
-            });
-            store.dispatch("RemoveDocumentFromQuestionSet", {
-              documentid: Number(docid),
-              QSID: props.QSID
-            });
+            RemoveQSFromDocument(props.QSID, Number(docid));
           }
         }
       }

@@ -13,13 +13,18 @@ module.exports = {
         foreignKey: true
       },
       QuestionId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      QuestionType: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      TextAnswer: {
+        type: Sequelize.STRING
+      },
+      ChoiceAnswer: {
         type: Sequelize.INTEGER
-      },
-      Answer: {
-        type: Sequelize.STRING
-      },
-      CorrectAnswer: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

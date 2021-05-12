@@ -1,7 +1,7 @@
 import store from "@/store";
 import { QuestionSet, QuestionSetFlag } from "@/store/interfaces/question.type";
 import { datify } from "@/utils/calender.utils";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import axios from "../api";
 
 
@@ -54,6 +54,7 @@ export function GetAllQuestionSets() {
     }
   }).then((response: AxiosResponse) => {
     if (response.status && response.status === 200) {
+      console.log(response.data)
       const QuestionSets = response.data.QuestionSets;
       if (QuestionSets) {
         QuestionSets.forEach((questionset: QuestionSet) => {
@@ -64,6 +65,79 @@ export function GetAllQuestionSets() {
     }
   })
 
+}
+
+
+// assigns a questionset to a document
+export function AssignQSToDocument(QSID: number, DocumentID: number) {
+  axios
+    .post("/AssignQSToDocument", {
+      QSID: QSID,
+      did: DocumentID
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("SetDocumentQSID", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        store.dispatch("AttachDocumentToQuestionSet", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        console.log("assigned");
+      }
+    })
+}
+
+// removes a questionset from a document
+export function RemoveQSFromDocument(QSID: number, DocumentID: number) {
+  axios
+    .post("/RemoveQSFromDocument", {
+      QSID: QSID,
+      did: DocumentID
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        store.dispatch("DeleteQuestionSetFromDocument", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        store.dispatch("RemoveDocumentFromQuestionSet", {
+          documentid: DocumentID,
+          QSID: QSID
+        });
+        console.log("Removed");
+      }
+    })
+}
+
+export function LinkQuestionSetToCourse(QSID: number, CourseID: number) {
+  axios
+  .post("/AssignQSToCourse", {
+    QSID: QSID,
+    CourseID: CourseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("linked");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
+}
+
+export function RemoveQSFromCourse(QSID: number, CourseID: number) {
+  axios
+  .post("/RemoveQSFromCourse", {
+    QSID: QSID,
+    CourseID: CourseID
+  })
+  .then((response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("removed");
+    }
+  }).catch((error: AxiosError) => {
+    console.error(error);
+  });
 }
 
 

@@ -9,4 +9,5 @@ export type UserType = {
   Role: RoleType.Student | RoleType.Teacher;
   FirstName?: string;
   LastName?: string;
+  Email?: string;
 };

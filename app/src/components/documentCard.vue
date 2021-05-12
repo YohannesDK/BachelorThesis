@@ -39,12 +39,17 @@
                 v-test="{ id: 'card-options-dropdown' }"
               >
                 <li @click="OpenEditor(document.Documentid)">Open</li>
-                <li>Rename</li>
-                <li @click="OpenQuestionSet(-1)">
+                <li
+                @click="NotImplementedAlert()"
+                >Rename</li>
+                <li @click="OpenQuestionSet(-1)"
+                v-if="IsTeacher"
+                >
                   Add New Question Set
                 </li>
-                <li @click="addDoc()">Add to course</li>
-                <li>Share</li>
+                <li
+                @click="NotImplementedAlert()"
+                >Share</li>
                 <hr />
                 <li @click="deleteDocument(document.Documentid)">Delete</li>
               </ul>
@@ -57,13 +62,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, computed } from "vue";
 import Test from "@/directives/test.directive";
 import { documentType } from "@/store/interfaces/document";
 import axios, { AxiosError } from "axios";
 import { DeltaToPlainText } from "@/utils/delta.utils";
 import { DeleteDocument } from "@/services/api/document.service";
 import router from "@/router";
+import store from "@/store";
 export default defineComponent({
   name: "documentCard",
   directives: { Test },
@@ -83,10 +89,7 @@ export default defineComponent({
     const showDropDown = ref<boolean>(false);
     const documentLastEdited = ref(props.document.lastEdited);
 
-    // let documentParsed = true
-
-    // @ts-ignore
-    const courseID = router.currentRoute._rawValue.query.cid;
+    const IsTeacher = computed(() => store.getters.getIsTeacher);
 
     const More = () => {
       showDropDown.value = true;
@@ -96,21 +99,6 @@ export default defineComponent({
       showDropDown.value = false;
     };
 
-    const addDoc = () => {
-      console.log("added this one" + props.document.Documentid);
-      axios
-        .post("api/linkDocument", {
-          documentId: props.document.Documentid,
-          courseId: courseID
-        })
-        .then(response => {
-          console.log(response);
-        }).catch((error: AxiosError) => {
-          console.error(error);
-        });
-    };
-
-    //THIS QUERY WONT WORK
     const OpenEditor = (DocumentId: number) => {
       router.push({ name: "EditorView", query: { did: DocumentId } });
     };
@@ -121,6 +109,10 @@ export default defineComponent({
         query: { QSID: QSID, did: props.document.Documentid }
       });
     };
+
+    const NotImplementedAlert = () => {
+      store.dispatch("NotImplementedAlert");
+    }
 
     const deleteDocument = (docID: number) => {
       showDropDown.value = false;
@@ -153,6 +145,7 @@ export default defineComponent({
         documentText.value = "Empty Document";
       }
     });
+
     return {
       documentText,
       documentTextLength,
@@ -161,9 +154,10 @@ export default defineComponent({
       RemoveMore,
       OpenEditor,
       OpenQuestionSet,
-      addDoc,
       documentLastEdited,
-      deleteDocument
+      deleteDocument,
+      IsTeacher,
+      NotImplementedAlert
     };
   }
 });
@@ -206,6 +200,7 @@ export default defineComponent({
   padding: 6%;
   font-size: 0.77em;
   padding-top: 13%;
+  overflow-x: hidden;
 }
 
 .doc-item-data-container {

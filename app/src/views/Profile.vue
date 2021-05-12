@@ -1,36 +1,39 @@
 <template>
   <div class="container profile-container d-flex flex-column">
-    <div class="row">
-      <div class="col-md-3 mx-auto">
+    <div class="row p-row">
+      <div class="col-md-3 p-card mx-auto">
         <div ref="profileCard" class="profile-card card shadow">
           <div class="panel">
             <div class="profile-card-card">
               <img
                 class="profile-img"
-                src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120"
+                :src="require(`@/assets/teacher.jpg`)"
               />
-              <h1>{{ fullname }}</h1>
-              <p>{{ user.email }}</p>
+              <h1>{{ user.FirstName }} {{ user.LastName }}</h1>
+              <p>{{ user.UserName }}</p>
             </div>
             <ul class="profile-card-nav list-unstyled components">
               <li class="profile-card-li active">
-                <a href="" class="text-muted">
+                <a href="" class="text-muted"
+                @click.prevent="NotImplementedAlert()"
+                >
                   <fa class="profile-li-icon" icon="user"></fa>
                   Profile
                 </a>
               </li>
               <li class="profile-card-li">
-                <a href="" class="text-muted">
+                <a href="" class="text-muted"
+                @click.prevent="NotImplementedAlert()"
+                >
                   <fa class="profile-li-icon" icon="edit" />
                   Edit Profile
                 </a>
               </li>
-              <button @click="Logout()">Logout</button>
             </ul>
           </div>
         </div>
       </div>
-      <div class="profile-info-container col-md-8 d-flex">
+      <div class="profile-info-container p-card col-md-8 d-flex">
         <div ref="profileUserInfo" class="profile-info col-md-8 card shadow">
           <div class="panel">
             <h1>User Info</h1>
@@ -38,22 +41,16 @@
             <div class="panel-inner-container">
               <div class="row">
                 <div class="user-info-row">
-                  <p><span>Full Name:</span> : {{ fullname }}</p>
+                  <p><span>Firstname: </span>{{ user.FirstName }}</p>
                 </div>
                 <div class="user-info-row">
-                  <p><span>Role:</span> : {{ role }}</p>
+                  <p><span>Lastname: </span>{{ user.LastName }}</p>
                 </div>
                 <div class="user-info-row">
-                  <p><span>Birthday</span> : {{ user.Birthday }}</p>
+                  <p><span>Email: </span> {{ user.Email }}</p>
                 </div>
                 <div class="user-info-row">
-                  <p><span>Gender</span> : {{ user.gender }}</p>
-                </div>
-                <div class="user-info-row">
-                  <p><span>Email</span> : {{ user.email }}</p>
-                </div>
-                <div class="user-info-row">
-                  <p><span>Mobile</span> : {{ user.mobile }}</p>
+                  <p><span>Role: </span> {{ Role }}</p>
                 </div>
               </div>
             </div>
@@ -61,138 +58,36 @@
         </div>
       </div>
     </div>
-    <div class="row mt-5">
-      <div class="profile-recents card shadow mx-auto">
-        <div class="d-flex justify-content-between p-1">
-          <h1 class="nopadding">{{ navHeader }}</h1>
-          <nav class="navbar profile-recents-nav justify-content-end">
-            <div :class="{ collapse: showNav }">
-              <ul class="nav">
-                <li
-                  class="nav-item"
-                  :class="{ active: navitem.active }"
-                  @click="Active(index)"
-                  v-for="(navitem, index) in navContent"
-                  :key="index"
-                >
-                  <a class="nav-link text-muted" href="#">{{
-                    navitem.header
-                  }}</a>
-                </li>
-              </ul>
-            </div>
-            <div @click="toogleNav" class="navbar-toggler">
-              <fa icon="bars" />
-            </div>
-          </nav>
-        </div>
-        <hr class="mt-0" />
-        <div class="courses-container p-1" v-if="navHeader == 'Courses'">
-          Courses data
-        </div>
-        <div class="documents-container p-1" v-if="navHeader == 'Documents'">
-          documents data
-        </div>
-        <div class="recents-container p-1" v-if="navHeader == 'Recents'">
-          recents data
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import axios from "axios";
+import store from "@/store";
+import { RoleType, UserType } from "@/store/interfaces/user.types";
+import { computed, ComputedRef, defineComponent, onMounted, ref } from "vue";
 
 export default defineComponent({
   name: "Profile",
-  methods: {
-    Logout() {
-      localStorage.clear();
-      this.$router.push("/login");
-    }
-  },
-
-  created() {
-    if (localStorage.getItem("token") === null) {
-      this.$router.push("/login");
-    }
-  },
-
-  beforeCreate() {
-    axios
-      .get("/api/userinfo", {
-        headers: { token: localStorage.getItem("token") }
-      })
-      .then(response => {
-        this.name = response.data.user.username;
-        this.role = response.data.user.role;
-        this.fullname = response.data.user.fullname;
-        this.id = response.data.user.id;
-        console.log(response.data.courses);
-        for (let i = 0; i < response.data.courses.length; i++) {
-          this.courseName.push(response.data.courses[i].body);
-        }
-      });
-  },
-
   setup() {
-    const profileNav = ref<HTMLDivElement>();
-    const showNav = ref(false);
-    const navContent = ref([
-      {
-        header: "Courses",
-        active: true
-      },
-      {
-        header: "Documents",
-        active: false
-      },
-      {
-        header: "Recents",
-        active: false
+    const user: ComputedRef<UserType> = computed(() => store.getters.getActiveUser);
+    const Role = computed(() => {
+      if (user.value.Role === RoleType.Teacher) {
+        return "Teacher" 
       }
-    ]);
-    let LastActive = 0;
-    const navHeader = ref("Courses");
-    const toogleNav = () => {
-      console.log(showNav);
-      showNav.value = !showNav.value;
-    };
-    const Active = (index: number) => {
-      navContent.value[LastActive].active = false;
-      navContent.value[index].active = true;
-      navHeader.value = navContent.value[index].header;
-      LastActive = index;
-    };
-    const user = {
-      username: "JohnDoe123",
-      Firstname: "John",
-      Lastname: "Doe",
-      email: "JohnDoe@gmail.com",
-      mobile: "+47 95029950",
-      Birthday: "12 June 2000",
-      gender: "Male"
-    };
-
-    onMounted(() => {
-      console.log(profileNav);
+      return "Student"
     });
+
+    
+    const NotImplementedAlert = () => {
+      store.dispatch("NotImplementedAlert");
+    }
+ 
+
 
     return {
       user,
-      profileNav,
-      showNav,
-      toogleNav,
-      navContent,
-      Active,
-      navHeader,
-      name: "",
-      role: "",
-      fullname: "",
-      id: "",
-      courseName: [] as any
+      Role,
+      NotImplementedAlert
     };
   }
 });
@@ -223,6 +118,7 @@ export default defineComponent({
 .profile-card {
   display: flex;
   align-items: center;
+  height: 100%;
 }
 
 .profile-card .panel {
@@ -270,11 +166,12 @@ export default defineComponent({
 
 .profile-info-container {
   flex-direction: column;
+  height: 100%;
 }
 
 .profile-info {
   min-width: 90%;
-  min-height: 35vh;
+  height: 100%;
 }
 
 .profile-card,
@@ -362,5 +259,14 @@ export default defineComponent({
   text-decoration: underline;
   font-weight: bold;
   color: #3a7793;
+}
+
+.p-row {
+  min-height: 35vh;
+  height: 35vh;
+}
+
+.p-card {
+  height: 100%;
 }
 </style>

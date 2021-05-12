@@ -11,6 +11,16 @@
     >
       <router-view />
       <loading-screen v-if="showLoading" />
+      <div class="app-alert-container">
+        <alert-component 
+        v-for="alert in alertMessages"
+        :key="alert"
+        :AlertMessage="alert.message" 
+        :ShowAlert="!alert.shown"
+        :AlertType="alert.type"
+        :AlertID="alert.id"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -21,12 +31,14 @@ import NavBar from "@/components/NavBar.vue";
 import router from "@/router";
 import LoadingScreen from "@/components/LoadingScreen.vue";
 import store from "./store";
+import AlertComponent from "./components/alertComponent.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     NavBar,
-    LoadingScreen
+    LoadingScreen,
+    AlertComponent
   },
   setup() {
     const appContainer = ref<HTMLDivElement>();
@@ -61,6 +73,10 @@ export default defineComponent({
       }
     };
 
+    const alertMessages = computed(() => {
+      return store.getters.getAlertMessages;
+    })
+
     // TODO - fix this navbar shit
     computed(() => {
       if (appContainer.value) {
@@ -73,13 +89,15 @@ export default defineComponent({
       appContainer,
       showSideBar,
       OnMoveBody,
-      showLoading
+      showLoading,
+      alertMessages
     };
   }
 });
 </script>
 
 <style>
+@import "./assets/css/editor.css";
 .wrapper {
   display: flex;
   width: 100%;
@@ -91,9 +109,19 @@ export default defineComponent({
   padding: 0;
 }
 
+body::-webkit-scrollbar{
+  width: 0.8rem;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgb(177, 176, 176);
+  border-radius: 9px;
+}
+
 .appContainer {
   z-index: 0;
 }
+
 
 .appContainer.loading {
   z-index: 1;
@@ -102,5 +130,14 @@ export default defineComponent({
 .appFullWidth {
   margin-left: 250px;
   max-width: calc(100% - 250px);
+}
+
+.app-alert-container {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  top: 0;
+  padding-top: 1%
 }
 </style>

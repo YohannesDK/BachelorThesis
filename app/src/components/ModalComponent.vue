@@ -10,22 +10,6 @@
 
       <div class="modal-content-inner">
         <slot name="content" :settings="settingschoiche"> </slot>
-        <div class="settingsCard">
-          <ul class="list-unstyled">
-            <li
-              :class="{ active: settingschoiche === 0 }"
-              @click="settingsChange(0)"
-            >
-              Documents
-            </li>
-            <li
-              :class="{ active: settingschoiche === 1 }"
-              @click="settingsChange(1)"
-            >
-              Courses
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   </div>

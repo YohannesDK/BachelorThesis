@@ -19,8 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: true
     },
     QuestionId: DataTypes.INTEGER,
-    Answer: DataTypes.STRING,
-    CorrectAnswer: DataTypes.STRING
+    QuestionType: DataTypes.INTEGER,
+    TextAnswer: DataTypes.STRING,
+    ChoiceAnswer: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'AttemptData',

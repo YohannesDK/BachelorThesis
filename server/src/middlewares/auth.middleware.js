@@ -7,7 +7,6 @@ module.exports = (req, res, next) => {
     // const token = req.headers.authorization.split(' ')[1];
     const token = req.headers.token;
     jwt.verify(token, "secretkey", (err, decoded) => {
-
       if(err) return response.status(401).json({
         title: "unauthorized",
         error: err

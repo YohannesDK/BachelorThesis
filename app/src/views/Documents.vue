@@ -18,9 +18,6 @@
         <fa icon="search" size="lg" />
       </div>
     </div>
-    <div class="search-icon-wrapper" style="min-height:45px; margin-left:1%;">
-      <fa icon="filter" size="lg" />
-    </div>
   </div>
   <div class="container" style="padding-left: 0.5%;">
     <div class="doc-container d-flex">
@@ -82,7 +79,6 @@ export default defineComponent({
 
       if (searchValue.value !== "") {
         tempDocuments = tempDocuments.filter((doc: documentType) => {
-          console.log(doc.name, doc.QuestionSetID);
           return (
             doc.name
               .replace(/ /g, "")

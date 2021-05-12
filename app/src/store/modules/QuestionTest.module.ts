@@ -6,25 +6,30 @@ export default {
     TestData: [] as TestData[]
   },
   mutations: {
-    IncrementTestID: (state: any) => {
-      state.TestID++;
-    },
     AddTestData: (state: any, TestData: TestData) => {
-      state.TestData.push(TestData);
+      const TestDataIndex = (state.TestData as TestData[]).map((td: TestData) => td.TestID)
+        .indexOf(TestData.TestID);
+
+      if (TestDataIndex === -1) {
+        state.TestData.push(TestData);
+      } else{
+        state.TestData[TestDataIndex] = TestData
+      }
+    },
+    unLoadQuestionTestModule: (state: any) => {
+      state.TestID = 0;
+      state.TestData.length = 0;
     }
   },
   actions: {
-    IncrementTestID: (context: any) => {
-      context.commit("IncrementTestID");
-    },
     AddTestData: (context: any, TestData: TestData) => {
       context.commit("AddTestData", TestData);
+    },
+    unLoadQuestionTestModule: (context: any) => {
+      context.commit("unLoadQuestionTestModule");
     }
   },
   getters: {
-    getTestID: (state: any) => {
-      return state.TestID;
-    },
     getAllTestData: (state: any) => {
       return state.TestData;
     },
@@ -36,6 +41,29 @@ export default {
         }
       });
       return testData;
+    },
+    getTestDataByCourseAndQSID: (state: any) => (courseid: number, QSID: number) => {
+      const UserAdded : {[userID: number]: any} = {}
+      const courseTestDatas: TestData[] = [];
+
+      (state.TestData as TestData[]).forEach((testdata: TestData) => {
+        if (testdata.courseID === courseid && testdata.QSID === QSID) {
+          if (!(testdata.userID in UserAdded)) {
+            UserAdded[testdata.userID] = {
+              date : testdata.date,
+              index: courseTestDatas.length
+            } 
+            courseTestDatas.push(testdata);
+          } else {
+            if (UserAdded[testdata.userID].date < testdata.date) {
+              const index = UserAdded[testdata.userID].index;
+              courseTestDatas[index] = testdata
+            }
+          }
+        } 
+      });
+
+      return courseTestDatas
     },
     getTestDataByUserName: (state: any, userID: number) => {
       const testData: TestData[] = [];

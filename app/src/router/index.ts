@@ -2,7 +2,7 @@ import store from "@/store";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Welcome from "../views/welcome.vue";
-import { IsAuthenticated } from "@/services/api/auth.service";
+import { IsAuthenticated, Logout } from "@/services/api/auth.service";
 import { LoadStore } from "@/store/helpers/load.store";
 
 const routes: Array<RouteRecordRaw> = [
@@ -44,8 +44,18 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "documents" */ "../views/Documents.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (from.name === "Course") {
+        to.meta.courseDocument = true;
+        to.meta.courseID = from.query.cid
+      } else {
+        to.meta.courseDocuments = false;
+      }
+      next()
+    },
     path: "/editor",
     name: "EditorView",
+    // meta: { courseDocument: false },
     component: () =>
       import(/* webpackChunkName: "EditorView" */ "../views/EditorView.vue")
   },
@@ -63,6 +73,13 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "register" */ "../views/register.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (IsAuthenticated()) {
+        next({ name: "Home" });
+      } else {
+        next();
+      }
+    },
     path: "/login",
     name: "Login",
     meta: { showSideBar: false },
@@ -102,6 +119,15 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "questiontest" */ "../views/QuestionTest.vue")
   },
   {
+    beforeEnter(to, from, next) {
+      if (from.name === "Course") {
+        to.meta.courseQS = true;
+        to.meta.courseID = from.query.cid
+      } else {
+        to.meta.courseQS = false;
+      }
+      next()
+    },
     path: "/TakeTest",
     name: "TakeTest",
     meta: { showSideBar: false },
@@ -113,12 +139,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "PageNotFound",
     component: () =>
       import(/* webpackChunkName: "PageNotFound" */ "../views/PageNotFound.vue")
-  },
-  {
-    path: "/chartTest",
-    name: "chartTest",
-    component: () =>
-      import(/* webpackChunkName: "chartDemo" */ "../views/chartTest.vue")
   }
 ];
 
@@ -132,7 +152,7 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicRoutes.includes(to.name as string);
 
   if (authRequired && !IsAuthenticated()) {
-    localStorage.removeItem("token");
+    Logout();
     next({ name: "Login" });
   } else next();
 });

@@ -6,14 +6,19 @@
     }"
   >
     <div class="container d-flex justify-content-between">
-      <h2 class="documentTitle" ref="DocumentTittle" contenteditable="true">
+      <h2 class="documentTitle" ref="DocumentTittle" :contenteditable="!courseDocument">
         {{ Title }}
       </h2>
       <p>{{ LastEdited }}</p>
     </div>
   </div>
 
-  <Editor @updateDoc="onUpdateDoc" :docmentId="docID" />
+  <Editor 
+    @updateDoc="onUpdateDoc" 
+    @updateTopicTime="onUpdateTopicTime" 
+    :docmentId="docID" 
+    :courseDocument="courseDocument"
+  />
 </template>
 
 <script lang="ts">
@@ -23,7 +28,14 @@ import store from "@/store";
 //components
 import Editor from "@/components/Editor.vue";
 import router from "@/router";
+
+// services
 import { CreateDocument } from "@/services/api/document.service";
+import { UpdateTopicMonitoring } from "@/services/api/topicMonitoring.service";
+import { UpdateSingleUserTopicMonitoring } from "@/services/api/SingleUserTopicMonitoring.service";
+
+import { DocumentTopicData, TopicData } from "@/store/interfaces/topic.types";
+import { documentType } from "@/store/interfaces/document";
 
 export default defineComponent({
   name: "EditorView",
@@ -36,15 +48,28 @@ export default defineComponent({
     const Title = ref<string>("Enter Title...");
     const LastEdited = ref<string>("");
     const docID = Number(router.currentRoute.value.query.did);
+    const courseDocument = ref(router.currentRoute.value.meta.courseDocument);
 
     const TittleSetup = () => {
       // Set document title and last edited
-      if (docID !== -1) {
-        const document = store.getters.getDocmentbyId(docID);
-        if (document) {
-          Title.value = document.name;
-          LastEdited.value = document.lastEdited;
-        }
+      let document: documentType = {
+        Documentid: -1,
+        name: "",
+        body: "",
+        tags: [],
+        lastEdited: "",
+        QuestionSetID: []
+      }
+
+      if (docID !== -1 && !courseDocument.value) {
+        document = store.getters.getDocmentbyId(docID);
+      } else if (docID !== -1 && courseDocument.value) {
+        document = store.getters.getCourseDocumentById(docID);
+      }
+
+      if (document) {
+        Title.value = document.name;
+        LastEdited.value = document.lastEdited;
       }
 
       if (DocumentTittle.value) {
@@ -80,6 +105,33 @@ export default defineComponent({
       CreateDocument(updatedData.userId, JSON.stringify(updatedData.body), updatedData.DocumentTittle)
     };
 
+
+    const onUpdateTopicTime = (TopicData: any) => {
+      const documentTopicData: DocumentTopicData  = {
+        DocumentID: docID,
+        TopicTimes: []
+      }
+      let courseID = router.currentRoute.value.meta.courseID;
+
+      const TopicIDs = Object.keys(TopicData);
+      TopicIDs.map((TopicId: string) => {
+        const topicData: TopicData = {
+          TopicID: TopicId,
+          TopicName: TopicData[TopicId].Topic,
+          Time: TopicData[TopicId].Time
+        }
+        documentTopicData.TopicTimes.push(topicData);
+      });
+
+      if (courseID !== undefined) {
+        courseID = Number(courseID) 
+        if (documentTopicData.TopicTimes.length > 0) {
+          UpdateTopicMonitoring(documentTopicData, courseID);
+          UpdateSingleUserTopicMonitoring(documentTopicData);
+        }
+      }
+    }
+
     onMounted(() => {
       // Document Tittle events and setup
       TittleSetup();
@@ -90,7 +142,9 @@ export default defineComponent({
       Title,
       LastEdited,
       docID,
-      onUpdateDoc
+      onUpdateDoc,
+      onUpdateTopicTime,
+      courseDocument
     };
   }
 });
@@ -110,4 +164,6 @@ export default defineComponent({
   outline: none;
   padding-left: 12px;
 }
+
+
 </style>

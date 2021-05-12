@@ -44,7 +44,9 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="" v-test="{ id: 'navbar-addNew-dropdown-course' }">
+                  <a href="" 
+                  @click.prevent="OpenCoursesPage()"
+                  v-test="{ id: 'navbar-addNew-dropdown-course' }">
                     <fa icon="book" class="sidebar-menu-faicons"></fa>
                     Course</a
                   >
@@ -60,7 +62,9 @@
                   >
                 </li>
                 <li class="sidebar-list">
-                  <a href="">
+                  <a href=""
+                  @click.prevent="AddResourceGroup()"
+                  >
                     <fa icon="layer-group" class="sidebar-menu-faicons"></fa>
                     Resource Group</a
                   >
@@ -173,21 +177,28 @@ export default defineComponent({
     });
 
     const signout = () => {
-      const emptyUser: UserType = {
-        UserID: -1,
-        UserName: "",
-        Role: RoleType.Student,
-        FirstName: "",
-        LastName: ""
-      };
-      store.dispatch("setUser", emptyUser);
       Logout();
     };
 
     // Editor
-    const OpenEditor = async () => {
-      router.push({ name: "EditorView", query: { did: -1 } });
+    const OpenEditor = () => {
+      const newDocID = CreateDocument(user.value.UserID);
+
+      newDocID.then((docid: number | undefined) => {
+        if (docid && typeof docid === "number") {
+          router.push({ name: "EditorView", query: { did: docid} });
+        }
+      });
+
     };
+
+    const OpenCoursesPage = () => {
+      router.push({name: "Courses"});
+    }
+
+    const AddResourceGroup = () => {
+      store.dispatch("NotImplementedAlert");
+    }
 
     const smallsidebar = () => {
       if (sidebar.value) {
@@ -213,7 +224,9 @@ export default defineComponent({
       addProject,
       OpenEditor,
       AddNewQuestionSet,
-      smallsidebar
+      smallsidebar,
+      OpenCoursesPage,
+      AddResourceGroup
     };
   }
 });

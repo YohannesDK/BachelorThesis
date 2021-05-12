@@ -14,6 +14,9 @@ const wrapper = shallowMount(ToogleSwitch, {
   props: {
     documentId: 1,
     documentName: documentName,
+    QSID: -1,
+    QuestionSetName: "",
+    toogleSwitchType: 0,
     attached: checked
   }
 });

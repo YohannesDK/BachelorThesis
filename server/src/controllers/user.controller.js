@@ -3,8 +3,6 @@ const models = require("../models/index.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
-const { response } = require("express");
-const { report } = require("../routes/attempts.routes.js");
 
 const user = (request, response) => {
     models.users.findOne({where: {username: request.body.username} }).then(function (users){
@@ -30,21 +28,24 @@ const user = (request, response) => {
       // });
 
       // If the above statements are not executed, the user information is correct. Proceed to create a token
-      let token = jwt.sign({ username: users.username, password: users.password, fullname: users.fullname, role: users.role, id: users.id}, "secretkey");
+      let token = jwt.sign({ username: users.username, role: users.role, id: users.id}, "secretkey");
+
 
       // Return the user data and token to frontend
       return response.status(200).json({
           title: "logged in",
-          username: users.username,
-          password: users.password,
           id: users.id,
+          firstname: users.firstname,
+          lastname: users.lastname,
+          email: users.email,
+          username: users.username,
           role: users.role,
           token: token
       });
   }).catch(function(err){
       console.log(err);
   });
-}
+};
 
 const register = (request, response) => {
     axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
@@ -57,9 +58,9 @@ const register = (request, response) => {
       const firstname = register_info[0].text;
       const lastname = register_info[1].text;
       const email = register_info[2].email;
-      const role = register_info[3].choice.label;
-      const username = register_info[4].text;
-      const password = register_info[5].text;
+      const username = register_info[3].text;
+      const password = register_info[4].text;
+      const role = register_info[5].choice.label;
       
 
       models.users.findOne({where: {username: username} }).then(function (users){
@@ -67,7 +68,9 @@ const register = (request, response) => {
           if(!users){
               models.users.create({
                   username: username,
-                  fullname: firstname + " " + lastname,
+                  firstname: firstname,
+                  lastname: lastname,
+                  email: email,
                   password: bcrypt.hashSync(password, 10),
                   role: role
               });
@@ -85,7 +88,7 @@ const register = (request, response) => {
   }).catch((error) => {
       console.error(error);
   });
-}
+};
 
 const users = (request, response) => {
       // User enters desired username, we look that username up in the database
@@ -110,9 +113,9 @@ const users = (request, response) => {
         }
 
     });
-}
+};
 
-const user_info = (request, response, next) => {
+const user_info = (request, response) => {
   let token = request.headers.token;
   jwt.verify(token, "secretkey", (err, decoded )=> {
       
@@ -125,7 +128,7 @@ const user_info = (request, response, next) => {
       models.users.findOne({where: {id: decoded.id} }).then(function (user){
           models.courses.findAll({where: {userId: decoded.id}}).then(function (courses){
 
-              console.log(decoded.id)
+              console.log(decoded.id);
 
               return response.json({
                   title: "Fetch user info",
@@ -138,7 +141,7 @@ const user_info = (request, response, next) => {
           console.log(err);
       });
   });
-}
+};
 
 const student_course = (request, response) => {
   let courseList = [];
@@ -181,7 +184,7 @@ const student_course = (request, response) => {
           console.log(err);
       });
   });
-}
+};
 
 module.exports = {
   user,
@@ -189,5 +192,5 @@ module.exports = {
   users,
   user_info,
   student_course
-}
+};
 

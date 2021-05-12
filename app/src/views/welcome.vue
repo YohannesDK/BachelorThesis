@@ -43,10 +43,12 @@
 </template>
 
 <script lang="ts">
+import store from "@/store";
 import { defineComponent } from "vue";
 export default defineComponent({
   name: "Welcome",
   setup() {
+    store.dispatch("loading", false);
     return {};
   }
 });
