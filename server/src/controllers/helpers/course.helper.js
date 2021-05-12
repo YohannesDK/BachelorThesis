@@ -146,7 +146,7 @@ const getCourseDocumentsAndData = async (course, allCourseDocumentQuestionSets, 
                         TopicID: DTopic.TopicID,
                         Topic: DTopic.TopicName,
                         Time: DTopic.Time,
-                        ExpectedTime: 0,
+                        ExpectedTime: DTopic.ExpectedTime,
                         UserStats: []
                     };
   

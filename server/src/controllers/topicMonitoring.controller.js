@@ -15,11 +15,12 @@ const updateTopicMonitoring = async (request, response) => {
         TopicID: TopicTimeData.TopicID,
         TopicName: TopicTimeData.TopicName,
         Time: TopicTimeData.Time,
+        ExpectedTime: TopicTimeData.ExpectedTime,
         DocumentID: DocumentTopicData.DocumentID,
         CourseID: courseID
       }) 
     } else {
-      await models.TopicMonitoring.update({TopicName: TopicTimeData.TopicName}, {where: {TopicID: TopicTimeData.TopicID}});
+      await models.TopicMonitoring.update({TopicName: TopicTimeData.TopicName, ExpectedTime: TopicTimeData.ExpectedTime}, {where: {TopicID: TopicTimeData.TopicID}});
 
       await models.TopicMonitoring.increment("Time", {by: TopicTimeData.Time, where: {
         TopicID: TopicTimeData.TopicID

@@ -305,7 +305,7 @@
             </div>
             <div class="stat-container">
               <div class="stat-inner" v-if="StatsMenuIndex === 0">
-                class stats
+                <class-stats :TopicStatsDocuments="TopicStatsDocumentsProp"/>
               </div>
               <div class="stat-inner" v-if="StatsMenuIndex === 1">
                 <topic-stats :TopicStatsDocuments="TopicStatsDocumentsProp" />
@@ -358,6 +358,7 @@ import AddDocumentToCourse from "@/components/AddDocumentToCourse.vue";
 import AddQuestionSetToCourse from "@/components/AddQuestionSetToCourse.vue";
 import TopicStats from "@/components/TopicStats.vue";
 import QuestionStats from "@/components/QuestionStats.vue";
+import ClassStats from "@/components/ClassStats.vue";
 
 export default defineComponent({
   components: {
@@ -370,7 +371,8 @@ export default defineComponent({
     AddDocumentToCourse,
     AddQuestionSetToCourse,
     TopicStats,
-    QuestionStats
+    QuestionStats,
+    ClassStats
   },
   name: "Course",
   setup() {

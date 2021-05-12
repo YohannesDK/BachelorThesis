@@ -161,12 +161,11 @@ export default defineComponent({
               name: "Time Used",
               data: TopicStatData.value.TimeUsed
             },
-            // TODO - find out if this is needed, and how to do it
-            // {
-            //   name: "Pre-calculted Time",
-            //   data: TopicStatData.value.TimeExpected
-            // },
-            ...scatterSeries.value
+            {
+              name: "Time Expected - wpm",
+              data: TopicStatData.value.TimeExpected
+            },
+            // ...scatterSeries.value
           ]
         };
       }
@@ -239,15 +238,11 @@ export default defineComponent({
 
 .document-list li.active {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  /* background: rgb(74 104 118); */
-  /* border: 1px solid whitesmoke; */
-  /* color: white !important; */
 }
 
 .document-list li:hover {
   cursor: pointer;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  /* border: 1px solid whitesmoke; */
 }
 
 .topic-time-chart-container {

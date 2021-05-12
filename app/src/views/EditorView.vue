@@ -106,19 +106,30 @@ export default defineComponent({
     };
 
 
-    const onUpdateTopicTime = (TopicData: any) => {
+    const onUpdateTopicTime = (TopicData: any, ExpectedTopicTime: {[topicID: string]: number}) => {
       const documentTopicData: DocumentTopicData  = {
         DocumentID: docID,
         TopicTimes: []
       }
       let courseID = router.currentRoute.value.meta.courseID;
 
+
       const TopicIDs = Object.keys(TopicData);
       TopicIDs.map((TopicId: string) => {
+        let ExpectedTime = 0;
+
+        console.log(ExpectedTopicTime)
+
+        if (TopicId in ExpectedTopicTime) {
+          console.log("her");
+          ExpectedTime = ExpectedTopicTime[TopicId];
+        }
+
         const topicData: TopicData = {
           TopicID: TopicId,
           TopicName: TopicData[TopicId].Topic,
-          Time: TopicData[TopicId].Time
+          Time: TopicData[TopicId].Time,
+          ExpectedTime: ExpectedTime
         }
         documentTopicData.TopicTimes.push(topicData);
       });
