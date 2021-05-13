@@ -15,7 +15,7 @@
 
   <div
     class="topic-time-chart-container shadow rounded card p-1"
-    v-if="SelectDocumentID !== -1"
+    v-if="SelectDocumentID !== -1 && ChartHasData"
   >
     <h4 class="text-muted mb-3 p-1">
       Topic Times - {{ selectedDocumentName }}
@@ -30,6 +30,12 @@
       :animateOnUpdate="true"
     />
   </div>
+  <div 
+      v-if="(SelectDocumentID === -1 || !ChartHasData) && !Loading"
+      class="chart-no-data"
+    >
+      <h3>No Data</h3>
+    </div>
 </div>
 </template>
 
@@ -102,7 +108,7 @@ export default defineComponent({
           seriesUserData.value.push(InitialUserStats[userid]);
         })
 
-        console.log(seriesUserData.value)
+
 
         return {
           ...ChartConfiguration,
@@ -118,12 +124,24 @@ export default defineComponent({
       return -1;
     });
 
+    const ChartHasData = computed(() => {
+      if (TopicUserStasData.value === -1) {
+        return false 
+      }
+      return TopicUserStasData.value.TopicHeaders.length > 0 && Object.keys(TopicUserStasData.value.UserStats).length > 0
+    })
+
+    const Loading = ref(false);
 
     const UpdateDocumentSelected = (docID: number, docName: string) => {
-      SelectDocumentID.value = docID;
-      selectedDocumentName.value = docName;
+      SelectDocumentID.value = -1;
+      Loading.value = true
 
-      console.log(classChart.value)
+      setTimeout(() => {
+        SelectDocumentID.value = docID;
+        selectedDocumentName.value = docName;
+        Loading.value = false
+      }, 100);
 
       seriesUserData.value = []
     };
@@ -132,7 +150,9 @@ export default defineComponent({
       SelectDocumentID,
       selectedDocumentName,
       chartOptions,
-      classChart
+      classChart,
+      ChartHasData,
+      Loading
     } 
   },
 })
@@ -180,8 +200,13 @@ export default defineComponent({
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
+.topic-charts-container {
+  min-height: 70vh;
+}
+
 .topic-time-chart-container {
   margin-bottom: 20vh;
+  transition: all 0.3s;
 }
 
 .chart-no-data {
