@@ -201,7 +201,7 @@ export default defineComponent({
 }
 
 .topic-charts-container {
-  min-height: 50vh;
+  min-height: 70vh;
 }
 
 .topic-time-chart-container {
