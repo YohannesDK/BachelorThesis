@@ -105,6 +105,9 @@ export function getAllCourses() {
         const CourseDocumentTopicStat: DocumentTopicStat[] =
           response.data.allCourseDocumentTopicStats;
 
+
+        console.log(CourseDocumentTopicStat)
+
         const allTestDataStats: TestData[] = response.data.allTestDataStats;
 
 

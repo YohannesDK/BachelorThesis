@@ -69,7 +69,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ["updateDoc", "updateTopicTime"],
+  emits: ["updateDoc", "updateTopicTime", "updateTopicTimeExpected"],
   setup(props, { emit }) {
 
     const user: Ref<UserType> = ref<UserType>(store.getters.getActiveUser);
@@ -81,6 +81,7 @@ export default defineComponent({
 
     const SelectedTopicID = ref(null);
     const TopicData = ref({});
+    const ExpectedTopicTime = ref({})
     const Time = ref(0);
 
     // Editor container element
@@ -130,7 +131,7 @@ export default defineComponent({
 
 
       if (props.courseDocument === true && !IsTeacher.value) {
-        emit("updateTopicTime", TopicData.value)
+        emit("updateTopicTime", TopicData.value, ExpectedTopicTime.value)
       } 
 
     });
@@ -152,13 +153,14 @@ export default defineComponent({
           syntax: {
             highlight: (text: string) => hljs.highlightAuto(text).value
           },
-          TopicSelectionModule: {}
+          TopicSelectionModule: {},
         },
+        ExpectedTopicTime: ExpectedTopicTime.value,
         SelectedTopicID: SelectedTopicID.value,
         TopicData: TopicData.value,
         Time: Time.value,
-        Monitor: props.courseDocument === true // TODO - for testing purposes, remove this later
-        // Monitor: props.courseDocument === true && !IsTeacher.value
+        // Monitor: props.courseDocument === true // TODO - for testing purposes, remove this later
+        Monitor: props.courseDocument === true && !IsTeacher.value
       });
 
       //Send Get request to fetch the document that has been clicked on
@@ -203,7 +205,8 @@ export default defineComponent({
       SelectedTopicID,
       Time,
       visualize,
-      IsTeacher
+      IsTeacher,
+      ExpectedTopicTime
     };
   }
 });

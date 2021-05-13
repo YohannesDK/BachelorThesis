@@ -2,6 +2,7 @@ import Quill, { DeltaOperation, Sources } from "quill";
 import { Delta, Op } from "types-quill-delta";
 import HeaderBlot from "./blots/headerBlot";
 import ParagraphBlot from "./blots/paragraphBlot";
+import { WordPerSecond } from "./constants";
 import TopicSelectionModule from "./modules/topicSelection.module";
 
 type ITopic = {
@@ -16,7 +17,8 @@ class MyQuill extends Quill {
   public options: any;
 
   public SelectedTopicID: string | null;
-  public TopicData: {[topicID: string]: ITopic}
+  public TopicData: {[topicID: string]: ITopic};
+  public ExpectedTopicTime: {[topicID: string]: number};
 
   // public ScrollThrottle = false
   public ScrollTimeout: any = -1;
@@ -34,6 +36,7 @@ class MyQuill extends Quill {
 
     this.SelectedTopicID = options.SelectedTopicID || null
     this.TopicData = options.TopicData || {}
+    this.ExpectedTopicTime = options.ExpectedTopicTime || {}
     this.Time = options.Time || 0
 
     this.Monitor = options.Monitor || false
@@ -51,6 +54,8 @@ class MyQuill extends Quill {
 
     // start timer at once, even before first scroll event is captured
     if (this.Monitor) {
+      this.CalculateExpectedTopicTime(delta);
+
       this.StartTimer();
       this.root.dispatchEvent(new CustomEvent("scroll-stopped"));
     }
@@ -161,6 +166,35 @@ class MyQuill extends Quill {
     });
 
     return delta
+  }
+
+  /**
+   * calculates expected topic time by finding number of words in a topic and dividing it by WordPerSecond
+   */
+  public CalculateExpectedTopicTime(delta: Delta) {
+    let TopicID = "document";
+
+
+    delta.map((op: Op, index: number) => {
+      if (("attributes" in op) && ("header" in op["attributes"]!)) {
+        TopicID = op["attributes"]!["header"]["ref"];
+      }
+      if (("insert" in op) && (typeof op["insert"] === "string") && (op["insert"]!.match(/\n/g)||[]).length === 0) {
+      
+        const text = op["insert"]!.trim();
+        const length = text.length > 0 ? text.split(/\s+/).length : 0;
+
+        if (!(TopicID in this.ExpectedTopicTime)) {
+          this.ExpectedTopicTime[TopicID] = length 
+        } else {
+          this.ExpectedTopicTime[TopicID] += length 
+        }
+      }
+    })
+    const topicids = Object.keys(this.ExpectedTopicTime);
+    topicids.map((tid: string) => {
+      this.ExpectedTopicTime[tid] = Math.round(this.ExpectedTopicTime[tid]/WordPerSecond)
+    })
   }
 
   public EnableTopicUpdating(topicID: string) {

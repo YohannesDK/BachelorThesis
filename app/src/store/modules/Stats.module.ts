@@ -1,3 +1,4 @@
+import { Round } from "@/utils/math.utils";
 import { DocumentTopicStat, GroupedTopicData, GroupedTopicUserStats, TopicTimeStat, TopicTimeUserStat } from "../interfaces/topic.stats.types";
 
 export default {
@@ -35,9 +36,10 @@ export default {
 
       const TopicHeaders: string[] = [];
       let TimeUsed: number[] = [];
-      const TimeExpected: number[] = [];
+      let TimeExpected: number[] = [];
 
       let TotalDocumentTime = 0;
+      let TotalExpectedDocumentTime = 0;
       
       const UserStatsSorted: GroupedTopicData[] = [];
 
@@ -51,6 +53,7 @@ export default {
           TotalDocumentTime += TopicStat.Time;
 
           TimeExpected.push(TopicStat.ExpectedTime || 0);
+          TotalExpectedDocumentTime += TopicStat.ExpectedTime || 0
 
           TopicStat.UserStats.forEach((userStat: TopicTimeUserStat) => {
             UserStatsSorted.push({
@@ -70,13 +73,48 @@ export default {
         }
 
         TimeUsed = TimeUsed.map((time: number) => { return Math.round((time/TotalDocumentTime) * 100)})
-
+        TimeExpected = TimeExpected.map((time: number) => {return Math.round((time/TotalExpectedDocumentTime) * 100)} )
         return {
           TopicHeaders,
           TimeUsed,
           TimeExpected,
           StudentGroupsResult
         } 
+      }
+      return -1
+    },
+
+    getCourseDocumentUserStats: (state: any) => (documentId: number) => {
+      const DocumentTopicStat: DocumentTopicStat | undefined = (state.DocumentTopicStats as DocumentTopicStat[])
+        .find((DTS: DocumentTopicStat) => DTS.Documentid === documentId);
+      
+      const TopicHeaders: string[] = [];
+
+      const UserStats: {[UserId: number] : any}= {}
+
+      if (DocumentTopicStat) {
+        DocumentTopicStat.TopicStats.forEach((TopicStat: TopicTimeStat, index: number) => {
+          TopicHeaders.push(TopicStat.Topic);
+
+          TopicStat.UserStats.forEach((userStat: TopicTimeUserStat) => {
+            const TimeInMinutes = Round(userStat.Time / 60, 2);
+
+            if (!(userStat.UserId in UserStats)) {
+              UserStats[userStat.UserId] = {
+                name: userStat.Name,
+                data: [TimeInMinutes]
+              } 
+            } else {
+              UserStats[userStat.UserId].data.push(TimeInMinutes);
+            }
+          })
+        }) 
+
+
+        return {
+          TopicHeaders,
+          UserStats
+        }
       }
       return -1
     }
