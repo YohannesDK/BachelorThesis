@@ -4,47 +4,43 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
 
-const user = (request, response) => {
-    models.users.findOne({where: {username: request.body.username} }).then(function (users){
-          
-      // If the user does not exist, return error
-      if(!users){
-          return response.json({
-              title: "User not found",
-              error: "invalid credentials"
-          });
-      } 
-      
-      // If the passwords dont match, return error
-      if(!bcrypt.compareSync(request.body.password, users.password)){
-          return response.json({
-              title: "Login failed",
-              error: "invalid credentials"
-          });
-      } 
+const login = async (request, response) => {
+    const username = request.body.username;
+    const password = request.body.password;
 
-      // let token = jwt.sign({ username: users.username, password: users.password, role: users.role, id: users.id}, "secretkey", {
-      //     expiresIn: "10s" // set token expiation time, so we can check if token is valid by just decoding it
-      // });
-
-      // If the above statements are not executed, the user information is correct. Proceed to create a token
-      let token = jwt.sign({ username: users.username, role: users.role, id: users.id}, "secretkey");
-
-
-      // Return the user data and token to frontend
-      return response.status(200).json({
-          title: "logged in",
-          id: users.id,
-          firstname: users.firstname,
-          lastname: users.lastname,
-          email: users.email,
-          username: users.username,
-          role: users.role,
-          token: token
+    let user = await models.users.findOne({where: {username: username} });
+    
+    let alluser = await models.users.findAll();
+    
+    // If the user does not exist, return error
+    if (!user) {
+      return response.status(400).json({
+            title: "User not found",
+            error: "invalid credentials"
       });
-  }).catch(function(err){
-      console.log(err);
-  });
+    }
+    
+    if(!bcrypt.compareSync(password, user.password)){
+        return response.status(400).json({
+            title: "Login failed",
+            error: "invalid credentials"
+        });
+    } 
+    
+    let token = jwt.sign({ username: user.username, role: user.role, id: user.id}, "secretkey");
+
+    // Return the user data and token to frontend
+    return response.status(200).json({
+        title: "logged in",
+        id: user.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        token: token
+    });
+
 };
 
 const register = (request, response) => {
@@ -61,6 +57,8 @@ const register = (request, response) => {
       const username = register_info[3].text;
       const password = register_info[4].text;
       const role = register_info[5].choice.label;
+
+      console.log(firstname, lastname, username, password, role)
       
 
       models.users.findOne({where: {username: username} }).then(function (users){
@@ -84,7 +82,7 @@ const register = (request, response) => {
           }
 
       });
-      response.send(200);
+      response.sendStatus(200);
   }).catch((error) => {
       console.error(error);
   });
@@ -187,7 +185,7 @@ const student_course = (request, response) => {
 };
 
 module.exports = {
-  user,
+  login,
   register,
   users,
   user_info,

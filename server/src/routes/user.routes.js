@@ -14,15 +14,13 @@ const userController = require("../controllers/user.controller")
 
 
 //This api call is called when users log in.
-router.post("/api/user", userController.user )
+router.post("/api/user", userController.login )
 
 //This api call gets user info
 
 //This api call registers users
 router.get("/api/register", userController.register )
 
-//This api call creates a user, probably swapped out for the api above.
-router.post("/api/users", userController.users)
 
 router.get("/api/userinfo", userController.user_info)
 
