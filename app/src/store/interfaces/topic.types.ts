@@ -3,6 +3,7 @@ export type TopicData = {
   TopicID: string;
   TopicName: string;
   Time: number;
+  ExpectedTime: number;
 }
 
 export type DocumentTopicData = {

@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     TopicID: DataTypes.STRING,
     TopicName: DataTypes.STRING,
     Time: DataTypes.INTEGER,
+    ExpectedTime: DataTypes.INTEGER,
     DocumentID: DataTypes.INTEGER,
     CourseID: DataTypes.INTEGER
   }, {

@@ -15,6 +15,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      ExpectedTime: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
       DocumentID: {
         allowNull: false,
         type: Sequelize.INTEGER
