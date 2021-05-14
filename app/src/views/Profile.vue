@@ -9,7 +9,6 @@
                 class="profile-img"
                 :src="require(`@/assets/teacher.jpg`)"
               />
-              <h1>{{ user.FirstName }} {{ user.LastName }}</h1>
               <p>{{ user.UserName }}</p>
             </div>
             <ul class="profile-card-nav list-unstyled components">

@@ -120,7 +120,7 @@ class MyQuill extends Quill {
 
       // TODO
       // here we would interrupt the timer if it exceeds some amount, say 4-5 min
-      if (this.Time > 16) {
+      if (this.Time > 300) {
         clearInterval(this.Timer);
         this.StopTimer() 
       }
