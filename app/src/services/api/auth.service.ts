@@ -15,6 +15,17 @@ export function checkLogin(form: any) {
   );
 }
 
+export function Register(responseID: string) {
+  axios
+    .post("/register", {
+      responseID: responseID
+    }).then((response: AxiosResponse) => {
+      if (response.status && response.status === 200) {
+        router.push({name: "Login"}); 
+      }
+    })
+}
+
 export function Login(username: string, password: string) {
   axios
     .post("/user", {

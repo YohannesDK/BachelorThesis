@@ -19,7 +19,7 @@ router.post("/api/user", userController.login )
 //This api call gets user info
 
 //This api call registers users
-router.get("/api/register", userController.register )
+router.post("/api/register", userController.register )
 
 
 router.get("/api/userinfo", userController.user_info)

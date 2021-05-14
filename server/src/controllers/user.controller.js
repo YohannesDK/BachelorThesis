@@ -44,12 +44,12 @@ const login = async (request, response) => {
 };
 
 const register = (request, response) => {
-    axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses?page_size=1", {
+    axios.get("https://api.typeform.com/forms/vRs8ZOsa/responses", {
       headers: {
           "Authorization": "Bearer " + process.env.TYPEFORM_ACCESS_TOKEN,
       }
   }).then((res) => {
-      const register_info = res.data.items[0].answers;
+      const register_info = ref.data.items.find((item) => item["response_id"] === request.body.responseID).answers;
 
       const firstname = register_info[0].text;
       const lastname = register_info[1].text;
